@@ -4,7 +4,7 @@
 //#include "XGraphics.h"
 //#include "BwImgProcess.h"
 //#include "gl\glew.h"
-#include <gl3\gl3.h>
+//#include <gl3\gl3.h>
 
 //XGraphics gGraphics;
 
