@@ -64,10 +64,10 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	this->GetWindowRect( rect );
 	ScreenToClient(rect);
 
-	//eglView = CCEGLView::sharedOpenGLView();
-	//eglView->CreateGL( this->m_hWnd );
-	//eglView->setViewName("HelloCpp");
-	//eglView->setFrameSize( 800, 600 );
+	eglView = CCEGLView::sharedOpenGLView();
+	eglView->CreateGL( this->m_hWnd );
+	eglView->setViewName("HelloCpp");
+	eglView->setFrameSize( 800, 600 );
 	//CCDirector *pDirector = CCDirector::sharedDirector();
 	//pDirector->setOpenGLView( eglView );
 	//CCSize frameSize = eglView->getFrameSize();

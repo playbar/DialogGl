@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/opengl/!svn/ver/36/FlashCocos/cocos2dx/kazmath/src/GL
+END
+matrix.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/opengl/!svn/ver/36/FlashCocos/cocos2dx/kazmath/src/GL/matrix.c
+END
+mat4stack.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/opengl/!svn/ver/36/FlashCocos/cocos2dx/kazmath/src/GL/mat4stack.c
+END

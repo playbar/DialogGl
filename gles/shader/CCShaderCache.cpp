@@ -28,10 +28,10 @@ THE SOFTWARE.
 #include "CCGLProgram.h"
 #include "ccMacros.h"
 #include "ccShaders.h"
+#include "cclog.h"
 
-NS_CC_BEGIN
-
-enum {
+enum
+{
     kCCShaderType_PositionTextureColor,
     kCCShaderType_PositionTextureColorAlphaTest,
     kCCShaderType_PositionColor,
@@ -71,7 +71,6 @@ CCShaderCache::CCShaderCache()
 
 CCShaderCache::~CCShaderCache()
 {
-    CCLOGINFO("cocos2d deallocing 0x%X", this);
     m_pPrograms->release();
 }
 
@@ -279,8 +278,6 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
     
     p->link();
     p->updateUniforms();
-    
-    CHECK_GL_ERROR_DEBUG();
 }
 
 CCGLProgram* CCShaderCache::programForKey(const char* key)
@@ -293,4 +290,3 @@ void CCShaderCache::addProgram(CCGLProgram* program, const char* key)
     m_pPrograms->setObject(program, key);
 }
 
-NS_CC_END

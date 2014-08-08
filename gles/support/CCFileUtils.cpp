@@ -30,12 +30,11 @@ THE SOFTWARE.
 //#include "CCSAXParser.h"
 //#include "support/zip_support/unzip.h"
 #include <stack>
+#include "ccMacros.h"
 
 using namespace std;
 
-#define CC_SAFE_DELETE(p)            do { if(p) { delete (p); (p) = 0; } } while(0)
-#define CC_SAFE_RELEASE(p)            do { if(p) { (p)->release(); } } while(0)
-#define CC_BREAK_IF(cond)            if(cond) break
+
 
 CCFileUtils* CCFileUtils::s_sharedFileUtils = NULL;
 

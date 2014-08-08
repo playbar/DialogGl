@@ -13,6 +13,8 @@
 //#include "MainScene.h"
 //USING_NS_CC;
 
+#include "CCEGLView.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
 // COpenGLDialogDlg Dialogfeld
@@ -38,7 +40,7 @@ public:
 protected:
 	HICON m_hIcon;
 
-	//CCEGLView* eglView;
+	CCEGLView* eglView;
 	//MainScene *mMainScene;
 
 	//BwGLView mBwGLView;

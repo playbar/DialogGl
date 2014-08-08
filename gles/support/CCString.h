@@ -32,13 +32,15 @@ THE SOFTWARE.
 #include <string>
 #include <functional>
 
+#include "CCObject.h"
+
 
 /**
  * @addtogroup data_structures
  * @{
  */
 
-class CCString
+class CCString : public CCObject
 {
 public:
     CCString();

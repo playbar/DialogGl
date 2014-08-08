@@ -1,7 +1,5 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2011      Ricardo Quesada
-Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2010 cocos2d-x.org
 
 http://www.cocos2d-x.org
 
@@ -24,59 +22,76 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#ifndef __CCSHADERCACHE_H__
-#define __CCSHADERCACHE_H__
 
-#include "cocoa/CCDictionary.h"
+#include "CCObject.h"
+//#include "CCAutoreleasePool.h"
+#include "ccMacros.h"
+//#include "script_support/CCScriptSupport.h"
 
-NS_CC_BEGIN
 
-class CCGLProgram;
-
-/**
- * @addtogroup shaders
- * @{
- */
-
-/** CCShaderCache
- Singleton that stores manages GL shaders
- @since v2.0
- */
-class CC_DLL CCShaderCache : public CCObject 
+CCZone::CCZone(CCObject *pObject)
 {
-public:
-    CCShaderCache();
+	m_pCopyObject = pObject;
+}
 
-    virtual ~CCShaderCache();
-    /** returns the shared instance */
-    static CCShaderCache* sharedShaderCache();
+CCObject* CCCopying::copyWithZone(CCZone *pZone)
+{
+    CC_UNUSED_PARAM(pZone);
+    return 0;
+}
 
-    /** purges the cache. It releases the retained instance. */
-    static void purgeSharedShaderCache();
+CCObject::CCObject(void)
+: m_nLuaID(0)
+, m_uReference(1) // when the object is created, the reference count of it is 1
+, m_uAutoReleaseCount(0)
+{
+    static unsigned int uObjectCount = 0;
 
-    /** loads the default shaders */
-    void loadDefaultShaders();
-    
-    /** reload the default shaders */
-    void reloadDefaultShaders();
+    m_uID = ++uObjectCount;
+}
 
-    /** returns a GL program for a given key */
-    CCGLProgram * programForKey(const char* key);
+CCObject::~CCObject(void)
+{
+ 
+}
 
-    /** adds a CCGLProgram to the cache for a given name */
-    void addProgram(CCGLProgram* program, const char* key);
+CCObject* CCObject::copy()
+{
+    return copyWithZone(0);
+}
 
-private:
-    bool init();
-    void loadDefaultShader(CCGLProgram *program, int type);
+void CCObject::release(void)
+{
+    --m_uReference;
 
-    CCDictionary* m_pPrograms;
+    if (m_uReference == 0)
+    {
+        delete this;
+    }
+}
 
-};
+void CCObject::retain(void)
+{
+    ++m_uReference;
+}
 
-// end of shaders group
-/// @}
+CCObject* CCObject::autorelease(void)
+{
+    return this;
+}
 
-NS_CC_END
+bool CCObject::isSingleReference(void)
+{
+    return m_uReference == 1;
+}
 
-#endif /* __CCSHADERCACHE_H__ */
+unsigned int CCObject::retainCount(void)
+{
+    return m_uReference;
+}
+
+bool CCObject::isEqual(const CCObject *pObject)
+{
+    return this == pObject;
+}
+

@@ -43,8 +43,9 @@ THE SOFTWARE.
 // extern
 #include "kazmath/GL/matrix.h"
 #include "kazmath/kazmath.h"
+#include "ccMacros.h"
 
-#define CCRANDOM_0_1() ((float)rand()/RAND_MAX)
+
 
 //typedef struct _hashUniformEntry
 //{
@@ -119,13 +120,13 @@ bool CCGLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, 
     return true;
 }
 
-bool CCGLProgram::initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename)
-{
-    const GLchar * vertexSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(vShaderFilename).c_str())->getCString();
-    const GLchar * fragmentSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(fShaderFilename).c_str())->getCString();
-
-    return initWithVertexShaderByteArray(vertexSource, fragmentSource);
-}
+//bool CCGLProgram::initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename)
+//{
+//    const GLchar * vertexSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(vShaderFilename).c_str())->getCString();
+//    const GLchar * fragmentSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(fShaderFilename).c_str())->getCString();
+//
+//    return initWithVertexShaderByteArray(vertexSource, fragmentSource);
+//}
 
 const char* CCGLProgram::description()
 {

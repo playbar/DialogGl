@@ -33,6 +33,8 @@ THE SOFTWARE.
 
 #include "GL/glew.h"
 
+#include "CCObject.h"
+
 
 /**
  * @addtogroup shaders
@@ -97,7 +99,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
  
  @since v2.0.0
  */
-class CCGLProgram
+class CCGLProgram : public CCObject
 {
 public:
     CCGLProgram();
@@ -105,7 +107,7 @@ public:
     /** Initializes the CCGLProgram with a vertex and fragment with bytes array */
     bool initWithVertexShaderByteArray(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray);
     /** Initializes the CCGLProgram with a vertex and fragment with contents of filenames */
-    bool initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename);
+    //bool initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename);
     /**  It will add a new attribute to the shader */
     void addAttribute(const char* attributeName, GLuint index);
     /** links the glProgram */
