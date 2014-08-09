@@ -429,8 +429,10 @@ bool CCEGLView::Create()
         CC_BREAK_IF(! m_hWnd);
 
         bRet = initGL();
-		if(!bRet) destroyGL();
+		if(!bRet)
+			destroyGL();
         CC_BREAK_IF(!bRet);
+		ShowWindow( m_hWnd, true );
 
         s_pMainWindow = this;
         bRet = true;

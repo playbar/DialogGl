@@ -49,10 +49,6 @@ THE SOFTWARE.
 #include <string.h>
 #include <cmath>
 
-#ifndef M_PI
-    #define M_PI       3.14159265358979323846
-#endif
-
 static bool s_bInitialized = false;
 static CCGLProgram* s_pShader = NULL;
 static int s_nColorLocation = -1;

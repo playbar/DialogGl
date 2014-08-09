@@ -106,10 +106,11 @@ void COpenGLDialogDlg::OnPaint()
 	mMainLayer->draw();
 	//mMainLayer->visit();
 
-	eglView->swapBuffers();
+	
 
 	//ccDrawColor4F( 0.1, 0.4, 0.2, 0.3 );
 	//ccDrawPoint( ccp( 30, 30 ));
+	eglView->swapBuffers();
 	//drawNode->draw();
 	//return;
 

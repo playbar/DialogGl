@@ -49,6 +49,10 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
+
 #define CC_DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) * 0.01745329252f) // PI / 180
 
 #define CC_SWAP(x, y, type)    \

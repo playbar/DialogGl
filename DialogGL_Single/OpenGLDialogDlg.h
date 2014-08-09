@@ -11,7 +11,8 @@
 ////#include "BwGLView.h"
 
 
-//#include "CCEGLView.h"
+#include "CCEGLView.h"
+#include "CCDrawNode.h"
 //#include "CCDrawNode.h"
 
 
@@ -39,8 +40,8 @@ public:
 protected:
 	HICON m_hIcon;
 
-	//CCEGLView* eglView;
-	//CCDrawNode *drawNode;
+	CCEGLView* eglView;
+	CCDrawNode *drawNode;
 	//MainLayer *mMainLayer;
 	//BwGLView mBwGLView;
 

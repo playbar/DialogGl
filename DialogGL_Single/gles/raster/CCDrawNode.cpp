@@ -322,7 +322,7 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 	memset(extrude, 0, sizeof(struct ExtrudeVerts)*count);
 	
 	for(unsigned int i = 0; i < count; i++)
-    {
+    {  
 		ccVertex2F v0 = __v2f(verts[(i-1+count)%count]);
 		ccVertex2F v1 = __v2f(verts[i]);
 		ccVertex2F v2 = __v2f(verts[(i+1)%count]);

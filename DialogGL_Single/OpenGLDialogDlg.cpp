@@ -7,7 +7,7 @@
 //#include "cctypes.h"
 #include "set"
 
-//#include "CCDrawingPrimitives.h"
+#include "CCDrawingPrimitives.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,13 +67,77 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	this->GetWindowRect( rect );
 	ScreenToClient(rect);
 
-	//eglView = CCEGLView::sharedOpenGLView();
-	//eglView->CreateGL( this->m_hWnd );
-	//eglView->setViewName("HelloCpp");
-	//eglView->setFrameSize( 800, 600 );
+	eglView = CCEGLView::sharedOpenGLView();
+	eglView->CreateGL( this->m_hWnd );
+	//eglView->Create();
+	eglView->setViewName("HelloCpp");
+	eglView->setFrameSize( 800, 600 );
+	eglView->setGLDefaultValues();
 
-	//drawNode = CCDrawNode::create();
-	//drawNode->drawDot( ccp( 100, 100 ), 40, ccc4f( 0.1, 0.2, 0.1, 0.3 ));
+	drawNode = CCDrawNode::create();
+	static ccColor4F green ={0,1,0,1};
+	float fRadius=200.0f;
+	const int nCount=100;
+	//const float coef= 2.0f* (float)M_PI/nCount;
+	static CCPoint circle[nCount];
+
+	circle[0].x = 100;
+	circle[0].y = 100;
+	circle[4].x = -100;
+	circle[4].y = 100;
+	circle[3].x = -100;
+	circle[3].y = -100;
+	circle[2].x = 100;
+	circle[2].y = -100;
+	circle[1].x = 0;
+	circle[1].y = 0;
+	//for(unsigned int i= 0;i< nCount;i++)
+	//{
+	//	float rads =i*coef;
+	//	circle[i].x= fRadius* cosf(rads);
+	//	circle[i].y= fRadius* sinf(rads);
+	//}
+	//circle[0].x = 100;
+	//circle[0].y = 50;
+	//circle[1].x = 50;
+	//circle[1].y = 100;
+	//circle[2].x = 0;
+	//circle[2].y = 0;
+	//circle[3].x = -50;
+	//circle[3].y = 100;
+	//circle[4].x = -100;
+	//circle[4].y = 50;
+	//circle[5].x = -150;
+	//circle[5].y = 100;
+	//circle[6].x = -100;
+	//circle[6].y = 0;
+	//circle[7].x = -120;
+	//circle[7].y = -100;
+	//circle[8].x = -80;
+	//circle[8].y = -50;
+	//circle[9].x = -30;
+	//circle[9].y = -140;
+	//circle[10].x = -10;
+	//circle[10].y = -60;
+	//circle[11].x = 0;
+	//circle[11].y = -80;
+	//circle[12].x = 40;
+	//circle[12].y = -30;
+	//circle[13].x = 110;
+	//circle[13].y = -100;
+	//circle[14].x = 120;
+	//circle[14].y = -80;
+	//circle[15].x = 200;
+	//circle[15].y = 0;
+	//circle[16].x = 150;
+	//circle[16].y = 50;
+	//circle[17].x = 150;
+	//circle[17].y = 100;
+
+	drawNode->setPosition( 300, 300 );
+	drawNode->drawPolygon(circle, 5, green, 1, green );//绘制这个多边形!
+
+	//drawNode->drawDot( ccp( 100, 100 ), 40, ccc4f( 1, 0, 1, 1 ));
 	//CCDirector *pDirector = ;
 	//CCDirector::sharedDirector()->setOpenGLView( eglView );
 	//pDirector->setOpenGLView( eglView );
@@ -88,30 +152,17 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//mBwGLView.OnSize(0, rect.Width(), rect.Height() );
 	//openGLControl.Create(rect,this);
 
-	return TRUE;  // Geben Sie TRUE zur點k, au遝r ein Steuerelement soll den Fokus erhalten
+	return TRUE;  
 }
 
-// Wollen Sie Ihrem Dialogfeld eine Schaltfl鋍he "Minimieren" hinzuf黦en, ben鰐igen Sie 
-//  den nachstehenden Code, um das Symbol zu zeichnen. F黵 MFC-Anwendungen, die das 
-//  Dokument/Ansicht-Modell verwenden, wird dies automatisch f黵 Sie erledigt.
 
 void COpenGLDialogDlg::OnPaint() 
 {
-	//char pchTmp[ 256 ] = {0};
-	//sprintf( pchTmp, "%s, %d", __FUNCTION__, __LINE__ );
-	//OutputDebugStringA( pchTmp );
-	//mBwGLView.OnPaint(); 
-	//CCDirector::sharedDirector()->drawScene();
-
-	//mMainLayer->draw();
-	//mMainLayer->visit();
-
-	//eglView->swapBuffers();
-
-	//ccDrawColor4F( 0.1, 0.4, 0.2, 0.3 );
-	//ccDrawPoint( ccp( 30, 30 ));
+	ccDrawColor4B(255,0,0,255);
+	ccDrawLine( ccp(100, 100), ccp( 800, 600) );
 	//drawNode->draw();
-	//return;
+	drawNode->visit();
+	eglView->swapBuffers();
 
 	if (IsIconic())
 	{
