@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib
+END
+GLU32.lib
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/GLU32.lib
+END
+OSMESA32.lib
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OSMESA32.lib
+END
+OPENGL32.dll
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OPENGL32.dll
+END
+OPENGL32.exp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OPENGL32.exp
+END
+GLU32.dll
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/GLU32.dll
+END
+OSMESA32.dll
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OSMESA32.dll
+END
+GLU32.exp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/GLU32.exp
+END
+OSMESA32.exp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OSMESA32.exp
+END
+mesa.lib
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/mesa.lib
+END
+OPENGL32.lib
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/lib/OPENGL32.lib
+END

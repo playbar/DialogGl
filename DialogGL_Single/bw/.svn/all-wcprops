@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw
+END
+XFont.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/XFont.cpp
+END
+define.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/define.h
+END
+StbImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/StbImage.h
+END
+XFont.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/XFont.h
+END
+string_comp.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/string_comp.cpp
+END
+XRect.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/XRect.cpp
+END
+gdx2d.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/gdx2d.cpp
+END
+string_comp.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/string_comp.h
+END
+XRect.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/XRect.h
+END
+StbImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/StbImage.cpp
+END
+gdx2d.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/opengl/!svn/ver/36/FlashCocos/OpenGLDialog/bw/gdx2d.h
+END
