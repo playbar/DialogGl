@@ -33,6 +33,8 @@
 #include "CCNode.h"
 #include "ccTypes.h"
 
+#include "tess.h"
+
 /** CCDrawNode
  Node that draws dots, segments and polygons.
  Faster than the "drawing primitives" since they it draws everything in one single batch.
@@ -52,7 +54,7 @@ protected:
     ccBlendFunc     m_sBlendFunc;
     
     bool            m_bDirty;
-    
+
 public:
     static CCDrawNode* create();
     virtual ~CCDrawNode();
@@ -68,6 +70,8 @@ public:
     
 	/** draw a polygon with a fill color and line color */
 	void drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor);
+
+	void drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color );
     
     /** Clear the geometry in the node's buffer. */
     void clear();
@@ -76,6 +80,14 @@ public:
     void setBlendFunc(const ccBlendFunc &blendFunc);
     
     CCDrawNode();
+
+public:
+	void beginPolygon();
+	void endPolygon();
+	void drawAllPolygon();
+
+private:
+	GLUtesselator *tobj;
     
 private:
     void ensureCapacity(unsigned int count);

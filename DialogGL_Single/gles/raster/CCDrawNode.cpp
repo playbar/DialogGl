@@ -23,6 +23,7 @@
 #include "CCDrawNode.h"
 #include "CCPointExtension.h"
 #include "CCShaderCache.h"
+#include "CCDrawingPrimitives.h"
 //#include "CCGL.h"
 #include "gl/glew.h"
 
@@ -421,11 +422,253 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
     free(extrude);
 }
 
+void CCDrawNode::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
+{
+	unsigned int vertex_count = 2 * 3;
+	ensureCapacity( vertex_count );
+	ccColor4B col = ccc4BFromccc4F( color );
+	ccV2F_C4B_T2F_Triangle triangle =
+	{
+		{ vertex2( p1.x, p1.y), col, __t( v2fzero) },
+		{ vertex2( p2.x, p2.y), col, __t( v2fzero ) },
+		{ vertex2( p3.x, p3.y), col, __t( v2fzero ) }
+	};
+	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+	//ccV2F_C4B_T2F_Triangle triangle = { a, b, c };
+	triangles[0] = triangle;
+	m_nBufferCount += vertex_count;
+	m_bDirty = true;
+	return;
+}
+
 void CCDrawNode::clear()
 {
     m_nBufferCount = 0;
     m_bDirty = true;
 }
+
+std::vector<CCPoint*> g_pintArray;
+CCDrawNode * pthis = NULL;
+void __stdcall vertexCallback(GLdouble *vertex)
+{
+	const GLdouble *pointer;
+	CCPoint *p = new CCPoint();
+	p->x = vertex[0];
+	p->y = vertex[1];
+	g_pintArray.push_back( p );
+
+	//pointer = (GLdouble *) vertex;
+	//glColor3dv(pointer+3);
+	//glVertex3dv((GLdouble*)vertex);
+
+	//g_pintArray
+}
+
+void __stdcall beginCallback( GLenum which )
+{
+
+}
+
+void __stdcall endCallback( )
+{
+	static ccColor4F green ={0,1,0,1};
+	int count = g_pintArray.size();
+	//const int nCount=100;
+	//static CCPoint circle[nCount];
+	//circle[0].x = 50;
+	//circle[0].y = 100;
+	//circle[1].x = 0;
+	//circle[1].y = 0;
+	//circle[2].x = -50;
+	//circle[2].y = 100;
+	//circle[3].x = -100;
+	//circle[3].y = 50;
+	//circle[4].x = -150;
+	//circle[4].y = 100;
+	//drawPolygon( (CCPoint*)(g_pintArray[0]), count,green, 1, green );
+
+	CCPoint * pdata = new CCPoint[count];
+	for ( int i = 0; i < count; i++ )
+	{
+		pdata[i].x = g_pintArray[i]->x;
+		pdata[i].y = g_pintArray[i]->y;
+	}
+
+	ccDrawSolidPoly( pdata, count, green );
+	delete []pdata;
+	std::vector<CCPoint*>::iterator iter = g_pintArray.begin();
+	std::vector<CCPoint*>::iterator end = g_pintArray.end();
+	for ( ; iter != end; iter++ )
+	{
+		delete *iter;
+	}
+	g_pintArray.clear();
+	
+	
+}
+
+void __stdcall errorCallback( GLenum errorCode )
+{
+	const GLubyte *estring;
+	//estring = gluErrorString( errorCode );
+	//fprintf( stderr, "Tessellation Error: %s\n", estring );
+	exit( 0 );
+}
+
+void __stdcall combineCallback(GLdouble coords[3], 
+		GLdouble *vertex_data[4],
+		GLfloat weight[4], GLdouble **dataOut )
+{
+	GLdouble *vertex;
+	int i;
+
+	vertex = (GLdouble *) malloc(6 * sizeof(GLdouble));
+
+	vertex[0] = coords[0];
+	vertex[1] = coords[1];
+	vertex[2] = coords[2];
+	for (i = 3; i < 6; i++)
+		vertex[i] = weight[0] * vertex_data[0][i] 
+					+ weight[1] * vertex_data[1][i]
+					+ weight[2] * vertex_data[2][i] 
+					+ weight[3] * vertex_data[3][i];
+	*dataOut = vertex;
+
+	CCPoint *p = new CCPoint();
+	p->x = vertex[0];
+	p->y = vertex[1];
+	g_pintArray.push_back( p );
+	
+	
+}
+
+//GLdouble star[5][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
+//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
+//};
+
+//GLdouble star[5][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
+//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
+//};
+
+//GLdouble star[8][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
+//	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 1.0, 0.0,
+//	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
+//	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
+//	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
+//	120.0, 70.0, 0.0, 1.0, 0.0, 1.0
+//};
+
+GLdouble star[10][6] =
+{
+	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
+	//150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+	//120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
+	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
+	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
+	120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+	150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
+	50.0, 150.0, 0.0, 1.0, 1.0, 0.0
+};
+
+//GLdouble star[8][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	50.0, 200.0, 0.0, 1.0, 0.0, 0.0,
+//	100.0, 200.0, 0.0, 0.0, 1.0, 1.0,
+//	100.0, 100.0, 0.0, 1.0, 1.0, 0.0,
+//	150.0, 100.0, 0.0, 1.0, 0.0, 0.0,
+//	150.0, 200.0, 0.0, 0.0, 1.0, 1.0,
+//	200.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 1.0, 0.0, 1.0
+//};
+
+
+
+void CCDrawNode::beginPolygon()
+{
+	tobj = gluNewTess();
+	pthis = this;
+	gluTessCallback(tobj, GLU_TESS_VERTEX, (void (__stdcall *)())vertexCallback);
+	gluTessCallback(tobj, GLU_TESS_BEGIN,  (void (__stdcall *)())beginCallback);
+	gluTessCallback(tobj, GLU_TESS_END, (void (__stdcall *)())endCallback);
+	gluTessCallback(tobj, GLU_TESS_ERROR, (void (__stdcall *)())errorCallback);
+	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
+
+	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+	gluTessBeginPolygon(tobj, NULL);
+	gluTessBeginContour(tobj);
+	gluTessVertex(tobj, star[0], star[0]);
+	gluTessVertex(tobj, star[1], star[1]);
+	gluTessVertex(tobj, star[2], star[2]);
+	gluTessVertex(tobj, star[3], star[3]);
+	gluTessVertex(tobj, star[4], star[4]);
+	gluTessVertex(tobj, star[5], star[5]);
+	gluTessVertex(tobj, star[6], star[6]);
+	gluTessVertex(tobj, star[7], star[7]);
+	gluTessVertex(tobj, star[8], star[8]);
+	gluTessVertex(tobj, star[9], star[9]);
+	//gluTessVertex(tobj, star[10], star[10]);
+	//gluTessVertex(tobj, star[11], star[11]);
+	gluTessEndContour(tobj);
+	gluTessEndPolygon(tobj);
+
+	return;
+}
+
+void CCDrawNode::endPolygon()
+{
+	 gluDeleteTess(tobj);
+
+	 //static ccColor4F green ={0,1,0,1};
+	 //int count = g_pintArray.size();
+	 ////const int nCount=100;
+	 ////static CCPoint circle[nCount];
+	 ////circle[0].x = 50;
+	 ////circle[0].y = 100;
+	 ////circle[1].x = 0;
+	 ////circle[1].y = 0;
+	 ////circle[2].x = -50;
+	 ////circle[2].y = 100;
+	 ////circle[3].x = -100;
+	 ////circle[3].y = 50;
+	 ////circle[4].x = -150;
+	 ////circle[4].y = 100;
+	 ////drawPolygon( (CCPoint*)(g_pintArray[0]), count,green, 1, green );
+
+	 //CCPoint * pdata = new CCPoint[count];
+	 //for ( int i = 0; i < count; i++ )
+	 //{
+		// pdata[i].x = g_pintArray[i]->x;
+		// pdata[i].y = g_pintArray[i]->y;
+	 //}
+
+	 //ccDrawSolidPoly( pdata, count, green );
+	 //delete []pdata;
+
+}
+
+void CCDrawNode::drawAllPolygon()
+{
+
+}
+
 
 ccBlendFunc CCDrawNode::getBlendFunc() const
 {

@@ -254,7 +254,8 @@ void ccDrawSolidPoly( const CCPoint *poli, unsigned int numberOfPoints, ccColor4
         glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, newPoli);
     }    
 
-    glDrawArrays(GL_TRIANGLE_FAN, 0, (GLsizei) numberOfPoints);
+    //glDrawArrays(GL_TRIANGLE_FAN, 0, (GLsizei) numberOfPoints);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei) numberOfPoints);
 
     CC_SAFE_DELETE_ARRAY(newPoli);
     //CC_INCREMENT_GL_DRAWS(1);

@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="gles;gles/kazmath;gles/raster;gles/shader;gles/support;glew"
+				AdditionalIncludeDirectories="gles;gles/kazmath;gles/raster;gles/shader;gles/support;glew;glu"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -763,6 +763,106 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="glu"
+			>
+			<File
+				RelativePath=".\glu\dict-list.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\dict.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\dict.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\geom.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\geom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\gluos.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\memalloc.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\memalloc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\mesh.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\mesh.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\normal.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\normal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\priorityq-heap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\priorityq-sort.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\priorityq.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\priorityq.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\render.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\render.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\sweep.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\sweep.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\tess.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\tess.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\tessmono.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glu\tessmono.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath="ReadMe.txt"
