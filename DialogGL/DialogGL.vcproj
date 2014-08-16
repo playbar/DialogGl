@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)cocos2dx/include&quot;;&quot;$(SolutionDir)dependency/cocos2dx&quot;;&quot;$(SolutionDir)cocos2dx/kazmath/include&quot;;&quot;$(SolutionDir)cocos2dx\platform\win32&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\OGLES&quot;;&quot;$(SolutionDir)cocos2dx&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)cocos2dx/include&quot;;&quot;$(SolutionDir)dependency/cocos2dx&quot;;&quot;$(SolutionDir)cocos2dx/kazmath/include&quot;;&quot;$(SolutionDir)cocos2dx\platform\win32&quot;;&quot;$(SolutionDir)cocos2dx\platform\third_party\win32\OGLES&quot;;&quot;$(SolutionDir)cocos2dx&quot;;raster"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_AFXDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libcocos2d.lib"
+				AdditionalDependencies="libcocos2d.lib opengl32.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(SolutionDir)Debug"
@@ -342,6 +342,34 @@
 			</File>
 			<File
 				RelativePath="res\OpenGLDialog.rc2"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="raster"
+			>
+			<File
+				RelativePath=".\raster\BwFillStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\raster\BwFillStyle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\raster\BwShapeRecord.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\raster\BwShapeRecord.h"
+				>
+			</File>
+			<File
+				RelativePath=".\raster\Raster_gl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\raster\Raster_gl.h"
 				>
 			</File>
 		</Filter>
