@@ -1,5 +1,6 @@
 #include "MainScene.h"
 #include "VisibleRect.h"
+#include "testResource.h"
 
 USING_NS_CC;
 
@@ -32,7 +33,7 @@ bool MainLayer::init()
     //CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     //CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	DrawCCCipingNode();
+	ParallaxTest();
 
 	//DrawTexture();
 	
@@ -44,6 +45,39 @@ bool MainLayer::init()
     //
     return true;
 }
+
+
+void MainLayer::ParallaxTest()
+{
+	CCSprite * cocosImage = CCSprite::create( s_Power );
+	cocosImage->setScale( 2.5f );
+	cocosImage->setAnchorPoint( ccp( 0, 0 ) );
+
+	CCTileMapAtlas *tilemap = CCTileMapAtlas::create( s_TilesPng, s_LevelMapTga, 16, 16 );
+	tilemap->releaseMap();
+	tilemap->setAnchorPoint( ccp( 0,0 ) );
+	tilemap->getTexture()->setAntiAliasTexParameters();
+
+	CCSprite *background = CCSprite::create( s_back );
+	background->setScale( 1.5f );
+	background->setAnchorPoint( ccp( 0, 0));
+
+	CCParallaxNode *voidNode = CCParallaxNode::create();
+	voidNode->addChild( background, -1, ccp( 0.4f, 0.5f), CCPointZero );
+	voidNode->addChild( tilemap, 1, ccp( 2.2f, 1.0f), ccp( 0, -200) );
+	voidNode->addChild( cocosImage, 2, ccp( 3.0f, 2.5f), ccp( 200, 800) );
+
+	CCActionInterval *goUp = CCMoveBy::create( 4, ccp( 0, -500 ));
+	CCActionInterval *goDown = goUp->reverse();
+	CCActionInterval *go = CCMoveBy::create( 8, ccp( -1000, 0 ));
+	CCActionInterval *goBack = go->reverse();
+	CCSequence *seq = CCSequence::create( goUp, go, goDown, goBack, NULL );
+	voidNode->runAction( ( CCRepeatForever::create( seq )));
+	addChild( voidNode );
+
+
+}
+
 
 void MainLayer::DrawGradient()
 {
@@ -242,7 +276,7 @@ void MainLayer::onEnter()
 void MainLayer::draw()
 {
 	CCLayer::draw();
-	drawGraphics();
+	//drawGraphics();
 }
 
 void MainLayer::drawGraphics()

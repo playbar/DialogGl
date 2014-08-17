@@ -15,11 +15,12 @@ public:
 	~BwEdge();
 	void SetControlPt( CCPoint &pt );
 	void SetEndPt( CCPoint &pt );
+	bool straight();
 	int IsLine( );
 	void IsLine( int bline);
 public:
-	CCPoint mControlPt;	//control
-	CCPoint mEndPt;
+	CCPoint cp;	//control
+	CCPoint ap;
 	int    mbLine;
 };
 

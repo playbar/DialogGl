@@ -304,6 +304,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testResource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\VisibleRect.cpp"
 				>
 			</File>

@@ -4,30 +4,6 @@
 
 vector<GLdouble*> gVecPoint;
 
-class oglScopeMatrix 
-{
-public:
-	oglScopeMatrix(const kmMat3& m)
-	{
-		//glPushMatrix();
-		//float mat[16];
-		//memset(&mat[0], 0, sizeof(mat));
-		//mat[0] = m.a / 65536.0f;
-		//mat[1] = m.b / 65536.0f;
-		//mat[4] = m.c / 65536.0f;
-		//mat[5] = m.d / 65536.0f;
-		//mat[10] = 1;
-		//mat[12] = m.tx;
-		//mat[13] = m.ty;
-		//mat[15] = 1;
-		//glMultMatrixf(mat);
-	}
-	~oglScopeMatrix()
-	{
-		glPopMatrix();
-	}
-};
-
 CCPoint PtMiddle( CCPoint pt1, CCPoint pt2 )
 {
 	CCPoint pt;
@@ -62,14 +38,14 @@ vector<oglVertex> BwInterpolate( vector<BwEdge> &edgs, float &anchor_x, float &a
 		it != end; ++it )
 	{
 		BwEdge &the_edge = *it;
-		CCPoint target( the_edge.mEndPt.x, the_edge.mEndPt.y );
+		CCPoint target( the_edge.ap.x, the_edge.ap.y );
 		if( the_edge.IsLine( ) )
 		{
 			shape_points.push_back( oglVertex( target ) );
 		}
 		else
 		{
-			CCPoint control( the_edge.mControlPt.x, the_edge.mControlPt.y );
+			CCPoint control( the_edge.cp.x, the_edge.cp.y );
 			TraceCurve( anchor, control, target, shape_points );
 		}
 		anchor = target;
@@ -113,8 +89,8 @@ PathPtrVec paths_by_line_style( PathVec &path_vec, unsigned int style )
 
 BwPath *find_connecting_path( BwPath &to_connect, list<BwPath*> path_refs )
 {
-	float target_x = to_connect.mVecEdges.back().mEndPt.x;
-	float target_y = to_connect.mVecEdges.back().mEndPt.y;
+	float target_x = to_connect.mVecEdges.back().ap.x;
+	float target_y = to_connect.mVecEdges.back().ap.y;
 
 	if( target_x == to_connect.mStartPt.x && target_y == to_connect.mStartPt.y )
 	{
@@ -364,7 +340,7 @@ void RasterGL::ShowAllPt( BwShapeRecord & rec )
 			BwEdge &edge = *it;
 			memset(pTmp, 0, 256 );
 			sprintf(pTmp, "Path edge---->%d:%d, ControlPt->x:%d, y:%d, EndPt->x:%d, y:%d", 
-				ipathnum, iedgenum, edge.mControlPt.x, edge.mControlPt.y, edge.mEndPt.x, edge.mEndPt.y );
+				ipathnum, iedgenum, edge.cp.x, edge.cp.y, edge.ap.x, edge.ap.y );
 			OutputDebugStringA( pTmp );
 		}
 	}
@@ -387,9 +363,9 @@ void RasterGL::GlesDrawSubShape( BwPath &pPath, kmMat3 &matrix, ccColor4F &cx, v
 	int pos = 3;
 	for( it = pPath.mVecEdges.begin(); it != pPath.mVecEdges.end(); it++ )
 	{
-		pData[pos] =(*it).mEndPt.x;// >> mAntiShift;
+		pData[pos] =(*it).ap.x;// >> mAntiShift;
 		pos++;
-		pData[pos] = (*it).mEndPt.y;// >> mAntiShift;
+		pData[pos] = (*it).ap.y;// >> mAntiShift;
 		sprintf(pTmp, "pt:%d,x:%f, y:%f", pos / 3, pData[pos - 1], pData[pos] );
 		OutputDebugStringA( pTmp );
 		pos++;
@@ -568,7 +544,7 @@ void RasterGL::draw_outline( vector<BwPath>&path_vec, PathPointMap& pathpoints, 
 				it != end; it++ )
 			{
 				BwEdge &cur_edge = *it;
-				glVertex2d( cur_edge.mEndPt.x, cur_edge.mEndPt.y );
+				glVertex2d( cur_edge.ap.x, cur_edge.ap.y );
 			}
 		}
 		glEnd();
@@ -658,12 +634,12 @@ vector<BwPath> RasterGL::NormalizePaths( vector<BwPath>&paths )
 BwPath RasterGL::ReversePath( BwPath &curPath )
 {
 	BwEdge &cur_end = curPath.mVecEdges.back();
-	float prev_cx = cur_end.mControlPt.x;
-	float prev_cy = cur_end.mControlPt.y;
-	BwPath newPath( cur_end.mEndPt.x, cur_end.mEndPt.y, curPath.mFillRight, curPath.mFillLeft,
+	float prev_cx = cur_end.cp.x;
+	float prev_cy = cur_end.cp.y;
+	BwPath newPath( cur_end.ap.x, cur_end.ap.y, curPath.mFillRight, curPath.mFillLeft,
 		curPath.mLineStyle, curPath.mbNewShape );
-	float prev_ax = cur_end.mEndPt.x;
-	float prev_ay = cur_end.mEndPt.y;
+	float prev_ax = cur_end.ap.x;
+	float prev_ay = cur_end.ap.y;
 
 	for( vector<BwEdge>::reverse_iterator it = curPath.mVecEdges.rbegin() + 1,
 		end = curPath.mVecEdges.rend(); it != end; ++it )
@@ -671,16 +647,16 @@ BwPath RasterGL::ReversePath( BwPath &curPath )
 		BwEdge &curEdge = *it;
 		if( prev_ax == prev_cx && prev_ay == prev_cy )
 		{
-			prev_cx = curEdge.mEndPt.x;
-			prev_cy = curEdge.mEndPt.y;
+			prev_cx = curEdge.ap.x;
+			prev_cy = curEdge.ap.y;
 		}
-		BwEdge newEdge( prev_cx, prev_cy, curEdge.mEndPt.x, curEdge.mEndPt.y );
+		BwEdge newEdge( prev_cx, prev_cy, curEdge.ap.x, curEdge.ap.y );
 		newPath.mVecEdges.push_back( newEdge );
 
-		prev_cx = curEdge.mControlPt.x;
-		prev_cy = curEdge.mControlPt.y;
-		prev_ax = curEdge.mEndPt.x;
-		prev_ay = curEdge.mEndPt.y;
+		prev_cx = curEdge.cp.x;
+		prev_cy = curEdge.cp.y;
+		prev_ax = curEdge.ap.x;
+		prev_ay = curEdge.ap.y;
 	}
 	BwEdge newLastEdge( prev_cx, prev_cy, curPath.mStartPt.x, curPath.mStartPt.y );
 	newPath.mVecEdges.push_back( newLastEdge );

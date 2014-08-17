@@ -17,8 +17,8 @@ public:
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
 
-	 
-
+	 void ParallaxTest();
+ 
 	void DrawTexture();
 	void DrawPolygen();
 	void DrawCCCipingNode();

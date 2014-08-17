@@ -103,8 +103,8 @@ void COpenGLDialogDlg::OnPaint()
 	//mBwGLView.OnPaint(); 
 	//CCDirector::sharedDirector()->drawScene();
 
-	mMainLayer->draw();
-	//mMainLayer->visit();
+	//mMainLayer->draw();
+	mMainLayer->visit();
 
 	
 

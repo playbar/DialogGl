@@ -3,17 +3,17 @@
 
 BwEdge::BwEdge()
 {
-	memset( &mControlPt, 0, sizeof( CCPoint ));
-	memset( &mEndPt, 0, sizeof( CCPoint ));
+	memset( &cp, 0, sizeof( CCPoint ));
+	memset( &ap, 0, sizeof( CCPoint ));
 	mbLine = 0;
 }
 
 BwEdge::BwEdge( int cx, int cy, int ax, int ay)
 {
-	mControlPt.x = cx;
-	mControlPt.y = cy;
-	mEndPt.x = ax;
-	mEndPt.y = ay;
+	cp.x = cx;
+	cp.y = cy;
+	ap.x = ax;
+	ap.y = ay;
 }
 
 BwEdge::~BwEdge()
@@ -35,12 +35,17 @@ int BwEdge::IsLine()
 
 void BwEdge::SetControlPt( CCPoint &pt )
 {
-	mControlPt = pt;
+	cp = pt;
 }
 
 void BwEdge::SetEndPt( CCPoint &pt )
 {
-	mEndPt = pt;
+	ap = pt;
+}
+
+bool BwEdge::straight()
+{
+	return cp == ap;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -116,7 +121,7 @@ int BwPath::PtInPath(CCPoint &pt )
 {
 	if( mStartPt == pt )
 		return en_PtPos_Begin;
-	else if( mVecEdges.back().mEndPt == pt )
+	else if( mVecEdges.back().ap == pt )
 		return en_PtPos_End;
 	else 
 	{
@@ -125,7 +130,7 @@ int BwPath::PtInPath(CCPoint &pt )
 		for( ; it != end; it++ )
 		{
 			BwEdge &edge = *it;
-			if( edge.mEndPt == pt )
+			if( edge.ap == pt )
 				return en_PtPos_Mid;
 		}
 	}
