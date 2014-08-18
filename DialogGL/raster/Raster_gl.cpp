@@ -29,15 +29,15 @@ void TraceCurve( CCPoint &startP, CCPoint&controlP, CCPoint &endP,
 	return;
 }
 
-vector<oglVertex> BwInterpolate( vector<BwEdge> &edgs, float &anchor_x, float &anchor_y )
+vector<oglVertex> BwInterpolate( vector<Edge> &edgs, float &anchor_x, float &anchor_y )
 {
 	CCPoint anchor( anchor_x, anchor_y );
 	vector<oglVertex> shape_points;
 	shape_points.push_back( oglVertex( anchor ) );
-	for( vector<BwEdge>::iterator it = edgs.begin(), end = edgs.end();
+	for( vector<Edge>::iterator it = edgs.begin(), end = edgs.end();
 		it != end; ++it )
 	{
-		BwEdge &the_edge = *it;
+		Edge &the_edge = *it;
 		CCPoint target( the_edge.ap.x, the_edge.ap.y );
 		if( the_edge.IsLine( ) )
 		{
@@ -59,12 +59,12 @@ PathPtrVec paths_by_fill_style( PathVec &path_vec, unsigned int style )
 	for( PathVec::iterator it = path_vec.begin(), end = path_vec.end();
 		it != end; ++it )
 	{
-		BwPath &cur_path = *it;
-		if( cur_path.mFillLeft == style )
+		Path &cur_path = *it;
+		if( cur_path.mFill0 == style )
 		{
 			paths.push_back( &cur_path );
 		}
-		if( cur_path.mFillRight == style )
+		if( cur_path.mFill1 == style )
 		{
 			paths.push_back( &cur_path );
 		}
@@ -78,8 +78,8 @@ PathPtrVec paths_by_line_style( PathVec &path_vec, unsigned int style )
 	for( PathVec::iterator it = path_vec.begin(), end = path_vec.end();
 		it != end; ++it )
 	{
-		BwPath &cur_path = *it;
-		if( cur_path.mLineStyle == style )
+		Path &cur_path = *it;
+		if( cur_path.mLine == style )
 		{
 			paths.push_back( &cur_path );
 		}
@@ -87,7 +87,7 @@ PathPtrVec paths_by_line_style( PathVec &path_vec, unsigned int style )
 	return paths;
 }
 
-BwPath *find_connecting_path( BwPath &to_connect, list<BwPath*> path_refs )
+Path *find_connecting_path( Path &to_connect, list<Path*> path_refs )
 {
 	float target_x = to_connect.mVecEdges.back().ap.x;
 	float target_y = to_connect.mVecEdges.back().ap.y;
@@ -96,17 +96,17 @@ BwPath *find_connecting_path( BwPath &to_connect, list<BwPath*> path_refs )
 	{
 		return NULL;
 	}
-	for( list<BwPath*>::iterator it = path_refs.begin(), end = path_refs.end();
+	for( list<Path*>::iterator it = path_refs.begin(), end = path_refs.end();
 		it != end; ++it )
 	{
-		BwPath *cur_path = *it;
+		Path *cur_path = *it;
 		if( cur_path == &to_connect )
 		{
 			continue;
 		}
 		if( cur_path->mStartPt.x == target_x && cur_path->mStartPt.y )
 		{
-			if( cur_path->mFillLeft != to_connect.mFillLeft )
+			if( cur_path->mFill0 != to_connect.mFill0 )
 			{
 				continue;
 			}
@@ -118,34 +118,34 @@ BwPath *find_connecting_path( BwPath &to_connect, list<BwPath*> path_refs )
 
 list<PathPtrVec > get_contours( PathPtrVec &paths )
 {
-	list<BwPath *> path_refs;
+	list<Path *> path_refs;
 	list<PathPtrVec > contours;
 
 	for( PathPtrVec::iterator it = paths.begin(), end = paths.end();
 		it != end; ++it )
 	{
-		BwPath *cur_path = *it;
+		Path *cur_path = *it;
 		path_refs.push_back( cur_path );
 	}
-	list< BwPath *>::iterator ittmp;
-	for( list< BwPath *>::iterator it = path_refs.begin(), end = path_refs.end();
+	list< Path *>::iterator ittmp;
+	for( list< Path *>::iterator it = path_refs.begin(), end = path_refs.end();
 		it != end; ++it )
 	{
 		ittmp = it;
-		BwPath *cur_path = *it;
+		Path *cur_path = *it;
 		if( cur_path->mVecEdges.empty() )
 		{
 			continue;
 		}
 		PathPtrVec contour;
 		contour.push_back( cur_path );
-		BwPath *connector = find_connecting_path( *cur_path, path_refs );
+		Path *connector = find_connecting_path( *cur_path, path_refs );
 		while( connector )
 		{
 			contour.push_back( connector );
-			BwPath *tmp = connector;
+			Path *tmp = connector;
 			ittmp++;
-			connector = find_connecting_path( *connector, list<BwPath*>(ittmp, end ) );
+			connector = find_connecting_path( *connector, list<Path*>(ittmp, end ) );
 			path_refs.remove( tmp );
 		}
 		contours.push_back( contour );
@@ -274,29 +274,31 @@ void RasterGL::GetCacheData( unsigned char *pdata, int width, int height )
 
 void RasterGL::GlesDrawShape( BwShapeRecord & rec, kmMat3 &matrix, ccColor4F &cx )
 {
+	ccDrawLine( ccp( 10, 10), ccp( 200, 200 ) );
+	return;
 	//BwglDrawLine(0, 0, 100, 100, 2, 0xFF00FF00 );
 	//return;
-	ShowAllPt( rec );
+	//ShowAllPt( rec );
 	//BwglClear();
 	//GLDrawLine(20, 20, 100, 100, 2, 0xFF00FF00 );
 	//return;
-	vector<BwPath>& paths = rec.mVecPaths;
+	vector<Path>& paths = rec.mPaths;
 	bool haveShape =false;
 	bool haveOutline = false;
 	AnalyzePath( paths, haveShape, haveOutline );
 	if( !haveOutline && !haveShape )
 		return;
 
-	vector< vector<BwPath>::iterator > subShapes = FindSubShape( paths );
-	vector< BwFillStyle *> &fillStyle = rec.mVecFillStyles;
-	vector< BwLineStyle > &lineStyle = rec.mVecLineStyles;
+	vector< vector<Path>::iterator > subShapes = FindSubShape( paths );
+	vector< FillStyle *> &fillStyle = rec.mFillStyles;
+	vector< LineStyle > &lineStyle = rec.mLineStyles;
 
 	for( int i = 0; i < subShapes.size() - 1; ++i )
 	{
-		vector<BwPath> subShapePaths;
+		vector<Path> subShapePaths;
 		if( subShapes[i] != subShapes[i + 1 ])
 		{
-			subShapePaths = vector<BwPath>( subShapes[i], subShapes[i + 1 ]);
+			subShapePaths = vector<Path>( subShapes[i], subShapes[i + 1 ]);
 		}
 		else
 		{
@@ -309,10 +311,10 @@ void RasterGL::GlesDrawShape( BwShapeRecord & rec, kmMat3 &matrix, ccColor4F &cx
 
 //////////////////////////////////////////////////////////////////////////
 
-	vector<BwPath>::iterator it;
-	for( it = rec.mVecPaths.begin(); it != rec.mVecPaths.end(); it++ )
+	vector<Path>::iterator it;
+	for( it = rec.mPaths.begin(); it != rec.mPaths.end(); it++ )
 	{
-		GlesDrawSubShape( *it, matrix, cx, rec.mVecFillStyles, rec.mVecLineStyles );
+		GlesDrawSubShape( *it, matrix, cx, rec.mFillStyles, rec.mLineStyles );
 	}
 	return;
 }
@@ -323,21 +325,21 @@ void RasterGL::ShowAllPt( BwShapeRecord & rec )
 	memset(pTmp, 0, 256 );
 	int ipathnum = 0;
 	int iedgenum = 0;
-	PathVec::iterator iter = rec.mVecPaths.begin();
-	PathVec::iterator final = rec.mVecPaths.end();
+	PathVec::iterator iter = rec.mPaths.begin();
+	PathVec::iterator final = rec.mPaths.end();
 	for( ; iter != final; iter++ )
 	{
 		iedgenum = 0;
 		ipathnum++;
-		BwPath &path = *iter;
+		Path &path = *iter;
 		memset(pTmp, 0, 256 );
 		sprintf(pTmp, "Path num-->%d, StartPt->x:%d, y:%d", ipathnum, path.mStartPt.x, path.mStartPt.y );
 		OutputDebugStringA( pTmp );
-		vector< BwEdge >::iterator it;
+		vector< Edge >::iterator it;
 		for( it = path.mVecEdges.begin(); it != path.mVecEdges.end(); it++ )
 		{
 			iedgenum++;
-			BwEdge &edge = *it;
+			Edge &edge = *it;
 			memset(pTmp, 0, 256 );
 			sprintf(pTmp, "Path edge---->%d:%d, ControlPt->x:%d, y:%d, EndPt->x:%d, y:%d", 
 				ipathnum, iedgenum, edge.cp.x, edge.cp.y, edge.ap.x, edge.ap.y );
@@ -347,8 +349,8 @@ void RasterGL::ShowAllPt( BwShapeRecord & rec )
 	return;
 }
 
-void RasterGL::GlesDrawSubShape( BwPath &pPath, kmMat3 &matrix, ccColor4F &cx, vector<BwFillStyle*> &fillStyle,
-				  vector<BwLineStyle> &lineStyle )
+void RasterGL::GlesDrawSubShape( Path &pPath, kmMat3 &matrix, ccColor4F &cx, vector<FillStyle*> &fillStyle,
+				  vector<LineStyle> &lineStyle )
 {
 	char pTmp[256];
 	memset(pTmp, 0, 256 );
@@ -359,7 +361,7 @@ void RasterGL::GlesDrawSubShape( BwPath &pPath, kmMat3 &matrix, ccColor4F &cx, v
 	pData[1] = pPath.mStartPt.y;// >> mAntiShift;
 	sprintf(pTmp, "s.x:%f, s.y:%f", pData[0], pData[1] );
 	OutputDebugStringA( pTmp );
-	vector< BwEdge >::iterator it;
+	vector< Edge >::iterator it;
 	int pos = 3;
 	for( it = pPath.mVecEdges.begin(); it != pPath.mVecEdges.end(); it++ )
 	{
@@ -389,21 +391,21 @@ void RasterGL::GlesDrawSubShape( BwPath &pPath, kmMat3 &matrix, ccColor4F &cx, v
 	return;
 }
 
-void RasterGL::AnalyzePath( vector<BwPath> &paths, bool &haveShape, bool &haveOutline )
+void RasterGL::AnalyzePath( vector<Path> &paths, bool &haveShape, bool &haveOutline )
 {
 	haveShape = false;
 	haveOutline = false;
 	int cou = paths.size();
 	for( int i = 0; i < cou; i++ )
 	{
-		const BwPath&thePath = paths[i];
-		if( (thePath.mFillLeft > 0) || (thePath.mFillRight > 0 ))
+		const Path&thePath = paths[i];
+		if( (thePath.mFill0 > 0) || (thePath.mFill1 > 0 ))
 		{
 			haveShape = true;
 			if( haveOutline )
 				return;
 		}
-		if( thePath.mLineStyle > 0 )
+		if( thePath.mLine > 0 )
 		{
 			haveOutline = true;
 			if( haveShape )
@@ -412,16 +414,16 @@ void RasterGL::AnalyzePath( vector<BwPath> &paths, bool &haveShape, bool &haveOu
 	}
 }
 
-vector< vector<BwPath>::iterator > RasterGL::FindSubShape( vector<BwPath> &paths )
+vector< vector<Path>::iterator > RasterGL::FindSubShape( vector<Path> &paths )
 {
-	vector< vector<BwPath>::iterator > subShapes;
-	vector<BwPath>::iterator it = paths.begin(),
+	vector< vector<Path>::iterator > subShapes;
+	vector<Path>::iterator it = paths.begin(),
 							 end = paths.end();
 	subShapes.push_back( it );
 	++it;
 	for( ; it != end; ++it )
 	{
-		BwPath &curPath = *it;
+		Path &curPath = *it;
 		if( curPath.mbNewShape )
 		{
 			subShapes.push_back( it );
@@ -436,8 +438,8 @@ vector< vector<BwPath>::iterator > RasterGL::FindSubShape( vector<BwPath> &paths
 
 
 
-void RasterGL::DrawSubShape( vector<BwPath>&paths, kmMat3 &mat, ccColor4F &cx, vector<BwFillStyle*>&fillStyle,
-				  vector<BwLineStyle>&lineStyle )
+void RasterGL::DrawSubShape( vector<Path>&paths, kmMat3 &mat, ccColor4F &cx, vector<FillStyle*>&fillStyle,
+				  vector<LineStyle>&lineStyle )
 {
 	PathVec normalized = NormalizePaths( paths );
 	PathPointMap pathpoints = GetPathPoints( normalized );
@@ -449,7 +451,7 @@ void RasterGL::DrawSubShape( vector<BwPath>&paths, kmMat3 &mat, ccColor4F &cx, v
 		{
 			continue;
 		}
-		BwFillStyle *fs = fillStyle[ i + 1 ];
+		FillStyle *fs = fillStyle[ i + 1 ];
 		list<PathPtrVec > contours = get_contours( paths );
 		for( list< PathPtrVec>::iterator iter = contours.begin(), final = contours.end();
 			iter != final; ++iter )
@@ -460,7 +462,7 @@ void RasterGL::DrawSubShape( vector<BwPath>&paths, kmMat3 &mat, ccColor4F &cx, v
 			for( PathPtrVec::iterator it = refs.begin(), end = refs.end();
 				it != end; ++it )
 			{
-				BwPath &cur_path = *(*it);
+				Path &cur_path = *(*it);
 				//_tesselator.feed( pathpoints[&cur_path] );
 				//vector<oglVertex> &pData = pathpoints[&cur_path];
 				//fs->BeginFillStyle();
@@ -514,18 +516,18 @@ void RasterGL::DrawSubShape( vector<BwPath>&paths, kmMat3 &mat, ccColor4F &cx, v
 	return;
 }
 
-void RasterGL::draw_outline( vector<BwPath>&path_vec, PathPointMap& pathpoints, kmMat3 &mat,
-							ccColor4F &cx, vector<BwLineStyle>&lineStyle)
+void RasterGL::draw_outline( vector<Path>&path_vec, PathPointMap& pathpoints, kmMat3 &mat,
+							ccColor4F &cx, vector<LineStyle>&lineStyle)
 {
 	for( PathVec::iterator it = path_vec.begin(), end = path_vec.end();
 		it != end; ++it )
 	{
-		BwPath &cur_path = *it;
-		if( !cur_path.mLineStyle )
+		Path &cur_path = *it;
+		if( !cur_path.mLine )
 		{
 			continue;
 		}
-		bool draw_points = apply_line_style(lineStyle[cur_path.mLineStyle ], mat, cx );
+		bool draw_points = apply_line_style(lineStyle[cur_path.mLine ], mat, cx );
 		vector<oglVertex> &shape_points = (*pathpoints.find(&cur_path)).second;
 
 		glEnableClientState( GL_VERTEX_ARRAY );
@@ -540,10 +542,10 @@ void RasterGL::draw_outline( vector<BwPath>&path_vec, PathPointMap& pathpoints, 
 		glBegin( GL_POINTS );
 		{
 			glVertex2d( cur_path.mStartPt.x, cur_path.mStartPt.y );
-			for( vector<BwEdge>::iterator it = cur_path.mVecEdges.begin(), end = cur_path.mVecEdges.end();
+			for( vector<Edge>::iterator it = cur_path.mVecEdges.begin(), end = cur_path.mVecEdges.end();
 				it != end; it++ )
 			{
-				BwEdge &cur_edge = *it;
+				Edge &cur_edge = *it;
 				glVertex2d( cur_edge.ap.x, cur_edge.ap.y );
 			}
 		}
@@ -551,7 +553,7 @@ void RasterGL::draw_outline( vector<BwPath>&path_vec, PathPointMap& pathpoints, 
 	}
 }
 
-bool RasterGL::apply_line_style( BwLineStyle &style, kmMat3 &mat, ccColor4F &cx )
+bool RasterGL::apply_line_style( LineStyle &style, kmMat3 &mat, ccColor4F &cx )
 {
 	glDisable( GL_TEXTURE_2D );
 	bool rv = true;
@@ -582,7 +584,7 @@ PathPointMap RasterGL::GetPathPoints( PathVec &path_vec )
 	for( PathVec::iterator it = path_vec.begin(), end = path_vec.end();
 		it != end; ++it )
 	{
-		BwPath &cur_path = *it;
+		Path &cur_path = *it;
 		if( cur_path.mVecEdges.size() == 0 )
 		{
 			continue;
@@ -593,33 +595,33 @@ PathPointMap RasterGL::GetPathPoints( PathVec &path_vec )
 	return pathpoints;
 }
 
-vector<BwPath> RasterGL::NormalizePaths( vector<BwPath>&paths )
+vector<Path> RasterGL::NormalizePaths( vector<Path>&paths )
 {
-	vector<BwPath> normalized;
-	vector<BwPath>::iterator it = paths.begin(),
+	vector<Path> normalized;
+	vector<Path>::iterator it = paths.begin(),
 							end = paths.end();
 	for( ; it != end; ++it )
 	{
-		BwPath &curPath = *it;
+		Path &curPath = *it;
 		if( curPath.mVecEdges.empty() )
 		{
 			continue;
 		}
-		else if( curPath.mFillLeft && curPath.mFillRight )
+		else if( curPath.mFill0 && curPath.mFill1 )
 		{
 			normalized.push_back( curPath );
-			normalized.back().mFillLeft = 0;
-			BwPath newPath = ReversePath( curPath );
-			newPath.mFillLeft = 0;
+			normalized.back().mFill0 = 0;
+			Path newPath = ReversePath( curPath );
+			newPath.mFill0 = 0;
 			normalized.push_back( newPath );
 		}
-		else if( curPath.mFillLeft )
+		else if( curPath.mFill0 )
 		{
-			BwPath newPath = ReversePath( curPath );
-			newPath.mFillLeft = 0;
+			Path newPath = ReversePath( curPath );
+			newPath.mFill0 = 0;
 			normalized.push_back( newPath );
 		}
-		else if( curPath.mFillRight )
+		else if( curPath.mFill1 )
 		{
 			normalized.push_back( curPath );
 		}
@@ -631,26 +633,26 @@ vector<BwPath> RasterGL::NormalizePaths( vector<BwPath>&paths )
 	return normalized;
 }
 
-BwPath RasterGL::ReversePath( BwPath &curPath )
+Path RasterGL::ReversePath( Path &curPath )
 {
-	BwEdge &cur_end = curPath.mVecEdges.back();
+	Edge &cur_end = curPath.mVecEdges.back();
 	float prev_cx = cur_end.cp.x;
 	float prev_cy = cur_end.cp.y;
-	BwPath newPath( cur_end.ap.x, cur_end.ap.y, curPath.mFillRight, curPath.mFillLeft,
-		curPath.mLineStyle, curPath.mbNewShape );
+	Path newPath( cur_end.ap.x, cur_end.ap.y, curPath.mFill1, curPath.mFill0,
+		curPath.mLine, curPath.mbNewShape );
 	float prev_ax = cur_end.ap.x;
 	float prev_ay = cur_end.ap.y;
 
-	for( vector<BwEdge>::reverse_iterator it = curPath.mVecEdges.rbegin() + 1,
+	for( vector<Edge>::reverse_iterator it = curPath.mVecEdges.rbegin() + 1,
 		end = curPath.mVecEdges.rend(); it != end; ++it )
 	{
-		BwEdge &curEdge = *it;
+		Edge &curEdge = *it;
 		if( prev_ax == prev_cx && prev_ay == prev_cy )
 		{
 			prev_cx = curEdge.ap.x;
 			prev_cy = curEdge.ap.y;
 		}
-		BwEdge newEdge( prev_cx, prev_cy, curEdge.ap.x, curEdge.ap.y );
+		Edge newEdge( prev_cx, prev_cy, curEdge.ap.x, curEdge.ap.y );
 		newPath.mVecEdges.push_back( newEdge );
 
 		prev_cx = curEdge.cp.x;
@@ -658,7 +660,7 @@ BwPath RasterGL::ReversePath( BwPath &curPath )
 		prev_ax = curEdge.ap.x;
 		prev_ay = curEdge.ap.y;
 	}
-	BwEdge newLastEdge( prev_cx, prev_cy, curPath.mStartPt.x, curPath.mStartPt.y );
+	Edge newLastEdge( prev_cx, prev_cy, curPath.mStartPt.x, curPath.mStartPt.y );
 	newPath.mVecEdges.push_back( newLastEdge );
 	return newPath;
 }
@@ -668,7 +670,7 @@ void RasterGL::MaskBegin()
 
 }
 
-void RasterGL::MaskAddPath( BwPath *path )
+void RasterGL::MaskAddPath( Path *path )
 {
 
 }

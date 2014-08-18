@@ -28,11 +28,11 @@ public:
 	ccColor4F mColor;
 };
 
-class BwFillStyle
+class FillStyle
 {
 public:
-	BwFillStyle();
-	virtual ~BwFillStyle();
+	FillStyle();
+	virtual ~FillStyle();
 
 public:
 	virtual void BeginFillStyle(){};
@@ -62,7 +62,7 @@ public:
 
 };
 
-class BwBitmapFill : public BwFillStyle
+class BitmapFill : public FillStyle
 {
 public:
 	enum BwTypeFill
@@ -79,10 +79,10 @@ public:
 	};
 
 public:
-	BwBitmapFill();
-	~BwBitmapFill();
+	BitmapFill();
+	~BitmapFill();
 
-	BwBitmapFill(BwType t, kmMat3 &m, BwTypeFill fill );
+	BitmapFill(BwType t, kmMat3 &m, BwTypeFill fill );
 
 	void StylelMatrix(kmMat3 &mat );
 	kmMat3 &StylelMatrix();
@@ -102,11 +102,11 @@ public:
 	kmMat3	mMatrix;
 };
 
-class BwSolidFill : public BwFillStyle
+class SolidFill : public FillStyle
 {
 public:
-	BwSolidFill();
-	~BwSolidFill();
+	SolidFill();
+	~SolidFill();
 	void StyleColor( ccColor4F &color );
 
 	virtual void BeginFillStyle();
@@ -117,7 +117,7 @@ public:
 };
 
 
-class BwGradientFill : public BwFillStyle
+class GradientFill : public FillStyle
 {
 	enum ENGradientType
 	{
@@ -142,8 +142,8 @@ class BwGradientFill : public BwFillStyle
 	};
 
 public:
-	BwGradientFill();
-	virtual ~BwGradientFill();
+	GradientFill();
+	virtual ~GradientFill();
 	void StylelMatrix( kmMat3 &mat );
 	kmMat3 & StylelMatrix();
 
@@ -187,7 +187,7 @@ public:
 	kmMat3			mMatrix;
 };
 
-class BwLineStyle
+class LineStyle
 {
 	enum ENJoinStyle
 	{
@@ -204,8 +204,8 @@ class BwLineStyle
 	};
 
 public:
-	BwLineStyle();
-	virtual ~BwLineStyle();
+	LineStyle();
+	virtual ~LineStyle();
 
 public:
 	void LineWidth( int width );

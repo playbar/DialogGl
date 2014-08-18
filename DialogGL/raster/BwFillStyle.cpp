@@ -2,74 +2,74 @@
 //#include "BwGLUtility.h"
 #include "math.h"
 
-BwFillStyle::BwFillStyle()
+FillStyle::FillStyle()
 {
 
 }
 
-BwFillStyle::~BwFillStyle()
+FillStyle::~FillStyle()
 {
 
 }
 
 
-BwBitmapFill::BwBitmapFill()
+BitmapFill::BitmapFill()
 {
 
 }
 
-BwBitmapFill::BwBitmapFill(BwType t, kmMat3 &m, BwTypeFill fill )
+BitmapFill::BitmapFill(BwType t, kmMat3 &m, BwTypeFill fill )
 {
 
 }
 
-BwBitmapFill::~BwBitmapFill()
+BitmapFill::~BitmapFill()
 {
 
 }
 
-void BwBitmapFill::StylelMatrix(kmMat3 &mat )
+void BitmapFill::StylelMatrix(kmMat3 &mat )
 {
 	mMatrix = mat;
 	//mMatrix = mat;
 }
 
-kmMat3 & BwBitmapFill::StylelMatrix()
+kmMat3 & BitmapFill::StylelMatrix()
 {
 	return mMatrix;
 }
 
-void BwBitmapFill::BitmapID(int id)
+void BitmapFill::BitmapID(int id)
 {
 	mBitmapId = id;
 }
 
-int BwBitmapFill::BitmapID()
+int BitmapFill::BitmapID()
 {
 	return mBitmapId; 
 };
 
-void BwBitmapFill::BeginFillStyle()
+void BitmapFill::BeginFillStyle()
 {
 
 }
 
-void BwBitmapFill::EndFillStyle()
+void BitmapFill::EndFillStyle()
 {
 
 }
 
-BwSolidFill::BwSolidFill()
+SolidFill::SolidFill()
 {
 
 }
 
-BwSolidFill::~BwSolidFill()
+SolidFill::~SolidFill()
 {
 
 }
 
-void BwSolidFill::StyleColor( ccColor4F &color )
+void SolidFill::StyleColor( ccColor4F &color )
 {
 	mColor.a = color.a;
 	mColor.r = color.r;
@@ -78,13 +78,13 @@ void BwSolidFill::StyleColor( ccColor4F &color )
 	return;
 }
 
-void BwSolidFill::BeginFillStyle()
+void SolidFill::BeginFillStyle()
 {
 	glColor4ub( mColor.b, mColor.g, mColor.r, mColor.a );
 	return;
 }
 
-void BwSolidFill::EndFillStyle()
+void SolidFill::EndFillStyle()
 {
 
 }
@@ -113,7 +113,7 @@ void BwGradientRecord::GraRecRatio( int ratio )
 	mRatio = ratio;
 }
 
-BwGradientFill::BwGradientFill()
+GradientFill::GradientFill()
 {
 	glGenTextures(1, &mTexture );
 	mbCraeteTex = false;
@@ -123,7 +123,7 @@ BwGradientFill::BwGradientFill()
 	mHeight = 0;
 }
 
-BwGradientFill::~BwGradientFill()
+GradientFill::~GradientFill()
 {
 	glDeleteTextures( 1, &mTexture );
 	mTexture = 0;
@@ -136,53 +136,53 @@ BwGradientFill::~BwGradientFill()
 	glDisable( mOglImgType );
 }
 
-void BwGradientFill::StylelMatrix( kmMat3 &mat )
+void GradientFill::StylelMatrix( kmMat3 &mat )
 {
 	mMatrix = mat;
 }
 
-kmMat3 & BwGradientFill::StylelMatrix()
+kmMat3 & GradientFill::StylelMatrix()
 {
 	return mMatrix;
 }
 
-void BwGradientFill::GradientType(int gt )
+void GradientFill::GradientType(int gt )
 {
 	menGradientType = (ENGradientType)gt;
 }
 
-int BwGradientFill::GradientType()
+int GradientFill::GradientType()
 {
 	return menGradientType;
 }
 
-void BwGradientFill::SpreadMode( int sm )
+void GradientFill::SpreadMode( int sm )
 {
 	menSpeadMode = (ENSpreadMode)sm;
 }
 
-int BwGradientFill::SpreadMode( )
+int GradientFill::SpreadMode( )
 {
 	return menSpeadMode;
 }
 
-void BwGradientFill::InterpolationMode( int im )
+void GradientFill::InterpolationMode( int im )
 {
 	menInterpolationMode = (ENInterpolationMode)im;
 }
 
-int BwGradientFill::InterpolationMode()
+int GradientFill::InterpolationMode()
 {
 	return menInterpolationMode;
 }
 
-void BwGradientFill::AddGradientRec(BwGradientRecord &gradrec )
+void GradientFill::AddGradientRec(BwGradientRecord &gradrec )
 {
 	mGradientRecords.push_back( gradrec );
 	return;
 }
 
-ccColor4F BwGradientFill::SampleGradient( int ratio )
+ccColor4F GradientFill::SampleGradient( int ratio )
 {
 	ccColor4F color;
 	int cou = mGradientRecords.size();
@@ -220,7 +220,7 @@ ccColor4F BwGradientFill::SampleGradient( int ratio )
 
 }
 
-void BwGradientFill::CreateGradientTex()
+void GradientFill::CreateGradientTex()
 {
 	if( menGradientType == en_LINEAR )
 	{
@@ -326,7 +326,7 @@ void BwGradientFill::CreateGradientTex()
 	return;
 }
 
-void BwGradientFill::setup()
+void GradientFill::setup()
 {
 	glEnable( mOglImgType );
 
@@ -336,7 +336,7 @@ void BwGradientFill::setup()
 	return;
 }
 
-void BwGradientFill::upload()
+void GradientFill::upload()
 {
 	glTexParameteri( mOglImgType, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	if( mOglImgType == GL_TEXTURE_1D )
@@ -357,7 +357,7 @@ void BwGradientFill::upload()
 	return;
 }
 
-void BwGradientFill::BeginFillStyle()
+void GradientFill::BeginFillStyle()
 {
 	glEnable( mOglImgType );
 	glEnable( GL_TEXTURE_GEN_S );
@@ -443,62 +443,62 @@ void BwGradientFill::BeginFillStyle()
 	return;
 }
 
-void BwGradientFill::EndFillStyle()
+void GradientFill::EndFillStyle()
 {
 
 }
 
-void BwGradientFill::TextureID( int id)
+void GradientFill::TextureID( int id)
 {
 	mTexture = id;
 }
-GLuint BwGradientFill::TextureID( )
+GLuint GradientFill::TextureID( )
 {
 	return mTexture;
 }
 
 
-BwLineStyle::BwLineStyle()
+LineStyle::LineStyle()
 {
 
 }
 
-BwLineStyle::~BwLineStyle()
+LineStyle::~LineStyle()
 {
 
 }
 
-void BwLineStyle::LineWidth( int width )
+void LineStyle::LineWidth( int width )
 {
 	mWidth = width;
 }
-int BwLineStyle::LineWidth( )
+int LineStyle::LineWidth( )
 {
 	return mWidth;
 }
 
-void BwLineStyle::LineColor( ccColor4F &color )
+void LineStyle::LineColor( ccColor4F &color )
 {
 	mColor = color;
 }
 
-ccColor4F& BwLineStyle::LineColor()
+ccColor4F& LineStyle::LineColor()
 {
 	return mColor;
 }
 
 
-void BwLineStyle::MiterLimitFactor( float miter )
+void LineStyle::MiterLimitFactor( float miter )
 {
 	mfMiterLimitFactor = miter;
 }
 
-float BwLineStyle::MiterLimitFactor( )
+float LineStyle::MiterLimitFactor( )
 {
 	return mfMiterLimitFactor;
 }
 
-void BwLineStyle::BeginLineStyle()
+void LineStyle::BeginLineStyle()
 {
 	// b, r »»Î»
 	//mColor.nColor = 0xFF00FF00;
@@ -514,7 +514,7 @@ void BwLineStyle::BeginLineStyle()
 	return;
 }
 
-void BwLineStyle::EndLineStyle()
+void LineStyle::EndLineStyle()
 {
 	//glLineWidth( 1 );
 	//glUniform1i( gColorFlag, 0 );

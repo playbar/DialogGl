@@ -7,12 +7,12 @@ using namespace std;
 #include "cocos2d.h"
 USING_NS_CC;
 
-class BwEdge
+class Edge
 {
 public:
-	BwEdge();
-	BwEdge( int cx, int cy, int ax, int ay);
-	~BwEdge();
+	Edge();
+	Edge( int cx, int cy, int ax, int ay);
+	~Edge();
 	void SetControlPt( CCPoint &pt );
 	void SetEndPt( CCPoint &pt );
 	bool straight();
@@ -32,15 +32,15 @@ enum PtPos
 	en_PtPos_End
 };
 
-class BwPath
+class Path
 {
 public:
-	BwPath();
-	BwPath( int ax, int ay, int fillLeft, int fillRight, int line, bool bNewShape);
-	~BwPath();
+	Path();
+	Path( int ax, int ay, int fillLeft, int fillRight, int line, bool bNewShape);
+	~Path();
 
 public:
-	void AddEdge(BwEdge &pedge );
+	void AddEdge(Edge &pedge );
 	void StartPt( CCPoint &pt );
 	CCPoint &StartPt();
 	void EmptyStartPt();
@@ -63,11 +63,11 @@ public:
 
 public:
 	CCPoint mStartPt;	// start point
-	vector< BwEdge > mVecEdges;
+	vector< Edge > mVecEdges;
 public:
-	int mFillLeft;
-	int mFillRight;
-	int mLineStyle;
+	int mFill0;
+	int mFill1;
+	int mLine;
 	bool mbNewShape;
 };
 
@@ -78,22 +78,24 @@ public:
 	~BwShapeRecord();
 
 public:
-	void AddFillSyle( BwFillStyle *fs );
-	void AddLineStyle( BwLineStyle &ls );
-	void AddPath( BwPath &path );
+	void AddFillSyle( FillStyle *fs );
+	void AddLineStyle( LineStyle &ls );
+	void AddPath( Path &path );
 	void SetBounds( );
 	void ReleaseFillStyle();
 	void ReleaseLineStyle();
 	void ReleasePaths();
 	void ReleaseAll();
-	BwPath &GetPath(int index );
+	Path &GetPath(int index );
 
 public:
-	vector<BwFillStyle*> mVecFillStyles;
-	vector<BwLineStyle> mVecLineStyles;
-	vector<BwPath> mVecPaths;
+	vector<FillStyle*> mFillStyles;
+	vector<LineStyle> mLineStyles;
+	vector<Path> mPaths;
+
+	CCRect mBounds;
 public:
-	BwPath mClipPath;
+	Path mClipPath;
 };
 
 

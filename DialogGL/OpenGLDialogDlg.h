@@ -12,6 +12,7 @@
 #include "cocos2d.h"
 #include "MainScene.h"
 USING_NS_CC;
+#include "Raster_gl.h"
 
 //#include "CCEGLView.h"
 //#include "CCDrawNode.h"
@@ -45,6 +46,7 @@ protected:
 	CCDrawNode *drawNode;
 	MainLayer *mMainLayer;
 	//BwGLView mBwGLView;
+	RasterGL rastergl;
 
 	// Generierte Message-Map-Funktionen
 	//{{AFX_MSG(COpenGLDialogDlg)

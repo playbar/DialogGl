@@ -104,7 +104,8 @@ void COpenGLDialogDlg::OnPaint()
 	//CCDirector::sharedDirector()->drawScene();
 
 	//mMainLayer->draw();
-	mMainLayer->visit();
+	ccDrawLine( ccp( 10, 10), ccp( 200, 200 ) );
+	//mMainLayer->visit();
 
 	
 

@@ -99,9 +99,9 @@ struct oglVertex
 	GLdouble _z;
 };
 
-typedef vector<BwPath > PathVec;
-typedef vector<BwPath*> PathPtrVec;
-typedef map<const BwPath*, vector<oglVertex> > PathPointMap;
+typedef vector<Path > PathVec;
+typedef vector<Path*> PathPtrVec;
+typedef map<const Path*, vector<oglVertex> > PathPointMap;
 
 //class Tesselator
 //{
@@ -143,26 +143,26 @@ public:
 
 private:
 	void ShowAllPt( BwShapeRecord & rec );
-	void GlesDrawSubShape( BwPath &pPath, kmMat3 &matrix, ccColor4F &cx, vector<BwFillStyle*> &fillStyle,
-		vector<BwLineStyle> &lineStyle );
+	void GlesDrawSubShape( Path &pPath, kmMat3 &matrix, ccColor4F &cx, vector<FillStyle*> &fillStyle,
+		vector<LineStyle> &lineStyle );
 
-	void AnalyzePath( vector<BwPath> &paths, bool &haveShape, bool &haveOutline );
-	vector< vector<BwPath>::iterator > FindSubShape( vector<BwPath> &paths );
+	void AnalyzePath( vector<Path> &paths, bool &haveShape, bool &haveOutline );
+	vector< vector<Path>::iterator > FindSubShape( vector<Path> &paths );
 	
-	void DrawSubShape( vector<BwPath>&paths, kmMat3 &mat, ccColor4F &cx, vector<BwFillStyle*>&fillStyle,
-		vector<BwLineStyle>&lineStyle );
-	void draw_outline( vector<BwPath>&path_vec, PathPointMap& pathpoints, kmMat3 &mat, ccColor4F &cx,
-		 vector<BwLineStyle>&lineStyle);
+	void DrawSubShape( vector<Path>&paths, kmMat3 &mat, ccColor4F &cx, vector<FillStyle*>&fillStyle,
+		vector<LineStyle>&lineStyle );
+	void draw_outline( vector<Path>&path_vec, PathPointMap& pathpoints, kmMat3 &mat, ccColor4F &cx,
+		 vector<LineStyle>&lineStyle);
 
-	bool apply_line_style( BwLineStyle &style, kmMat3 &mat,ccColor4F &cx );
+	bool apply_line_style( LineStyle &style, kmMat3 &mat,ccColor4F &cx );
 
-	vector<BwPath> NormalizePaths( vector<BwPath>&paths );
-	BwPath ReversePath( BwPath &curPath );
+	vector<Path> NormalizePaths( vector<Path>&paths );
+	Path ReversePath( Path &curPath );
 	PathPointMap GetPathPoints( PathVec &path_vec );
 
 public:
 	void MaskBegin();
-	void MaskAddPath( BwPath *path );	
+	void MaskAddPath( Path *path );	
 	void MaskEnd();		//apply mask
 
 	void EnableBlend( ENBlendMode mode );
@@ -188,7 +188,7 @@ protected:
 	int mWidth;
 	int Height;
 
-	vector< BwPath * > mVecMask;
+	vector< Path * > mVecMask;
 	bool mbDrawMask;
 	ENBlendMode mBlendMode;
 	ENBitmapFilter mBitmapFilter;

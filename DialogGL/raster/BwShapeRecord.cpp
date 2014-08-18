@@ -1,14 +1,14 @@
 #include "BwShapeRecord.h"
 #include <Windows.h>
 
-BwEdge::BwEdge()
+Edge::Edge()
 {
 	memset( &cp, 0, sizeof( CCPoint ));
 	memset( &ap, 0, sizeof( CCPoint ));
 	mbLine = 0;
 }
 
-BwEdge::BwEdge( int cx, int cy, int ax, int ay)
+Edge::Edge( int cx, int cy, int ax, int ay)
 {
 	cp.x = cx;
 	cp.y = cy;
@@ -16,74 +16,74 @@ BwEdge::BwEdge( int cx, int cy, int ax, int ay)
 	ap.y = ay;
 }
 
-BwEdge::~BwEdge()
+Edge::~Edge()
 {
 
 }
 
-void BwEdge::IsLine(int bline )
+void Edge::IsLine(int bline )
 {
 	mbLine = bline;
 	return;
 }
 
-int BwEdge::IsLine()
+int Edge::IsLine()
 {
 	return mbLine;
 	//return mControlPt == mEndPt;
 }
 
-void BwEdge::SetControlPt( CCPoint &pt )
+void Edge::SetControlPt( CCPoint &pt )
 {
 	cp = pt;
 }
 
-void BwEdge::SetEndPt( CCPoint &pt )
+void Edge::SetEndPt( CCPoint &pt )
 {
 	ap = pt;
 }
 
-bool BwEdge::straight()
+bool Edge::straight()
 {
 	return cp == ap;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-BwPath::BwPath()
+Path::Path()
 {
 	mStartPt.x = 0;
 	mStartPt.y = 0;
-	mFillLeft = 0;
-	mFillRight = 0;
-	mLineStyle = 0;
+	mFill0 = 0;
+	mFill1 = 0;
+	mLine = 0;
 	mbNewShape = false;
 }
 
-BwPath::BwPath( int ax, int ay, int fillLeft, int fillRight, int line, bool bNewShape)
+Path::Path( int ax, int ay, int fillLeft, int fillRight, int line, bool bNewShape)
 {
 	mStartPt.x = ax;
 	mStartPt.y = ay;
-	mFillLeft = fillLeft;
-	mFillRight = fillRight;
-	mLineStyle = line;
+	mFill0 = fillLeft;
+	mFill1 = fillRight;
+	mLine = line;
 	mbNewShape = bNewShape;
 	mVecEdges.resize( 0 );
 	return;
 }
 
-BwPath::~BwPath()
+Path::~Path()
 {
 	ReleaseEdge();
 }
 
-void BwPath::AddEdge(BwEdge &pedge )
+void Path::AddEdge(Edge &pedge )
 {
 	mVecEdges.push_back( pedge );
 	return;
 }
 
-void BwPath::StartPt( CCPoint &pt )
+void Path::StartPt( CCPoint &pt )
 {
 	//mStartPt = pt;
 	mStartPt.x = pt.x;
@@ -91,19 +91,19 @@ void BwPath::StartPt( CCPoint &pt )
 	return;
 }
 
-void BwPath::EmptyStartPt()
+void Path::EmptyStartPt()
 {
 	mStartPt.x = 0;
 	mStartPt.y = 0;
 }
 
-bool BwPath::IsStartPtEmpty()
+bool Path::IsStartPtEmpty()
 {
 	bool b = (mStartPt.x == 0 && mStartPt.y == 0);
 	return b;
 }
 
-void BwPath::ClearEdges()
+void Path::ClearEdges()
 {
 	mStartPt.x = 0;
 	mStartPt.y = 0;
@@ -112,12 +112,12 @@ void BwPath::ClearEdges()
 	return;
 }
 
-bool BwPath::EdgeEmpty()
+bool Path::EdgeEmpty()
 {
 	return mVecEdges.empty();
 }
 
-int BwPath::PtInPath(CCPoint &pt )
+int Path::PtInPath(CCPoint &pt )
 {
 	if( mStartPt == pt )
 		return en_PtPos_Begin;
@@ -125,11 +125,11 @@ int BwPath::PtInPath(CCPoint &pt )
 		return en_PtPos_End;
 	else 
 	{
-		vector< BwEdge >::iterator it = mVecEdges.begin();
-		vector< BwEdge >::iterator end = mVecEdges.end();
+		vector< Edge >::iterator it = mVecEdges.begin();
+		vector< Edge >::iterator end = mVecEdges.end();
 		for( ; it != end; it++ )
 		{
-			BwEdge &edge = *it;
+			Edge &edge = *it;
 			if( edge.ap == pt )
 				return en_PtPos_Mid;
 		}
@@ -137,41 +137,41 @@ int BwPath::PtInPath(CCPoint &pt )
 	return en_PtPos_No;
 }
 
-CCPoint &BwPath::StartPt()
+CCPoint &Path::StartPt()
 {
 	return mStartPt;
 }
 
-void BwPath::FillLeft( int fillleft )
+void Path::FillLeft( int fillleft )
 {
-	mFillLeft = fillleft;
+	mFill0 = fillleft;
 }
 
-int BwPath::FillLeft( )
+int Path::FillLeft( )
 {
-	return mFillLeft;
+	return mFill0;
 }
 
-void BwPath::FillRight( int fillRight )
+void Path::FillRight( int fillRight )
 {
-	mFillRight = fillRight;
+	mFill1 = fillRight;
 }
-int BwPath::FillRight()
+int Path::FillRight()
 {
-	return mFillRight;
-}
-
-void BwPath::LineStyle(int ls )
-{
-	mLineStyle = ls;
+	return mFill1;
 }
 
-int BwPath::LineStyle()
+void Path::LineStyle(int ls )
 {
-	return mLineStyle;
+	mLine = ls;
 }
 
-void BwPath::ReleaseEdge()
+int Path::LineStyle()
+{
+	return mLine;
+}
+
+void Path::ReleaseEdge()
 {
 	//vector<BwEdge*>::iterator it;
 	//for( it = mVecEdges.begin(); it != mVecEdges.end(); it++ )
@@ -192,30 +192,30 @@ BwShapeRecord::~BwShapeRecord()
 	ReleaseAll();
 }
 
-void BwShapeRecord::AddFillSyle( BwFillStyle *fs )
+void BwShapeRecord::AddFillSyle( FillStyle *fs )
 {
-	mVecFillStyles.push_back( fs );
+	mFillStyles.push_back( fs );
 }
 
-void BwShapeRecord::AddLineStyle( BwLineStyle &ls )
+void BwShapeRecord::AddLineStyle( LineStyle &ls )
 {
-	mVecLineStyles.push_back( ls );
+	mLineStyles.push_back( ls );
 }
 
-void BwShapeRecord::AddPath( BwPath &path )
+void BwShapeRecord::AddPath( Path &path )
 {
-	mVecPaths.push_back( path );
+	mPaths.push_back( path );
 }
 
 void BwShapeRecord::ReleaseFillStyle()
 {
-	vector<BwFillStyle *>::iterator it;
-	for( it = mVecFillStyles.begin(); it != mVecFillStyles.end(); it++ )
+	vector<FillStyle *>::iterator it;
+	for( it = mFillStyles.begin(); it != mFillStyles.end(); it++ )
 	{
 		delete *it;
 	}
-	mVecFillStyles.clear();
-	mVecFillStyles.resize( 0 );
+	mFillStyles.clear();
+	mFillStyles.resize( 0 );
 }
 
 void BwShapeRecord::ReleaseLineStyle()
@@ -225,8 +225,8 @@ void BwShapeRecord::ReleaseLineStyle()
 	//{
 	//	delete *it;
 	//}
-	mVecLineStyles.clear();
-	mVecLineStyles.resize( 0 );
+	mLineStyles.clear();
+	mLineStyles.resize( 0 );
 	return;
 }
 
@@ -237,8 +237,8 @@ void BwShapeRecord::ReleasePaths()
 	//{
 	//	delete *it;
 	//}
-	mVecPaths.clear();
-	mVecPaths.resize( 0 );
+	mPaths.clear();
+	mPaths.resize( 0 );
 	return;
 }
 
@@ -250,7 +250,7 @@ void BwShapeRecord::ReleaseAll()
 	ReleasePaths();
 }
 
-BwPath &BwShapeRecord::GetPath(int index )
+Path &BwShapeRecord::GetPath(int index )
 {
-	return mVecPaths[index];
+	return mPaths[index];
 }
