@@ -125,7 +125,7 @@ static bool glew_dynamic_binding()
 //////////////////////////////////////////////////////////////////////////
 // impliment CCEGLView
 //////////////////////////////////////////////////////////////////////////
-static CCEGLView* s_pMainWindow = NULL;
+static EGLView* s_pMainWindow = NULL;
 static const WCHAR* kWindowClassName = L"Cocos2dxWin32";
 
 static LRESULT CALLBACK _WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -140,7 +140,7 @@ static LRESULT CALLBACK _WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
 }
 
-CCEGLView::CCEGLView()
+EGLView::EGLView()
 : m_bCaptured(false)
 , m_hWnd(NULL)
 , m_hDC(NULL)
@@ -153,12 +153,12 @@ CCEGLView::CCEGLView()
 	m_eProjection = kCCDirectorProjectionDefault;
 }
 
-CCEGLView::~CCEGLView()
+EGLView::~EGLView()
 {
 
 }
 
-bool CCEGLView::initGL()
+bool EGLView::initGL()
 {
     m_hDC = GetDC(m_hWnd);
     SetupPixelFormat(m_hDC);
@@ -216,7 +216,7 @@ bool CCEGLView::initGL()
     return true;
 }
 
-void CCEGLView::destroyGL()
+void EGLView::destroyGL()
 {
     if (m_hDC != NULL && m_hRC != NULL)
     {
@@ -226,7 +226,7 @@ void CCEGLView::destroyGL()
     }
 }
 
-bool CCEGLView::CreateGL(HWND hwnd )
+bool EGLView::CreateGL(HWND hwnd )
 {
 	m_hWnd = hwnd;
 	bool bRet = false;
@@ -238,7 +238,64 @@ bool CCEGLView::CreateGL(HWND hwnd )
 	return bRet;
 }
 
-void CCEGLView::setGLDefaultValues(void)
+
+void EGLView::CreateView(HWND hwnd, int left, int top, int width, int height )
+{
+	HINSTANCE hInstance = GetModuleHandle( NULL );
+	WNDCLASS  wc;        // Windows Class Structure
+
+	// Redraw On Size, And Own DC For Window.
+	wc.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	wc.lpfnWndProc    = _WindowProc;                    // WndProc Handles Messages
+	wc.cbClsExtra     = 0;                              // No Extra Window Data
+	wc.cbWndExtra     = 0;                                // No Extra Window Data
+	wc.hInstance      = hInstance;                        // Set The Instance
+	wc.hIcon          = LoadIcon( NULL, IDI_WINLOGO );    // Load The Default Icon
+	wc.hCursor        = LoadCursor( NULL, IDC_ARROW );    // Load The Arrow Pointer
+	wc.hbrBackground  = NULL;                           // No Background Required For GL
+	wc.lpszMenuName   = NULL;                         //
+	wc.lpszClassName  = L"Raster";               // Set The Class Name
+
+	RegisterClass(&wc);
+
+	// center window position
+	RECT rcDesktop;
+	GetWindowRect(GetDesktopWindow(), &rcDesktop);
+
+
+	// create window
+	m_hWnd = CreateWindowEx(
+		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,    // Extended Style For The Window
+		L"Raster",                                    // Class Name
+		L"Raster",                                                // Window Title
+		//WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+		WS_CHILD,        // Defined Window Style
+		0, 0,                                                // Window Position
+		//TODO: Initializing width with a large value to avoid getting a wrong client area by 'GetClientRect' function.
+		width,                                               // Window Width
+		height,                                               // Window Height
+		hwnd,                                                // No Parent Window
+		NULL,                                                // No Menu
+		hInstance,                                            // Instance
+		NULL );
+
+	bool bRet = initGL();
+	if(!bRet)
+		destroyGL();
+
+	ShowWindow( m_hWnd, true );
+
+	s_pMainWindow = this;
+
+	//CCEGLViewProtocol::setFrameSize( width, height );
+	resize( width, height);
+	SetWindowPos(m_hWnd, 0, left, top, width, height, SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	//RasterGL::sharedRasterGL()->SetWinSize( width, height );
+	return;
+}
+
+
+void EGLView::setGLDefaultValues(void)
 {
 	// This method SHOULD be called only after openGLView_ was initialized
 	CCAssert(m_pobOpenGLView, "opengl view should not be null");
@@ -253,7 +310,7 @@ void CCEGLView::setGLDefaultValues(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void CCEGLView::setAlphaBlending(bool bOn)
+void EGLView::setAlphaBlending(bool bOn)
 {
 	if (bOn)
 	{
@@ -265,7 +322,7 @@ void CCEGLView::setAlphaBlending(bool bOn)
 	}
 }
 
-void CCEGLView::setDepthTest(bool bOn)
+void EGLView::setDepthTest(bool bOn)
 {
 	if (bOn)
 	{
@@ -281,7 +338,7 @@ void CCEGLView::setDepthTest(bool bOn)
 }
 
 
-void CCEGLView::setProjection(ccDirectorProjection kProjection)
+void EGLView::setProjection(ccDirectorProjection kProjection)
 {
 	CCSize size = m_obDesignResolutionSize;
 
@@ -336,7 +393,7 @@ void CCEGLView::setProjection(ccDirectorProjection kProjection)
 }
 
 
-bool CCEGLView::Create( HWND hwnd )
+bool EGLView::Create( HWND hwnd )
 {
     bool bRet = false;
     do
@@ -399,7 +456,7 @@ bool CCEGLView::Create( HWND hwnd )
     return bRet;
 }
 
-LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT EGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -414,12 +471,12 @@ LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-bool CCEGLView::isOpenGLReady()
+bool EGLView::isOpenGLReady()
 {
     return (m_hDC != NULL && m_hRC != NULL);
 }
 
-void CCEGLView::end()
+void EGLView::end()
 {
     if (m_hWnd)
     {
@@ -431,7 +488,7 @@ void CCEGLView::end()
     delete this;
 }
 
-void CCEGLView::swapBuffers()
+void EGLView::swapBuffers()
 {
     if (m_hDC != NULL)
     {
@@ -440,12 +497,12 @@ void CCEGLView::swapBuffers()
 }
 
 
-void CCEGLView::setIMEKeyboardState(bool /*bOpen*/)
+void EGLView::setIMEKeyboardState(bool /*bOpen*/)
 {
 
 }
 
-void CCEGLView::setMenuResource(LPCWSTR menu)
+void EGLView::setMenuResource(LPCWSTR menu)
 {
     m_menu = menu;
     if (m_hWnd != NULL)
@@ -455,17 +512,17 @@ void CCEGLView::setMenuResource(LPCWSTR menu)
     }
 }
 
-void CCEGLView::setWndProc(CUSTOM_WND_PROC proc)
+void EGLView::setWndProc(CUSTOM_WND_PROC proc)
 {
     m_wndproc = proc;
 }
 
-HWND CCEGLView::getHWnd()
+HWND EGLView::getHWnd()
 {
     return m_hWnd;
 }
 
-void CCEGLView::resize(int width, int height)
+void EGLView::resize(int width, int height)
 {
     if (! m_hWnd)
     {
@@ -500,7 +557,7 @@ void CCEGLView::resize(int width, int height)
                  SWP_NOCOPYBITS | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 }
 
-void CCEGLView::setFrameZoomFactor(float fZoomFactor)
+void EGLView::setFrameZoomFactor(float fZoomFactor)
 {
     m_fFrameZoomFactor = fZoomFactor;
     resize(m_obScreenSize.width * fZoomFactor, m_obScreenSize.height * fZoomFactor);
@@ -508,19 +565,19 @@ void CCEGLView::setFrameZoomFactor(float fZoomFactor)
     //CCDirector::sharedDirector()->setProjection(CCDirector::sharedDirector()->getProjection());
 }
 
-float CCEGLView::getFrameZoomFactor()
+float EGLView::getFrameZoomFactor()
 {
     return m_fFrameZoomFactor;
 }
 
-void CCEGLView::setFrameSize(float width, float height)
+void EGLView::setFrameSize(float width, float height)
 {
 	m_obDesignResolutionSize = m_obScreenSize = CCSizeMake(width, height);
     resize(width, height); // adjust window size for menubar
     centerWindow();
 }
 
-void CCEGLView::centerWindow()
+void EGLView::centerWindow()
 {
     if (! m_hWnd)
     {
@@ -552,7 +609,7 @@ void CCEGLView::centerWindow()
     SetWindowPos(m_hWnd, 0, offsetX, offsetY, 0, 0, SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 }
 
-void CCEGLView::setViewPortInPoints(float x , float y , float w , float h)
+void EGLView::setViewPortInPoints(float x , float y , float w , float h)
 {
     glViewport((GLint)(x * m_fScaleX * m_fFrameZoomFactor + m_obViewPortRect.origin.x * m_fFrameZoomFactor),
         (GLint)(y * m_fScaleY  * m_fFrameZoomFactor + m_obViewPortRect.origin.y * m_fFrameZoomFactor),
@@ -560,7 +617,7 @@ void CCEGLView::setViewPortInPoints(float x , float y , float w , float h)
         (GLsizei)(h * m_fScaleY * m_fFrameZoomFactor));
 }
 
-void CCEGLView::setScissorInPoints(float x , float y , float w , float h)
+void EGLView::setScissorInPoints(float x , float y , float w , float h)
 {
     glScissor((GLint)(x * m_fScaleX * m_fFrameZoomFactor + m_obViewPortRect.origin.x * m_fFrameZoomFactor),
               (GLint)(y * m_fScaleY * m_fFrameZoomFactor + m_obViewPortRect.origin.y * m_fFrameZoomFactor),
@@ -568,12 +625,12 @@ void CCEGLView::setScissorInPoints(float x , float y , float w , float h)
               (GLsizei)(h * m_fScaleY * m_fFrameZoomFactor));
 }
 
-CCEGLView* CCEGLView::sharedOpenGLView()
+EGLView* EGLView::sharedOpenGLView()
 {
-    static CCEGLView* s_pEglView = NULL;
+    static EGLView* s_pEglView = NULL;
     if (s_pEglView == NULL)
     {
-        s_pEglView = new CCEGLView();
+        s_pEglView = new EGLView();
 		//if(!s_pEglView->Create())
 		//{
 		//	delete s_pEglView;

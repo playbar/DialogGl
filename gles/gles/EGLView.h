@@ -71,11 +71,11 @@ typedef LRESULT (*CUSTOM_WND_PROC)(UINT message, WPARAM wParam, LPARAM lParam, B
 
 class CCEGL;
 
-class CC_DLL CCEGLView //: public CCEGLViewProtocol
+class CC_DLL EGLView //: public CCEGLViewProtocol
 {
 public:
-    CCEGLView();
-    virtual ~CCEGLView();
+    EGLView();
+    virtual ~EGLView();
 
     /* override functions */
     virtual bool isOpenGLReady();
@@ -126,7 +126,7 @@ public:
     /**
     @brief    get the shared main open gl window
     */
-    static CCEGLView* sharedOpenGLView();
+    static EGLView* sharedOpenGLView();
 private:
 	ccDirectorProjection m_eProjection;
     bool m_bCaptured;

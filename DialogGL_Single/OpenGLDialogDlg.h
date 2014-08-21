@@ -40,7 +40,7 @@ public:
 protected:
 	HICON m_hIcon;
 
-	CCEGLView* eglView;
+	EGLView* eglView;
 	RasterGL *pRaster;
 	//MainLayer *mMainLayer;
 	//BwGLView mBwGLView;

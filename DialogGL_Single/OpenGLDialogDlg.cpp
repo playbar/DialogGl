@@ -66,7 +66,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	ScreenToClient(rect);
 
 
-	eglView = CCEGLView::sharedOpenGLView();
+	eglView = EGLView::sharedOpenGLView();
 	eglView->CreateGL( this->m_hWnd );
 	//eglView->Create( this->m_hWnd );
 	eglView->setFrameSize( 800, 600 );
