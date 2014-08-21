@@ -12,7 +12,7 @@
 
 
 #include "CCEGLView.h"
-#include "CCDrawNode.h"
+#include "RasterGL.h"
 //#include "CCDrawNode.h"
 
 

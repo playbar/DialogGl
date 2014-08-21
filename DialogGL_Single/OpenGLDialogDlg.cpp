@@ -137,7 +137,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	circle[17].y = 50;
 
 	drawNode->setPosition( 300, 300 );
-	//drawNode->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
+	drawNode->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
 	drawNode->beginPolygon();
 	drawNode->drawAllPolygon();
 	drawNode->endPolygon();
