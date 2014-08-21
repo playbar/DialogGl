@@ -343,14 +343,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\gles\raster\CCDrawNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCDrawNode.h"
-					>
-				</File>
-				<File
 					RelativePath=".\gles\raster\CCGrabber.cpp"
 					>
 				</File>
@@ -380,6 +372,14 @@
 				</File>
 				<File
 					RelativePath=".\gles\raster\CCTexturePVR.h"
+					>
+				</File>
+				<File
+					RelativePath=".\gles\raster\RasterGL.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\gles\raster\RasterGL.h"
 					>
 				</File>
 			</Filter>

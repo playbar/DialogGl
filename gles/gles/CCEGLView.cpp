@@ -155,7 +155,6 @@ CCEGLView::CCEGLView()
 , m_hWnd(NULL)
 , m_hDC(NULL)
 , m_hRC(NULL)
-, m_lpfnAccelerometerKeyHook(NULL)
 , m_menu(NULL)
 , m_wndproc(NULL)
 , m_fFrameZoomFactor(1.0f)
@@ -411,139 +410,18 @@ bool CCEGLView::Create()
 
 LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    BOOL bProcessed = FALSE;
-
     switch (message)
     {
-  //  case WM_LBUTTONDOWN:
-		//MsgLBtnDown( wParam, (short)LOWORD(lParam), (short)HIWORD(lParam) );
-  //      break;
-  //  case WM_MOUSEMOVE:
-  //      if (MK_LBUTTON == wParam && m_bCaptured)
-  //      {
-  //          POINT point = {(short)LOWORD(lParam), (short)HIWORD(lParam)};
-  //          CCPoint pt(point.x, point.y);
-  //          int id = 0;
-  //          pt.x /= m_fFrameZoomFactor;
-  //          pt.y /= m_fFrameZoomFactor;
-  //          handleTouchesMove(1, &id, &pt.x, &pt.y);
-  //      }
-  //      break;
-
-  //  case WM_LBUTTONUP:
-		//MsgLBtnUp( wParam, (short)LOWORD(lParam), (short)HIWORD(lParam) );
-  //      break;
-
-    case WM_SIZE:
-        //switch (wParam)
-        //{
-        //case SIZE_RESTORED:
-        //    CCApplication::sharedApplication()->applicationWillEnterForeground();
-        //    break;
-        //case SIZE_MINIMIZED:
-        //    CCApplication::sharedApplication()->applicationDidEnterBackground();
-        //    break;
-        //}
-        break;
-    case WM_KEYDOWN:
-        //if (wParam == VK_F1 || wParam == VK_F2)
-        //{
-        //    CCDirector* pDirector = CCDirector::sharedDirector();
-        //    if (GetKeyState(VK_LSHIFT) < 0 ||  GetKeyState(VK_RSHIFT) < 0 || GetKeyState(VK_SHIFT) < 0)
-        //        pDirector->getKeypadDispatcher()->dispatchKeypadMSG(wParam == VK_F1 ? kTypeBackClicked : kTypeMenuClicked);
-        //}
-        //else if (wParam == VK_ESCAPE)
-        //{
-        //    CCDirector::sharedDirector()->getKeypadDispatcher()->dispatchKeypadMSG(kTypeBackClicked);
-        //}
-
-        //if ( m_lpfnAccelerometerKeyHook!=NULL )
-        //{
-        //    (*m_lpfnAccelerometerKeyHook)( message,wParam,lParam );
-        //}
-        break;
-    case WM_KEYUP:
-        if ( m_lpfnAccelerometerKeyHook!=NULL )
-        {
-            (*m_lpfnAccelerometerKeyHook)( message,wParam,lParam );
-        }
-        break;
-    case WM_CHAR:
-        //{
-        //    if (wParam < 0x20)
-        //    {
-        //        if (VK_BACK == wParam)
-        //        {
-        //            CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
-        //        }
-        //        else if (VK_RETURN == wParam)
-        //        {
-        //            CCIMEDispatcher::sharedDispatcher()->dispatchInsertText("\n", 1);
-        //        }
-        //        else if (VK_TAB == wParam)
-        //        {
-        //            // tab input
-        //        }
-        //        else if (VK_ESCAPE == wParam)
-        //        {
-        //            // ESC input
-        //            //CCDirector::sharedDirector()->end();
-        //        }
-        //    }
-        //    else if (wParam < 128)
-        //    {
-        //        // ascii char
-        //        CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&wParam, 1);
-        //    }
-        //    else
-        //    {
-        //        char szUtf8[8] = {0};
-        //        int nLen = WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)&wParam, 1, szUtf8, sizeof(szUtf8), NULL, NULL);
-        //        CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(szUtf8, nLen);
-        //    }
-        //    if ( m_lpfnAccelerometerKeyHook!=NULL )
-        //    {
-        //        (*m_lpfnAccelerometerKeyHook)( message,wParam,lParam );
-        //    }
-        //}
-        break;
     case WM_PAINT:
         PAINTSTRUCT ps;
         BeginPaint(m_hWnd, &ps);
         EndPaint(m_hWnd, &ps);
         break;
-
-    case WM_CLOSE:
-        //CCDirector::sharedDirector()->end();
-        break;
-
-    case WM_DESTROY:
-        destroyGL();
-        PostQuitMessage(0);
-        break;
-
     default:
-        if (m_wndproc)
-        {
-
-            m_wndproc(message, wParam, lParam, &bProcessed);
-            if (bProcessed) break;
-        }
         return DefWindowProc(m_hWnd, message, wParam, lParam);
-    }
-
-    if (m_wndproc && !bProcessed)
-    {
-        m_wndproc(message, wParam, lParam, &bProcessed);
     }
     return 0;
 }
-
-void CCEGLView::setAccelerometerKeyHook( LPFN_ACCELEROMETER_KEYHOOK lpfnAccelerometerKeyHook )
-{
-    m_lpfnAccelerometerKeyHook=lpfnAccelerometerKeyHook;
-}
-
 
 bool CCEGLView::isOpenGLReady()
 {

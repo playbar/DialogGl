@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef __CCDRAWNODES_CCDRAW_NODE_H__
-#define __CCDRAWNODES_CCDRAW_NODE_H__
+#ifndef __RASTERGL_H__
+#define __RASTERGL_H__
 
 #include "CCNode.h"
 #include "ccTypes.h"

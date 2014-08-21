@@ -26,9 +26,6 @@ THE SOFTWARE.
 #define __CC_EGLVIEW_WIN32_H__
 
 #include "windows.h"
-//#include "CCStdC.h"
-//#include "platform/CCCommon.h"
-//#include "cocoa/CCGeometry.h"
 #include "CCEGLViewProtocol.h"
 #include "platformtype.h"
 
@@ -95,7 +92,6 @@ public:
     void centerWindow();
 
     typedef void (*LPFN_ACCELEROMETER_KEYHOOK)( UINT message,WPARAM wParam, LPARAM lParam );
-    void setAccelerometerKeyHook( LPFN_ACCELEROMETER_KEYHOOK lpfnAccelerometerKeyHook );
 
     virtual void setViewPortInPoints(float x , float y , float w , float h);
     virtual void setScissorInPoints(float x , float y , float w , float h);
@@ -105,16 +101,12 @@ public:
     @brief    get the shared main open gl window
     */
     static CCEGLView* sharedOpenGLView();
-
-
-
 private:
 	ccDirectorProjection m_eProjection;
     bool m_bCaptured;
     HWND m_hWnd;
     HDC  m_hDC;
     HGLRC m_hRC;
-    LPFN_ACCELEROMETER_KEYHOOK m_lpfnAccelerometerKeyHook;
 
     LPCWSTR m_menu;
     CUSTOM_WND_PROC m_wndproc;

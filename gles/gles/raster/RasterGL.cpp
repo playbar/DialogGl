@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "CCDrawNode.h"
+#include "RasterGL.h"
 #include "CCPointExtension.h"
 #include "CCShaderCache.h"
 #include "CCDrawingPrimitives.h"

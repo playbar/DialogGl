@@ -67,6 +67,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	this->GetWindowRect( rect );
 	ScreenToClient(rect);
 
+
 	eglView = CCEGLView::sharedOpenGLView();
 	eglView->CreateGL( this->m_hWnd );
 	//eglView->Create();
