@@ -88,6 +88,7 @@ public:
     void setWndProc(CUSTOM_WND_PROC proc);
 
 	bool CreateGL(HWND hwnd );
+	void CreateView(HWND hwnd, int left, int top, int width, int height );
 
 	//void MsgLBtnDown( UINT nFlags, long x, long y );
 	//void MsgLBtnUp( UINT nFlags, long x, long y );
