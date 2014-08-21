@@ -188,31 +188,19 @@
 			Name="gles"
 			>
 			<File
-				RelativePath=".\gles\CCEGLView.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\gles\CCEGLView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gles\CCEGLViewProtocol.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\gles\cceglviewprotocol.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gles\ccShaderEx_SwitchMask_frag.h"
-				>
-			</File>
-			<File
 				RelativePath=".\gles\cctypeinfo.h"
 				>
 			</File>
 			<File
 				RelativePath=".\gles\cctypes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\EGLView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\EGLView.h"
 				>
 			</File>
 			<Filter

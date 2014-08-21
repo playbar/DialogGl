@@ -42,7 +42,7 @@
  
  @since v2.1
  */
-class CC_DLL CCDrawNode : public CCNode
+class CC_DLL RasterGL : public CCNode
 {
 protected:
     GLuint      m_uVao;
@@ -57,8 +57,8 @@ protected:
     bool            m_bDirty;
 
 public:
-    static CCDrawNode* create();
-    virtual ~CCDrawNode();
+    static RasterGL* create();
+    virtual ~RasterGL();
     
     virtual bool init();
     virtual void draw();
@@ -80,7 +80,7 @@ public:
     ccBlendFunc getBlendFunc() const;
     void setBlendFunc(const ccBlendFunc &blendFunc);
     
-    CCDrawNode();
+    RasterGL();
 
 public:
 	void beginPolygon();

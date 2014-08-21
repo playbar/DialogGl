@@ -95,7 +95,7 @@ static inline ccTex2F __t(const ccVertex2F &v)
 
 // implementation of CCDrawNode
 
-CCDrawNode::CCDrawNode()
+RasterGL::RasterGL()
 : m_uVao(0)
 , m_uVbo(0)
 , m_uBufferCapacity(0)
@@ -107,7 +107,7 @@ CCDrawNode::CCDrawNode()
     m_sBlendFunc.dst = CC_BLEND_DST;
 }
 
-CCDrawNode::~CCDrawNode()
+RasterGL::~RasterGL()
 {
     free(m_pBuffer);
     m_pBuffer = NULL;
@@ -121,9 +121,9 @@ CCDrawNode::~CCDrawNode()
 #endif
 }
 
-CCDrawNode* CCDrawNode::create()
+RasterGL* RasterGL::create()
 {
-    CCDrawNode* pRet = new CCDrawNode();
+    RasterGL* pRet = new RasterGL();
     if (pRet && pRet->init())
     {
         pRet->autorelease();
@@ -136,7 +136,7 @@ CCDrawNode* CCDrawNode::create()
     return pRet;
 }
 
-void CCDrawNode::ensureCapacity(unsigned int count)
+void RasterGL::ensureCapacity(unsigned int count)
 {
     if(m_nBufferCount + count > m_uBufferCapacity)
     {
@@ -145,7 +145,7 @@ void CCDrawNode::ensureCapacity(unsigned int count)
 	}
 }
 
-bool CCDrawNode::init()
+bool RasterGL::init()
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
@@ -183,7 +183,7 @@ bool CCDrawNode::init()
     return true;
 }
 
-void CCDrawNode::render()
+void RasterGL::render()
 {
     if (m_bDirty)
     {
@@ -212,7 +212,7 @@ void CCDrawNode::render()
     //CC_INCREMENT_GL_DRAWS(1);
 }
 
-void CCDrawNode::draw()
+void RasterGL::draw()
 {
     ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
     
@@ -222,7 +222,7 @@ void CCDrawNode::draw()
     render();
 }
 
-void CCDrawNode::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
+void RasterGL::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 2*3;
     ensureCapacity(vertex_count);
@@ -243,7 +243,7 @@ void CCDrawNode::drawDot(const CCPoint &pos, float radius, const ccColor4F &colo
 	m_bDirty = true;
 }
 
-void CCDrawNode::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
+void RasterGL::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 6*3;
     ensureCapacity(vertex_count);
@@ -316,7 +316,7 @@ void CCDrawNode::drawSegment(const CCPoint &from, const CCPoint &to, float radiu
 	m_bDirty = true;
 }
 
-void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
+void RasterGL::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
 {
     struct ExtrudeVerts {ccVertex2F offset, n;};
 	struct ExtrudeVerts* extrude = (struct ExtrudeVerts*)malloc(sizeof(struct ExtrudeVerts)*count);
@@ -422,7 +422,7 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
     free(extrude);
 }
 
-void CCDrawNode::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
+void RasterGL::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
 {
 	unsigned int vertex_count = 2 * 3;
 	ensureCapacity( vertex_count );
@@ -441,14 +441,14 @@ void CCDrawNode::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoi
 	return;
 }
 
-void CCDrawNode::clear()
+void RasterGL::clear()
 {
     m_nBufferCount = 0;
     m_bDirty = true;
 }
 
 std::vector<CCPoint*> g_pintArray;
-CCDrawNode * pthis = NULL;
+RasterGL * pthis = NULL;
 void __stdcall vertexCallback(GLdouble *vertex)
 {
 	const GLdouble *pointer;
@@ -601,7 +601,7 @@ GLdouble star[10][6] =
 
 
 
-void CCDrawNode::beginPolygon()
+void RasterGL::beginPolygon()
 {
 	tobj = gluNewTess();
 	pthis = this;
@@ -632,7 +632,7 @@ void CCDrawNode::beginPolygon()
 	return;
 }
 
-void CCDrawNode::endPolygon()
+void RasterGL::endPolygon()
 {
 	 gluDeleteTess(tobj);
 
@@ -664,18 +664,18 @@ void CCDrawNode::endPolygon()
 
 }
 
-void CCDrawNode::drawAllPolygon()
+void RasterGL::drawAllPolygon()
 {
 
 }
 
 
-ccBlendFunc CCDrawNode::getBlendFunc() const
+ccBlendFunc RasterGL::getBlendFunc() const
 {
     return m_sBlendFunc;
 }
 
-void CCDrawNode::setBlendFunc(const ccBlendFunc &blendFunc)
+void RasterGL::setBlendFunc(const ccBlendFunc &blendFunc)
 {
     m_sBlendFunc = blendFunc;
 }

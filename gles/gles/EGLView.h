@@ -26,8 +26,8 @@ THE SOFTWARE.
 #define __CC_EGLVIEW_WIN32_H__
 
 #include "windows.h"
-#include "CCEGLViewProtocol.h"
 #include "platformtype.h"
+#include "ccTypes.h"
 
 typedef enum 
 {
@@ -41,11 +41,37 @@ typedef enum
 	kCCDirectorProjectionDefault = kCCDirectorProjection3D,
 } ccDirectorProjection;
 
+enum ResolutionPolicy
+{
+	// The entire application is visible in the specified area without trying to preserve the original aspect ratio.
+	// Distortion can occur, and the application may appear stretched or compressed.
+	kResolutionExactFit,
+	// The entire application fills the specified area, without distortion but possibly with some cropping,
+	// while maintaining the original aspect ratio of the application.
+	kResolutionNoBorder,
+	// The entire application is visible in the specified area without distortion while maintaining the original
+	// aspect ratio of the application. Borders can appear on two sides of the application.
+	kResolutionShowAll,
+	// The application takes the height of the design resolution size and modifies the width of the internal
+	// canvas so that it fits the aspect ratio of the device
+	// no distortion will occur however you must make sure your application works on different
+	// aspect ratios
+	kResolutionFixedHeight,
+	// The application takes the width of the design resolution size and modifies the height of the internal
+	// canvas so that it fits the aspect ratio of the device
+	// no distortion will occur however you must make sure your application works on different
+	// aspect ratios
+	kResolutionFixedWidth,
+
+	kResolutionUnKnown,
+};
+
+
 typedef LRESULT (*CUSTOM_WND_PROC)(UINT message, WPARAM wParam, LPARAM lParam, BOOL* pProcessed);
 
 class CCEGL;
 
-class CC_DLL CCEGLView : public CCEGLViewProtocol
+class CC_DLL CCEGLView //: public CCEGLViewProtocol
 {
 public:
     CCEGLView();
@@ -72,7 +98,7 @@ public:
 	 void setDepthTest(bool bOn);
 	 void setProjection(ccDirectorProjection kProjection);
 
- virtual bool Create();
+ virtual bool Create( HWND hwnd );
 private:
    
 	
@@ -112,6 +138,21 @@ private:
     CUSTOM_WND_PROC m_wndproc;
 
     float m_fFrameZoomFactor;
+
+private:
+
+	// real screen size
+	CCSize m_obScreenSize;
+	// resolution size, it is the size appropriate for the app resources.
+	CCSize m_obDesignResolutionSize;
+	// the view port size
+	CCRect m_obViewPortRect;
+	// the view name
+	char   m_szViewName[50];
+
+	float  m_fScaleX;
+	float  m_fScaleY;
+	ResolutionPolicy m_eResolutionPolicy;
 };
 
 #endif    // end of __CC_EGLVIEW_WIN32_H__

@@ -11,7 +11,7 @@
 ////#include "BwGLView.h"
 
 
-#include "CCEGLView.h"
+#include "EGLView.h"
 #include "RasterGL.h"
 //#include "CCDrawNode.h"
 
@@ -41,7 +41,7 @@ protected:
 	HICON m_hIcon;
 
 	CCEGLView* eglView;
-	CCDrawNode *drawNode;
+	RasterGL *pRaster;
 	//MainLayer *mMainLayer;
 	//BwGLView mBwGLView;
 

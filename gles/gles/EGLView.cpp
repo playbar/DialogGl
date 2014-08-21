@@ -22,22 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "CCEGLView.h"
+#include "EGLView.h"
 #include "cclog.h"
 #include "stdio.h"
 #include "ccMacros.h"
 #include "ccGLStateCache.h"
 #include "gl/matrix.h"
-
-//#include "cocoa/CCSet.h"
-//#include "ccMacros.h"
-//#include "CCDirector.h"
-//#include "touch_dispatcher/CCTouch.h"
-//#include "touch_dispatcher/CCTouchDispatcher.h"
-//#include "text_input_node/CCIMEDispatcher.h"
-//#include "keypad_dispatcher/CCKeypadDispatcher.h"
-//#include "support/CCPointExtension.h"
-//#include "CCApplication.h"
 
 
 static void SetupPixelFormat(HDC hDC)
@@ -346,7 +336,7 @@ void CCEGLView::setProjection(ccDirectorProjection kProjection)
 }
 
 
-bool CCEGLView::Create()
+bool CCEGLView::Create( HWND hwnd )
 {
     bool bRet = false;
     do
@@ -382,12 +372,13 @@ bool CCEGLView::Create()
             WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,    // Extended Style For The Window
             kWindowClassName,                                    // Class Name
             wszBuf,                                                // Window Title
-            WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+            //WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+			WS_CHILD,
             0, 0,                                                // Window Position
             //TODO: Initializing width with a large value to avoid getting a wrong client area by 'GetClientRect' function.
-            1000,                                               // Window Width
-            1000,                                               // Window Height
-            NULL,                                                // No Parent Window
+            800,                                               // Window Width
+            600,                                               // Window Height
+            hwnd,                                                // No Parent Window
             NULL,                                                // No Menu
             hInstance,                                            // Instance
             NULL );
@@ -494,7 +485,7 @@ void CCEGLView::resize(int width, int height)
     rcClient.right = rcClient.left + width;
     rcClient.bottom = rcClient.top + height;
 
-    const CCSize& frameSize = getFrameSize();
+    const CCSize& frameSize = m_obScreenSize;
     if (frameSize.width > 0)
     {
         WCHAR wszBuf[MAX_PATH] = {0};
@@ -524,8 +515,7 @@ float CCEGLView::getFrameZoomFactor()
 
 void CCEGLView::setFrameSize(float width, float height)
 {
-    CCEGLViewProtocol::setFrameSize(width, height);
-
+	m_obDesignResolutionSize = m_obScreenSize = CCSizeMake(width, height);
     resize(width, height); // adjust window size for menubar
     centerWindow();
 }
