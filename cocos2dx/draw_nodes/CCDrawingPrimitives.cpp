@@ -62,21 +62,21 @@ static GLfloat s_fPointSize = 1.0f;
 
 static void lazy_init( void )
 {
-    if( ! s_bInitialized ) {
+	if( ! s_bInitialized )
+	{
+		//
+		// Position and 1 color passed as a uniform (to simulate glColor4ub )
+		//
+		s_pShader = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_Position_uColor);
+		s_pShader->retain();
 
-        //
-        // Position and 1 color passed as a uniform (to simulate glColor4ub )
-        //
-        s_pShader = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_Position_uColor);
-        s_pShader->retain();
-        
-        s_nColorLocation = glGetUniformLocation( s_pShader->getProgram(), "u_color");
-    CHECK_GL_ERROR_DEBUG();
-        s_nPointSizeLocation = glGetUniformLocation( s_pShader->getProgram(), "u_pointSize");
-    CHECK_GL_ERROR_DEBUG();
+		s_nColorLocation = glGetUniformLocation( s_pShader->getProgram(), "u_color");
+		CHECK_GL_ERROR_DEBUG();
+		s_nPointSizeLocation = glGetUniformLocation( s_pShader->getProgram(), "u_pointSize");
+		CHECK_GL_ERROR_DEBUG();
 
-        s_bInitialized = true;
-    }
+		s_bInitialized = true;
+	}
 }
 
 // When switching from backround to foreground on android, we want the params to be initialized again

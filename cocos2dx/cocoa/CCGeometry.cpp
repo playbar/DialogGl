@@ -49,17 +49,6 @@ CCPoint& CCPoint::operator= (const CCPoint& other)
     return *this;
 }
 
-bool CCPoint::operator==( const CCPoint &other)
-{
-	if ( x == other.x && y == other.y )
-	{
-		return true; 
-	}
-	else
-		return false;
-	
-}
-
 void CCPoint::setPoint(float x, float y)
 {
     this->x = x;

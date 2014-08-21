@@ -13,11 +13,13 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
+// 德语(德国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 #pragma code_page(1252)
+#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -71,7 +73,7 @@ IDR_MAINFRAME           ICON                    "res\\OpenGLDialog.ico"
 // Dialog
 //
 
-IDD_OPENGLDIALOG_DIALOG DIALOGEX 0, 0, 510, 302
+IDD_OPENGLDIALOG_DIALOG DIALOGEX 0, 0, 628, 385
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "OpenGLDialog"
@@ -79,7 +81,7 @@ FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
 END
 
-IDD_ABOUTDLG_DIALOG DIALOG 0, 0, 230, 58
+IDD_ABOUTDLG_DIALOG DIALOG  0, 0, 230, 58
 STYLE DS_SETFONT | DS_MODALFRAME | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "Tahoma"
@@ -133,14 +135,14 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_OPENGLDIALOG_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 503
+        RIGHTMARGIN, 621
         TOPMARGIN, 7
-        BOTTOMMARGIN, 295
+        BOTTOMMARGIN, 378
     END
 
     IDD_ABOUTDLG_DIALOG, DIALOG
@@ -153,7 +155,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // German (Germany) resources
+#endif    // 德语(德国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

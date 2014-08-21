@@ -173,10 +173,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glew32.lib"
+				AdditionalDependencies="opengl32.lib glew32.lib gleslib.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="glew"
+				AdditionalLibraryDirectories="glew;&quot;$(OutDir)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/OpenGLDialog.pdb"
 				SubSystem="2"

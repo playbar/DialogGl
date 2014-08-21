@@ -41,7 +41,7 @@ THE SOFTWARE.
 #include "cocoa/CCAutoreleasePool.h"
 #include "platform/platform.h"
 #include "platform/CCFileUtils.h"
-#include "CCApplication.h"
+//#include "CCApplication.h"
 #include "label_nodes/CCLabelBMFont.h"
 #include "label_nodes/CCLabelAtlas.h"
 #include "actions/CCActionManager.h"
@@ -109,7 +109,7 @@ bool CCDirector::init(void)
     //m_pobScenesStack->init();
 
     // Set default projection (3D)
-    m_eProjection = kCCDirectorProjectionDefault;
+    m_eProjection = kCCDirectorProjection2D; //kCCDirectorProjectionDefault;
 
     // projection delegate if "Custom" projection is used
     m_pProjectionDelegate = NULL;
@@ -120,7 +120,7 @@ bool CCDirector::init(void)
     //m_pFPSLabel = NULL;
     //m_pSPFLabel = NULL;
     //m_pDrawsLabel = NULL;
-    //m_bDisplayStats = false;
+    m_bDisplayStats = false;
     m_uTotalFrames = m_uFrames = 0;
     //m_pszFPS = new char[10];
     m_pLastUpdate = new struct cc_timeval();
@@ -205,15 +205,42 @@ void CCDirector::setGLDefaultValues(void)
 // Draw the Scene
 void CCDirector::drawScene(void)
 {
+    // calculate "global" dt
+    calculateDeltaTime();
+
+    //tick before glClear: issue #533
+    if (! m_bPaused)
+    {
+        m_pScheduler->update(m_fDeltaTime);
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    kmGLPushMatrix();
-    m_pRunningScene->visit();
-
-    //if (m_bDisplayStats)
+    /* to avoid flickr, nextScene MUST be here: after tick and before draw.
+     XXX: Which bug is this one. It seems that it can't be reproduced with v0.9 */
+    //if (m_pNextScene)
     //{
-    //    showStats();
+    //    setNextScene();
     //}
+
+    kmGLPushMatrix();
+
+    // draw the scene
+    if (m_pRunningScene)
+    {
+        m_pRunningScene->visit();
+    }
+
+    // draw the notifications node
+    if (m_pNotificationNode)
+    {
+        m_pNotificationNode->visit();
+    }
+    
+    if (m_bDisplayStats)
+    {
+        showStats();
+    }
 
     kmGLPopMatrix();
 
@@ -225,10 +252,10 @@ void CCDirector::drawScene(void)
         m_pobOpenGLView->swapBuffers();
     }
     
-    //if (m_bDisplayStats)
-    //{
-    //    calculateMPF();
-    //}
+    if (m_bDisplayStats)
+    {
+        calculateMPF();
+    }
 }
 
 void CCDirector::calculateDeltaTime(void)
@@ -940,7 +967,7 @@ void CCDisplayLinkDirector::startAnimation(void)
     }
 
     m_bInvalid = false;
-    CCApplication::sharedApplication()->setAnimationInterval(m_dAnimationInterval);
+    //CCApplication::sharedApplication()->setAnimationInterval(m_dAnimationInterval);
 }
 
 void CCDisplayLinkDirector::mainLoop(void)

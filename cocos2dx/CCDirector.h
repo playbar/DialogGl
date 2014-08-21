@@ -116,9 +116,9 @@ public:
     virtual void setAnimationInterval(double dValue) = 0;
 
     /** Whether or not to display the FPS on the bottom-left corner */
-    //inline bool isDisplayStats(void) { return m_bDisplayStats; }
+    inline bool isDisplayStats(void) { return m_bDisplayStats; }
     /** Display the FPS on the bottom-left corner */
-    //inline void setDisplayStats(bool bDisplayStats) { m_bDisplayStats = bDisplayStats; }
+    inline void setDisplayStats(bool bDisplayStats) { m_bDisplayStats = bDisplayStats; }
     
     /** seconds per frame */
     inline float getSecondsPerFrame() { return m_fSecondsPerFrame; }
@@ -363,7 +363,7 @@ protected:
     /* landscape mode ? */
     bool m_bLandscape;
     
-    //bool m_bDisplayStats;
+    bool m_bDisplayStats;
     float m_fAccumDt;
     float m_fFrameRate;
     

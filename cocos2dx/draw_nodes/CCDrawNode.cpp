@@ -24,6 +24,9 @@
 #include "support/CCPointExtension.h"
 #include "shaders/CCShaderCache.h"
 #include "CCGL.h"
+#include "CCDrawingPrimitives.h"
+
+#include "vector"
 
 NS_CC_BEGIN
 
@@ -94,6 +97,203 @@ static inline ccTex2F __t(const ccVertex2F &v)
 
 // implementation of CCDrawNode
 
+
+std::vector<CCPoint*> g_pintArray;
+void __stdcall vertexCallback(GLdouble *vertex)
+{
+	const GLdouble *pointer;
+	CCPoint *p = new CCPoint();
+	p->x = vertex[0];
+	p->y = vertex[1];
+	g_pintArray.push_back( p );
+
+	//pointer = (GLdouble *) vertex;
+	//glColor3dv(pointer+3);
+	//glVertex3dv((GLdouble*)vertex);
+
+	//g_pintArray
+}
+
+void __stdcall beginCallback( GLenum which )
+{
+
+}
+
+void __stdcall endCallback( )
+{
+	static ccColor4F green ={0,1,0,1};
+	int count = g_pintArray.size();
+
+	CCPoint * pdata = new CCPoint[count];
+	for ( int i = 0; i < count; i++ )
+	{
+		pdata[i].x = g_pintArray[i]->x;
+		pdata[i].y = g_pintArray[i]->y;
+	}
+
+	ccDrawSolidPoly( pdata, count, green );
+	//ccDrawSolidPoly( &g_pintArray.begin(), count, green );
+	delete []pdata;
+	std::vector<CCPoint*>::iterator iter = g_pintArray.begin();
+	std::vector<CCPoint*>::iterator end = g_pintArray.end();
+	for ( ; iter != end; iter++ )
+	{
+		delete *iter;
+	}
+	g_pintArray.clear();
+
+
+}
+
+void __stdcall errorCallback( GLenum errorCode )
+{
+	const GLubyte *estring;
+	//estring = gluErrorString( errorCode );
+	//fprintf( stderr, "Tessellation Error: %s\n", estring );
+	exit( 0 );
+}
+
+void __stdcall combineCallback(GLdouble coords[3], 
+							   GLdouble *vertex_data[4],
+							   GLfloat weight[4], GLdouble **dataOut )
+{
+	GLdouble *vertex;
+	int i;
+
+	vertex = (GLdouble *) malloc(6 * sizeof(GLdouble));
+
+	vertex[0] = coords[0];
+	vertex[1] = coords[1];
+	vertex[2] = coords[2];
+	for (i = 3; i < 6; i++)
+		vertex[i] = weight[0] * vertex_data[0][i] 
+					+ weight[1] * vertex_data[1][i]
+					+ weight[2] * vertex_data[2][i] 
+					+ weight[3] * vertex_data[3][i];
+	*dataOut = vertex;
+
+	CCPoint *p = new CCPoint();
+	p->x = vertex[0];
+	p->y = vertex[1];
+	g_pintArray.push_back( p );
+
+
+}
+
+
+//GLdouble star[5][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
+//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
+//};
+
+//GLdouble star[5][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
+//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
+//};
+
+//GLdouble star[8][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
+//	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 1.0, 0.0,
+//	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
+//	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
+//	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
+//	120.0, 70.0, 0.0, 1.0, 0.0, 1.0
+//};
+
+GLdouble star[10][6] =
+{
+	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
+	//150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+	//120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
+	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
+	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
+	120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+	150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
+	50.0, 150.0, 0.0, 1.0, 1.0, 0.0
+};
+
+//GLdouble star[8][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	50.0, 200.0, 0.0, 1.0, 0.0, 0.0,
+//	100.0, 200.0, 0.0, 0.0, 1.0, 1.0,
+//	100.0, 100.0, 0.0, 1.0, 1.0, 0.0,
+//	150.0, 100.0, 0.0, 1.0, 0.0, 0.0,
+//	150.0, 200.0, 0.0, 0.0, 1.0, 1.0,
+//	200.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+//	200.0, 50.0, 0.0, 1.0, 0.0, 1.0
+//};
+
+
+void CCDrawNode::drawAllPolygon()
+{
+	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+	gluTessBeginPolygon(tobj, NULL);
+	gluTessBeginContour(tobj);
+	gluTessVertex(tobj, star[0], star[0]);
+	gluTessVertex(tobj, star[1], star[1]);
+	gluTessVertex(tobj, star[2], star[2]);
+	gluTessVertex(tobj, star[3], star[3]);
+	gluTessVertex(tobj, star[4], star[4]);
+	gluTessVertex(tobj, star[5], star[5]);
+	gluTessVertex(tobj, star[6], star[6]);
+	gluTessVertex(tobj, star[7], star[7]);
+	gluTessVertex(tobj, star[8], star[8]);
+	gluTessVertex(tobj, star[9], star[9]);
+	//gluTessVertex(tobj, star[10], star[10]);
+	//gluTessVertex(tobj, star[11], star[11]);
+	gluTessEndContour(tobj);
+	gluTessEndPolygon(tobj);
+}
+
+void CCDrawNode::drawAllPolygon( vector<ccV2F_C4F_T2F> &coords )
+{
+	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+	gluTessBeginPolygon(tobj, NULL);
+	gluTessBeginContour(tobj);
+
+	//	for (std::vector<oglVertex>::const_iterator it = vertices.begin(), end = vertices.end();
+	//		it != end; ++it) 
+	//	{
+	//			GLdouble* vertex = const_cast<GLdouble*>(&(*it)._x);
+	//			gluTessVertex(_tessobj, vertex, vertex);
+	//	}
+
+	//for ( vector<ccV2F_C4F_T2F>::const_iterator it = coords.begin(), end = coords.end();
+	//	it != end; ++it )
+	//{
+	//	
+	//}
+	
+
+	int ilen = coords.size();
+	for ( int i = 0; i < ilen; i++ )
+	{
+		gluTessVertex( tobj, (GLdouble*)&coords[i].vertices.x, (GLdouble*)&coords[i].vertices.x );
+	}
+	
+
+	gluTessEndContour(tobj);
+	gluTessEndPolygon(tobj);
+
+}
+
+
+
 CCDrawNode::CCDrawNode()
 : m_uVao(0)
 , m_uVbo(0)
@@ -104,6 +304,14 @@ CCDrawNode::CCDrawNode()
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
+
+	tobj = gluNewTess();
+	gluTessCallback(tobj, GLU_TESS_VERTEX, (void (__stdcall *)())vertexCallback);
+	gluTessCallback(tobj, GLU_TESS_BEGIN,  (void (__stdcall *)())beginCallback);
+	gluTessCallback(tobj, GLU_TESS_END, (void (__stdcall *)())endCallback);
+	gluTessCallback(tobj, GLU_TESS_ERROR, (void (__stdcall *)())errorCallback);
+	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
+
 }
 
 CCDrawNode::~CCDrawNode()
@@ -113,6 +321,8 @@ CCDrawNode::~CCDrawNode()
     
     glDeleteBuffers(1, &m_uVbo);
     m_uVbo = 0;
+
+	gluDeleteTess( tobj );
     
 #if CC_TEXTURE_ATLAS_USE_VAO      
     glDeleteVertexArrays(1, &m_uVao);
@@ -140,7 +350,7 @@ void CCDrawNode::ensureCapacity(unsigned int count)
     if(m_nBufferCount + count > m_uBufferCapacity)
     {
 		m_uBufferCapacity += MAX(m_uBufferCapacity, count);
-		m_pBuffer = (ccV2F_C4B_T2F*)realloc(m_pBuffer, m_uBufferCapacity*sizeof(ccV2F_C4B_T2F));
+		m_pBuffer = (ccV2F_C4F_T2F*)realloc(m_pBuffer, m_uBufferCapacity*sizeof(ccV2F_C4F_T2F));
 	}
 }
 
@@ -160,24 +370,22 @@ bool CCDrawNode::init()
     
     glGenBuffers(1, &m_uVbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4F_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
     
     glEnableVertexAttribArray(kCCVertexAttrib_Position);
-    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
+    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, vertices));
     
     glEnableVertexAttribArray(kCCVertexAttrib_Color);
-    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, colors));
+    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_TRUE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, colors));
     
     glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, texCoords));
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 #if CC_TEXTURE_ATLAS_USE_VAO 
     ccGLBindVAO(0);
 #endif
-    
-    CHECK_GL_ERROR_DEBUG();
     
     m_bDirty = true;
     
@@ -189,7 +397,7 @@ void CCDrawNode::render()
     if (m_bDirty)
     {
         glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4F_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
         m_bDirty = false;
     }
 #if CC_TEXTURE_ATLAS_USE_VAO     
@@ -198,20 +406,19 @@ void CCDrawNode::render()
     ccGLEnableVertexAttribs(kCCVertexAttribFlag_PosColorTex);
     glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
     // vertex
-    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
+    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, vertices));
     
     // color
-    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, colors));
+    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, colors));
     
     // texcood
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4F_T2F), (GLvoid *)offsetof(ccV2F_C4F_T2F, texCoords));
 #endif
 
     glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    CC_INCREMENT_GL_DRAWS(1);
-    CHECK_GL_ERROR_DEBUG();
+    //CC_INCREMENT_GL_DRAWS(1);
 }
 
 void CCDrawNode::draw()
@@ -229,14 +436,14 @@ void CCDrawNode::drawDot(const CCPoint &pos, float radius, const ccColor4F &colo
     unsigned int vertex_count = 2*3;
     ensureCapacity(vertex_count);
 	
-	ccV2F_C4B_T2F a = {{pos.x - radius, pos.y - radius}, ccc4BFromccc4F(color), {-1.0, -1.0} };
-	ccV2F_C4B_T2F b = {{pos.x - radius, pos.y + radius}, ccc4BFromccc4F(color), {-1.0,  1.0} };
-	ccV2F_C4B_T2F c = {{pos.x + radius, pos.y + radius}, ccc4BFromccc4F(color), { 1.0,  1.0} };
-	ccV2F_C4B_T2F d = {{pos.x + radius, pos.y - radius}, ccc4BFromccc4F(color), { 1.0, -1.0} };
+	ccV2F_C4F_T2F a = {{pos.x - radius, pos.y - radius}, color, {-1.0, -1.0} };
+	ccV2F_C4F_T2F b = {{pos.x - radius, pos.y + radius}, color, {-1.0,  1.0} };
+	ccV2F_C4F_T2F c = {{pos.x + radius, pos.y + radius}, color, { 1.0,  1.0} };
+	ccV2F_C4F_T2F d = {{pos.x + radius, pos.y - radius}, color, { 1.0, -1.0} };
 	
-	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
-    ccV2F_C4B_T2F_Triangle triangle0 = {a, b, c};
-    ccV2F_C4B_T2F_Triangle triangle1 = {a, c, d};
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
+    ccV2F_C4F_T2F_Triangle triangle0 = {a, b, c};
+    ccV2F_C4F_T2F_Triangle triangle1 = {a, c, d};
 	triangles[0] = triangle0;
 	triangles[1] = triangle1;
 	
@@ -269,47 +476,47 @@ void CCDrawNode::drawSegment(const CCPoint &from, const CCPoint &to, float radiu
 	ccVertex2F v7 = v2fadd(a, v2fadd(nw, tw));
 	
 	
-	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
 	
-    ccV2F_C4B_T2F_Triangle triangles0 = {
-        {v0, ccc4BFromccc4F(color), __t(v2fneg(v2fadd(n, t)))},
-        {v1, ccc4BFromccc4F(color), __t(v2fsub(n, t))},
-        {v2, ccc4BFromccc4F(color), __t(v2fneg(n))},
+    ccV2F_C4F_T2F_Triangle triangles0 = {
+        {v0, color, __t(v2fneg(v2fadd(n, t)))},
+        {v1, color, __t(v2fsub(n, t))},
+        {v2, color, __t(v2fneg(n))},
     };
 	triangles[0] = triangles0;
 	
-    ccV2F_C4B_T2F_Triangle triangles1 = {
-        {v3, ccc4BFromccc4F(color), __t(n)},
-        {v1, ccc4BFromccc4F(color), __t(v2fsub(n, t))},
-        {v2, ccc4BFromccc4F(color), __t(v2fneg(n))},
+    ccV2F_C4F_T2F_Triangle triangles1 = {
+        {v3, color, __t(n)},
+        {v1, color, __t(v2fsub(n, t))},
+        {v2, color, __t(v2fneg(n))},
     };
 	triangles[1] = triangles1;
 	
-    ccV2F_C4B_T2F_Triangle triangles2 = {
-        {v3, ccc4BFromccc4F(color), __t(n)},
-        {v4, ccc4BFromccc4F(color), __t(v2fneg(n))},
-        {v2, ccc4BFromccc4F(color), __t(v2fneg(n))},
+    ccV2F_C4F_T2F_Triangle triangles2 = {
+        {v3, color, __t(n)},
+        {v4, color, __t(v2fneg(n))},
+        {v2, color, __t(v2fneg(n))},
     };
 	triangles[2] = triangles2;
 
-    ccV2F_C4B_T2F_Triangle triangles3 = {
-        {v3, ccc4BFromccc4F(color), __t(n)},
-        {v4, ccc4BFromccc4F(color), __t(v2fneg(n))},
-        {v5, ccc4BFromccc4F(color), __t(n) },
+    ccV2F_C4F_T2F_Triangle triangles3 = {
+        {v3, color, __t(n)},
+        {v4, color, __t(v2fneg(n))},
+        {v5, color, __t(n) },
     };
     triangles[3] = triangles3;
 
-    ccV2F_C4B_T2F_Triangle triangles4 = {
-        {v6, ccc4BFromccc4F(color), __t(v2fsub(t, n))},
-        {v4, ccc4BFromccc4F(color), __t(v2fneg(n)) },
-        {v5, ccc4BFromccc4F(color), __t(n)},
+    ccV2F_C4F_T2F_Triangle triangles4 = {
+        {v6, color, __t(v2fsub(t, n))},
+        {v4, color, __t(v2fneg(n)) },
+        {v5, color, __t(n)},
     };
 	triangles[4] = triangles4;
 
-    ccV2F_C4B_T2F_Triangle triangles5 = {
-        {v6, ccc4BFromccc4F(color), __t(v2fsub(t, n))},
-        {v7, ccc4BFromccc4F(color), __t(v2fadd(n, t))},
-        {v5, ccc4BFromccc4F(color), __t(n)},
+    ccV2F_C4F_T2F_Triangle triangles5 = {
+        {v6, color, __t(v2fsub(t, n))},
+        {v7, color, __t(v2fadd(n, t))},
+        {v5, color, __t(n)},
     };
 	triangles[5] = triangles5;
 	
@@ -325,7 +532,7 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 	memset(extrude, 0, sizeof(struct ExtrudeVerts)*count);
 	
 	for(unsigned int i = 0; i < count; i++)
-    {
+    {  
 		ccVertex2F v0 = __v2f(verts[(i-1+count)%count]);
 		ccVertex2F v1 = __v2f(verts[i]);
 		ccVertex2F v2 = __v2f(verts[(i+1)%count]);
@@ -344,8 +551,8 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 	unsigned int vertex_count = 3*triangle_count;
     ensureCapacity(vertex_count);
 	
-	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
-	ccV2F_C4B_T2F_Triangle *cursor = triangles;
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
+	ccV2F_C4F_T2F_Triangle *cursor = triangles;
 	
 	float inset = (outline == 0.0 ? 0.5 : 0.0);
 	for(unsigned int i = 0; i < count-2; i++)
@@ -354,10 +561,10 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 		ccVertex2F v1 = v2fsub(__v2f(verts[i+1]), v2fmult(extrude[i+1].offset, inset));
 		ccVertex2F v2 = v2fsub(__v2f(verts[i+2]), v2fmult(extrude[i+2].offset, inset));
 		
-        ccV2F_C4B_T2F_Triangle tmp = {
-            {v0, ccc4BFromccc4F(fillColor), __t(v2fzero)},
-            {v1, ccc4BFromccc4F(fillColor), __t(v2fzero)},
-            {v2, ccc4BFromccc4F(fillColor), __t(v2fzero)},
+        ccV2F_C4F_T2F_Triangle tmp = {
+            {v0, fillColor, __t(v2fzero)},
+            {v1, fillColor, __t(v2fzero)},
+            {v2, fillColor, __t(v2fzero)},
         };
 
 		*cursor++ = tmp;
@@ -381,17 +588,17 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 			ccVertex2F outer0 = v2fadd(v0, v2fmult(offset0, borderWidth));
 			ccVertex2F outer1 = v2fadd(v1, v2fmult(offset1, borderWidth));
 			
-            ccV2F_C4B_T2F_Triangle tmp1 = {
-                {inner0, ccc4BFromccc4F(borderColor), __t(v2fneg(n0))},
-                {inner1, ccc4BFromccc4F(borderColor), __t(v2fneg(n0))},
-                {outer1, ccc4BFromccc4F(borderColor), __t(n0)}
+            ccV2F_C4F_T2F_Triangle tmp1 = {
+                {inner0, borderColor, __t(v2fneg(n0))},
+                {inner1, borderColor, __t(v2fneg(n0))},
+                {outer1, borderColor, __t(n0)}
             };
 			*cursor++ = tmp1;
 
-            ccV2F_C4B_T2F_Triangle tmp2 = {
-                {inner0, ccc4BFromccc4F(borderColor), __t(v2fneg(n0))},
-                {outer0, ccc4BFromccc4F(borderColor), __t(n0)},
-                {outer1, ccc4BFromccc4F(borderColor), __t(n0)}
+            ccV2F_C4F_T2F_Triangle tmp2 = {
+                {inner0, borderColor, __t(v2fneg(n0))},
+                {outer0, borderColor, __t(n0)},
+                {outer1, borderColor, __t(n0)}
             };
 			*cursor++ = tmp2;
 		}
@@ -401,17 +608,17 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 			ccVertex2F outer0 = v2fadd(v0, v2fmult(offset0, 0.5));
 			ccVertex2F outer1 = v2fadd(v1, v2fmult(offset1, 0.5));
 			
-            ccV2F_C4B_T2F_Triangle tmp1 = {
-                {inner0, ccc4BFromccc4F(fillColor), __t(v2fzero)},
-                {inner1, ccc4BFromccc4F(fillColor), __t(v2fzero)},
-                {outer1, ccc4BFromccc4F(fillColor), __t(n0)}
+            ccV2F_C4F_T2F_Triangle tmp1 = {
+                {inner0, fillColor, __t(v2fzero)},
+                {inner1, fillColor, __t(v2fzero)},
+                {outer1, fillColor, __t(n0)}
             };
 			*cursor++ = tmp1;
 
-            ccV2F_C4B_T2F_Triangle tmp2 = {
-                {inner0, ccc4BFromccc4F(fillColor), __t(v2fzero)},
-                {outer0, ccc4BFromccc4F(fillColor), __t(n0)},
-                {outer1, ccc4BFromccc4F(fillColor), __t(n0)}
+            ccV2F_C4F_T2F_Triangle tmp2 = {
+                {inner0, fillColor, __t(v2fzero)},
+                {outer0, fillColor, __t(n0)},
+                {outer1, fillColor, __t(n0)}
             };
 			*cursor++ = tmp2;
 		}
@@ -422,6 +629,143 @@ void CCDrawNode::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F
 	m_bDirty = true;
 
     free(extrude);
+}
+
+void CCDrawNode::drawPolygon(ccV2F_C4F_T2F *verts, unsigned int count, float borderWidth, const ccColor4F &borderColor)
+{
+	struct ExtrudeVerts {ccVertex2F offset, n;};
+	struct ExtrudeVerts* extrude = (struct ExtrudeVerts*)malloc(sizeof(struct ExtrudeVerts)*count);
+	memset(extrude, 0, sizeof(struct ExtrudeVerts)*count);
+
+	for(unsigned int i = 0; i < count; i++)
+	{  
+		ccVertex2F v0 = verts[(i-1+count)%count].vertices;
+		ccVertex2F v1 = verts[i].vertices;
+		ccVertex2F v2 = verts[(i+1)%count].vertices;
+
+		ccVertex2F n1 = v2fnormalize(v2fperp(v2fsub(v1, v0)));
+		ccVertex2F n2 = v2fnormalize(v2fperp(v2fsub(v2, v1)));
+
+		ccVertex2F offset = v2fmult(v2fadd(n1, n2), 1.0/(v2fdot(n1, n2) + 1.0));
+		struct ExtrudeVerts tmp = {offset, n2};
+		extrude[i] = tmp;
+	}
+
+	bool outline = ( borderWidth > 0.0);
+
+	unsigned int triangle_count = 3*count - 2;
+	unsigned int vertex_count = 3*triangle_count;
+	ensureCapacity(vertex_count);
+
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle *)(m_pBuffer + m_nBufferCount);
+	ccV2F_C4F_T2F_Triangle *cursor = triangles;
+
+	float inset = (outline == 0.0 ? 0.5 : 0.0);
+	for(unsigned int i = 0; i < count-2; i++)
+	{
+		ccVertex2F v0 = v2fsub(verts[0  ].vertices, v2fmult(extrude[0  ].offset, inset));
+		ccVertex2F v1 = v2fsub(verts[i+1].vertices, v2fmult(extrude[i+1].offset, inset));
+		ccVertex2F v2 = v2fsub(verts[i+2].vertices, v2fmult(extrude[i+2].offset, inset));
+
+		ccV2F_C4F_T2F_Triangle tmp = 
+		{
+			{v0, verts[ 0   ].colors, verts[0].texCoords},
+			{v1, verts[ i+ 1].colors, verts[0].texCoords},
+			{v2, verts[ i +2].colors, verts[0].texCoords},
+		};
+
+		*cursor++ = tmp;
+	}
+
+	for(unsigned int i = 0; i < count; i++)
+	{
+		int j = (i+1)%count;
+		ccVertex2F v0 = verts[i].vertices;
+		ccVertex2F v1 = verts[j].vertices;
+
+		ccVertex2F n0 = extrude[i].n;
+
+		ccVertex2F offset0 = extrude[i].offset;
+		ccVertex2F offset1 = extrude[j].offset;
+
+		if(outline)
+		{
+			ccVertex2F inner0 = v2fsub(v0, v2fmult(offset0, borderWidth));
+			ccVertex2F inner1 = v2fsub(v1, v2fmult(offset1, borderWidth));
+			ccVertex2F outer0 = v2fadd(v0, v2fmult(offset0, borderWidth));
+			ccVertex2F outer1 = v2fadd(v1, v2fmult(offset1, borderWidth));
+
+			ccV2F_C4F_T2F_Triangle tmp1 = {
+				{inner0, borderColor, __t(v2fneg(n0))},
+				{inner1, borderColor, __t(v2fneg(n0))},
+				{outer1, borderColor, __t(n0)}
+			};
+			*cursor++ = tmp1;
+
+			ccV2F_C4F_T2F_Triangle tmp2 = {
+				{inner0, borderColor, __t(v2fneg(n0))},
+				{outer0, borderColor, __t(n0)},
+				{outer1, borderColor, __t(n0)}
+			};
+			*cursor++ = tmp2;
+		}
+		else {
+			ccVertex2F inner0 = v2fsub(v0, v2fmult(offset0, 0.5));
+			ccVertex2F inner1 = v2fsub(v1, v2fmult(offset1, 0.5));
+			ccVertex2F outer0 = v2fadd(v0, v2fmult(offset0, 0.5));
+			ccVertex2F outer1 = v2fadd(v1, v2fmult(offset1, 0.5));
+
+			ccV2F_C4F_T2F_Triangle tmp1 = {
+				{inner0, borderColor, __t(v2fzero)},
+				{inner1, borderColor, __t(v2fzero)},
+				{outer1, borderColor, __t(n0)}
+			};
+			*cursor++ = tmp1;
+
+			ccV2F_C4F_T2F_Triangle tmp2 = {
+				{inner0, borderColor, __t(v2fzero)},
+				{outer0, borderColor, __t(n0)},
+				{outer1, borderColor, __t(n0)}
+			};
+			*cursor++ = tmp2;
+		}
+	}
+
+	m_nBufferCount += vertex_count;
+
+	m_bDirty = true;
+
+	free(extrude);
+}
+
+void CCDrawNode::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
+{
+	unsigned int vertex_count = 2 * 3;
+	ensureCapacity( vertex_count );
+	ccColor4B col = ccc4BFromccc4F( color );
+	ccV2F_C4F_T2F_Triangle triangle =
+	{
+		{ vertex2( p1.x, p1.y), color, __t( v2fzero) },
+		{ vertex2( p2.x, p2.y), color, __t( v2fzero ) },
+		{ vertex2( p3.x, p3.y), color, __t( v2fzero ) }
+	};
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+	triangles[0] = triangle;
+	m_nBufferCount += vertex_count;
+	m_bDirty = true;
+	return;
+}
+
+void CCDrawNode::drawTriangle( const ccV2F_C4F_T2F &p1, const ccV2F_C4F_T2F &p2, const ccV2F_C4F_T2F &p3 )
+{
+	unsigned int vertex_count = 2 * 3;
+	ensureCapacity( vertex_count );
+	ccV2F_C4F_T2F_Triangle triangle = { p1, p2, p3 };
+	ccV2F_C4F_T2F_Triangle *triangles = (ccV2F_C4F_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+	triangles[0] = triangle;
+	m_nBufferCount += vertex_count;
+	m_bDirty = true;
+	return;
 }
 
 void CCDrawNode::clear()
@@ -441,3 +785,4 @@ void CCDrawNode::setBlendFunc(const ccBlendFunc &blendFunc)
 }
 
 NS_CC_END
+

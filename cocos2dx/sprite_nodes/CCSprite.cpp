@@ -267,31 +267,6 @@ bool CCSprite::initWithSpriteFrameName(const char *pszSpriteFrameName)
     return initWithSpriteFrame(pFrame);
 }
 
-// XXX: deprecated
-/*
-CCSprite* CCSprite::initWithCGImage(CGImageRef pImage)
-{
-    // todo
-    // because it is deprecated, so we do not implement it
-
-    return NULL;
-}
-*/
-
-/*
-CCSprite* CCSprite::initWithCGImage(CGImageRef pImage, const char *pszKey)
-{
-    CCAssert(pImage != NULL);
-
-    // XXX: possible bug. See issue #349. New API should be added
-    CCTexture2D *pTexture = CCTextureCache::sharedTextureCache()->addCGImage(pImage, pszKey);
-
-    const CCSize& size = pTexture->getContentSize();
-    CCRect rect = CCRectMake(0 ,0, size.width, size.height);
-
-    return initWithTexture(texture, rect);
-}
-*/
 
 CCSprite::CCSprite(void)
 : m_bShouldBeHidden(false),

@@ -33,6 +33,10 @@
 #include "base_nodes/CCNode.h"
 #include "ccTypes.h"
 
+#include "tess.h"
+#include "vector"
+using namespace std;
+
 NS_CC_BEGIN
 
 /** CCDrawNode
@@ -49,12 +53,12 @@ protected:
     
     unsigned int    m_uBufferCapacity;
     GLsizei         m_nBufferCount;
-    ccV2F_C4B_T2F   *m_pBuffer;
+    ccV2F_C4F_T2F   *m_pBuffer;
     
     ccBlendFunc     m_sBlendFunc;
     
     bool            m_bDirty;
-    
+
 public:
     static CCDrawNode* create();
     virtual ~CCDrawNode();
@@ -70,6 +74,11 @@ public:
     
 	/** draw a polygon with a fill color and line color */
 	void drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor);
+	void drawPolygon(ccV2F_C4F_T2F *verts, unsigned int count, float borderWidth, const ccColor4F &borderColor);
+
+	void drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color );
+
+	void drawTriangle(  const ccV2F_C4F_T2F &p1, const ccV2F_C4F_T2F &p2, const ccV2F_C4F_T2F &p3 );
     
     /** Clear the geometry in the node's buffer. */
     void clear();
@@ -78,6 +87,13 @@ public:
     void setBlendFunc(const ccBlendFunc &blendFunc);
     
     CCDrawNode();
+
+public:
+	void drawAllPolygon();
+	void drawAllPolygon( vector<ccV2F_C4F_T2F> &coords );
+
+private:
+	GLUtesselator *tobj;
     
 private:
     void ensureCapacity(unsigned int count);

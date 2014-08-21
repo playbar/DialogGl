@@ -36,6 +36,7 @@ void main()																													\n\
 	// gl_FragColor = v_color*smoothstep(0.0, length(fwidth(v_texcoord)), 1.0 - length(v_texcoord));							\n\
 // #else																														\n\
 	gl_FragColor = v_color*step(0.0, 1.0 - length(v_texcoord));																\n\
+//	gl_FragColor = v_color;																									\n\
 // #endif																														\n\
 }																															\n\
 ";

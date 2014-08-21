@@ -94,6 +94,7 @@ public:
 	vector<Path> mPaths;
 
 	CCRect mBounds;
+	int mcharid;
 public:
 	Path mClipPath;
 };

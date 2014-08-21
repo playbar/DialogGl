@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "text_input_node/CCIMEDispatcher.h"
 #include "keypad_dispatcher/CCKeypadDispatcher.h"
 #include "support/CCPointExtension.h"
-#include "CCApplication.h"
+//#include "CCApplication.h"
 
 NS_CC_BEGIN
 
@@ -195,9 +195,29 @@ CCEGLView::~CCEGLView()
 
 }
 
+
+void CCEGLView::MakeCurrent( bool iscurrent )
+{
+	if ( iscurrent )
+	{ 
+		//hrcTmp = wglCreateContext( m_hDC );
+		bool re = wglMakeCurrent(m_hDC, m_hRC );
+		//GLenum __error = glGetError();
+		//char *szError = (char *)gluErrorString( __error );
+		//OutputDebugStringA( szError );
+
+	}
+	else
+	{
+		wglMakeCurrent( m_hDC, NULL );
+		//wglDeleteContext(hrcTmp );
+	}
+}
+
 bool CCEGLView::initGL()
 {
     m_hDC = GetDC(m_hWnd);
+	//m_hDC = GetDC( m_hParentWnd );
     SetupPixelFormat(m_hDC);
     //SetupPalette();
     m_hRC = wglCreateContext(m_hDC);
@@ -251,6 +271,8 @@ bool CCEGLView::initGL()
     // Enable point size by default on windows.
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
+	wglMakeCurrent(m_hDC, NULL);
+
     return true;
 }
 
@@ -280,6 +302,19 @@ bool CCEGLView::CreateGL(HWND hwnd )
 	}
 #endif
 	return bRet;
+}
+
+void CCEGLView::ShowView( bool bshow )
+{
+	ShowWindow(m_hWnd, bshow );
+}
+
+void CCEGLView::eglMoveWindow( int left, int top, int cx, int cy )
+{
+	 CCEGLViewProtocol::setFrameSize( cx, cy );
+	resize( cx, cy);
+	SetWindowPos(m_hWnd, 0, left, top, cx, cy, SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	return;
 }
 
 void CCEGLView::MsgLBtnDown( UINT nFlags, long x, long y )
@@ -325,8 +360,7 @@ void CCEGLView::MsgLBtnUp( UINT nFlags, long x, long y )
 	}
 }
 
-
-bool CCEGLView::Create()
+bool CCEGLView::Create( HWND hwnd )
 {
     bool bRet = false;
     do
@@ -362,35 +396,100 @@ bool CCEGLView::Create()
             WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,    // Extended Style For The Window
             kWindowClassName,                                    // Class Name
             wszBuf,                                                // Window Title
-            WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+            //WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+			WS_CHILD,        // Defined Window Style
             0, 0,                                                // Window Position
             //TODO: Initializing width with a large value to avoid getting a wrong client area by 'GetClientRect' function.
-            1000,                                               // Window Width
-            1000,                                               // Window Height
-            NULL,                                                // No Parent Window
+            100,                                               // Window Width
+            100,                                               // Window Height
+            hwnd,                                                // No Parent Window
             NULL,                                                // No Menu
             hInstance,                                            // Instance
             NULL );
 
         CC_BREAK_IF(! m_hWnd);
 
+		m_hParentWnd = hwnd;
+
         bRet = initGL();
 		if(!bRet) destroyGL();
         CC_BREAK_IF(!bRet);
+
+		//ShowWindow( m_hWnd, true );
 
         s_pMainWindow = this;
         bRet = true;
     } while (0);
 
-#if(_MSC_VER >= 1600)
-    m_bSupportTouch = CheckTouchSupport();
-    if(m_bSupportTouch)
-	{
-	    m_bSupportTouch = (s_pfRegisterTouchWindowFunction(m_hWnd, 0) != 0);
-    }
-#endif /* #if(_MSC_VER >= 1600) */
-
     return bRet;
+}
+
+void CCEGLView::CreateView( HWND hwnd, int left, int top, int width, int height )
+{
+	bool bRet = false;
+	do
+	{
+		CC_BREAK_IF(m_hWnd);
+
+		HINSTANCE hInstance = GetModuleHandle( NULL );
+		WNDCLASS  wc;        // Windows Class Structure
+
+		// Redraw On Size, And Own DC For Window.
+		wc.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wc.lpfnWndProc    = _WindowProc;                    // WndProc Handles Messages
+		wc.cbClsExtra     = 0;                              // No Extra Window Data
+		wc.cbWndExtra     = 0;                                // No Extra Window Data
+		wc.hInstance      = hInstance;                        // Set The Instance
+		wc.hIcon          = LoadIcon( NULL, IDI_WINLOGO );    // Load The Default Icon
+		wc.hCursor        = LoadCursor( NULL, IDC_ARROW );    // Load The Arrow Pointer
+		wc.hbrBackground  = NULL;                           // No Background Required For GL
+		wc.lpszMenuName   = m_menu;                         //
+		wc.lpszClassName  = kWindowClassName;               // Set The Class Name
+
+		CC_BREAK_IF(! RegisterClass(&wc) && 1410 != GetLastError());
+
+		// center window position
+		RECT rcDesktop;
+		GetWindowRect(GetDesktopWindow(), &rcDesktop);
+
+		WCHAR wszBuf[50] = {0};
+		MultiByteToWideChar(CP_UTF8, 0, m_szViewName, -1, wszBuf, sizeof(wszBuf));
+
+		// create window
+		m_hWnd = CreateWindowEx(
+			WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,    // Extended Style For The Window
+			kWindowClassName,                                    // Class Name
+			wszBuf,                                                // Window Title
+			//WS_CAPTION | WS_POPUPWINDOW | WS_MINIMIZEBOX,        // Defined Window Style
+			WS_CHILD,        // Defined Window Style
+			0, 0,                                                // Window Position
+			//TODO: Initializing width with a large value to avoid getting a wrong client area by 'GetClientRect' function.
+			width,                                               // Window Width
+			height,                                               // Window Height
+			hwnd,                                                // No Parent Window
+			NULL,                                                // No Menu
+			hInstance,                                            // Instance
+			NULL );
+
+		CC_BREAK_IF(! m_hWnd);
+
+		m_hParentWnd = hwnd;
+
+		bRet = initGL();
+		if(!bRet) destroyGL();
+		CC_BREAK_IF(!bRet);
+
+		//ShowWindow( m_hWnd, true );
+
+		s_pMainWindow = this;
+		bRet = true;
+	} while (0);
+
+	CCEGLViewProtocol::setFrameSize( width, height );
+	resize( width, height);
+	SetWindowPos(m_hWnd, 0, left, top, width, height, SWP_NOCOPYBITS | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	return;
+
 }
 
 LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -467,12 +566,12 @@ LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         switch (wParam)
         {
-        case SIZE_RESTORED:
-            CCApplication::sharedApplication()->applicationWillEnterForeground();
-            break;
-        case SIZE_MINIMIZED:
-            CCApplication::sharedApplication()->applicationDidEnterBackground();
-            break;
+        //case SIZE_RESTORED:
+        //    CCApplication::sharedApplication()->applicationWillEnterForeground();
+        //    break;
+        //case SIZE_MINIMIZED:
+        //    CCApplication::sharedApplication()->applicationDidEnterBackground();
+        //    break;
         }
         break;
     case WM_KEYDOWN:
@@ -540,7 +639,13 @@ LRESULT CCEGLView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
         PAINTSTRUCT ps;
         BeginPaint(m_hWnd, &ps);
+
+		MakeCurrent( true );
+		CCDirector::sharedDirector()->drawScene();
+		MakeCurrent( false );
+
         EndPaint(m_hWnd, &ps);
+		
         break;
 
     case WM_CLOSE:

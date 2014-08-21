@@ -68,25 +68,45 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	ScreenToClient(rect);
 
 	eglView = CCEGLView::sharedOpenGLView();
-	eglView->CreateGL( this->m_hWnd );
-	eglView->setViewName("HelloCpp");
-	eglView->setFrameSize( 800, 600 );
-
-	//drawNode = CCDrawNode::create();
-	//drawNode->drawDot( ccp( 100, 100 ), 40, ccc4f( 0.1, 0.2, 0.1, 0.3 ));
-	//CCDirector *pDirector = ;
+	eglView->CreateView( m_hWnd, 0, 0, 821, 586 );
+	eglView->ShowView( true );
 	CCDirector::sharedDirector()->setOpenGLView( eglView );
-	//pDirector->setOpenGLView( eglView );
-	//pDirector->initScene();
-	//CCSize frameSize = eglView->getFrameSize();
+	CCDirector::sharedDirector()->initScene();
 
-	mMainLayer = MainLayer::create();
-	//mMainLayer->retain();
-	//pDirector->addNode( mMainLayer );
+
+	eglView->MakeCurrent( true );
+	drawNode = CCDrawNode::create();
 	
-	//mBwGLView.Create( this->GetDC()->GetSafeHdc() );
-	//mBwGLView.OnSize(0, rect.Width(), rect.Height() );
-	//openGLControl.Create(rect,this);
+	ccV2F_C4F_T2F vct[4] = 
+	{
+		{ {100, 100},{ 1, 0, 0, 1 }, {0, 0 } },
+		{ {200, 200},{0, 1, 0, 1},   {0, 0 } },
+		{ {300, 100}, {0, 0, 1, 1}, {0, 0}},
+		{ {200, 0}, { 1, 1, 0, 1}, { 0, 0 } }
+	};
+	//vct[1] = { {200, 200}, {0, 0.5, 0, 1}, {0, 0}};
+	//vct[2] = 
+	//vct[3] = { {200, 0}, { 0, 1, 0, 1}, { 0, 0 } };
+	//drawNode->drawPolygon( vct, 4, 0, ccc4f( 0, 0, 0, 0) );
+	ccV2F_C4F_T2F p1 = { {100, 100},{ 1, 0, 0, 1 }, {0, 0 } };
+	ccV2F_C4F_T2F p2 = { {200, 200},{0, 1, 0, 1},   {0, 0 } };
+	ccV2F_C4F_T2F p3 = { {300, 100}, {0, 0, 1, 1}, {0, 0}};
+	drawNode->setPosition( 100, 100 );
+	drawNode->drawTriangle( p1, p2, p3 );
+
+	//drawNode->setPosition( 300, 300 );
+	//drawNode->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
+	//drawNode->drawDot( ccp( 200, 200 ), 50, ccc4f( 1.0, 0, 0, 1.0f ));
+	//drawNode->drawAllPolygon();
+	//drawNode->endPolygon();
+	//eglView->AddNode( drawNode );
+
+	CCDirector::sharedDirector()->addNode( drawNode );
+	//CCSprite *sprite = CCSprite::create( "test.png" );
+	//sprite->setPosition( ccp(100, 300) );
+	//sprite->setAnchorPoint( ccp( 0, 0.5 ));
+	//CCDirector::sharedDirector()->addNode( sprite );
+	eglView->MakeCurrent( false );
 
 	return TRUE;  // Geben Sie TRUE zur點k, au遝r ein Steuerelement soll den Fokus erhalten
 }
@@ -97,24 +117,6 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 void COpenGLDialogDlg::OnPaint() 
 {
-	//char pchTmp[ 256 ] = {0};
-	//sprintf( pchTmp, "%s, %d", __FUNCTION__, __LINE__ );
-	//OutputDebugStringA( pchTmp );
-	//mBwGLView.OnPaint(); 
-	//CCDirector::sharedDirector()->drawScene();
-
-	//mMainLayer->draw();
-	ccDrawLine( ccp( 10, 10), ccp( 200, 200 ) );
-	//mMainLayer->visit();
-
-	
-
-	//ccDrawColor4F( 0.1, 0.4, 0.2, 0.3 );
-	//ccDrawPoint( ccp( 30, 30 ));
-	eglView->swapBuffers();
-	//drawNode->draw();
-	//return;
-
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // Ger鋞ekontext f黵 Zeichnen

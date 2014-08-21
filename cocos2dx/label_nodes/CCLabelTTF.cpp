@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "CCDirector.h"
 #include "shaders/CCGLProgram.h"
 #include "shaders/CCShaderCache.h"
-#include "CCApplication.h"
+//#include "CCApplication.h"
 
 NS_CC_BEGIN
 

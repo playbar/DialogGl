@@ -259,6 +259,16 @@ typedef struct _ccV2F_C4B_T2F_Triangle
 	ccV2F_C4B_T2F c;
 } ccV2F_C4B_T2F_Triangle;
 
+typedef struct _ccV2F_C4F_T2F_Triangle
+{
+	//! Point A
+	ccV2F_C4F_T2F a;
+	//! Point B
+	ccV2F_C4F_T2F b;
+	//! Point B
+	ccV2F_C4F_T2F c;
+} ccV2F_C4F_T2F_Triangle;
+
 //! A Quad of ccV2F_C4B_T2F
 typedef struct _ccV2F_C4B_T2F_Quad
 {

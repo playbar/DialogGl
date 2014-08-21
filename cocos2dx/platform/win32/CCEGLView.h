@@ -35,6 +35,7 @@ NS_CC_BEGIN
 typedef LRESULT (*CUSTOM_WND_PROC)(UINT message, WPARAM wParam, LPARAM lParam, BOOL* pProcessed);
 
 class CCEGL;
+class CCScene;
 
 class CC_DLL CCEGLView : public CCEGLViewProtocol
 {
@@ -53,16 +54,22 @@ public:
     void setWndProc(CUSTOM_WND_PROC proc);
 
 	bool CreateGL(HWND hwnd );
+	void ShowView( bool bshow );
+	void eglMoveWindow( int left, int top, int cx, int cy );
 
 	void MsgLBtnDown( UINT nFlags, long x, long y );
 	void MsgLBtnUp( UINT nFlags, long x, long y );
 	//void MsgMouseMove( 
+	virtual bool Create( HWND hwnd );
+	void CreateView( HWND hwnd, int left, int top, int width, int height );
+	void MakeCurrent( bool iscurrent );
 
- virtual bool Create();
+
 private:
    
 	
     bool initGL();
+	
     void destroyGL();
 public:
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -94,8 +101,10 @@ protected:
 private:
     bool m_bCaptured;
     HWND m_hWnd;
+	HWND m_hParentWnd;
     HDC  m_hDC;
     HGLRC m_hRC;
+	HGLRC hrcTmp;
     LPFN_ACCELEROMETER_KEYHOOK m_lpfnAccelerometerKeyHook;
     bool m_bSupportTouch;
 
