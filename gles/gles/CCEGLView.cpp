@@ -346,39 +346,6 @@ void CCEGLView::setProjection(ccDirectorProjection kProjection)
 	ccSetProjectionMatrixDirty();
 }
 
-//
-//void CCEGLView::MsgLBtnDown( UINT nFlags, long x, long y )
-//{
-//
-//	if (m_pDelegate && MK_LBUTTON == nFlags)
-//	{
-//		POINT point = { x, y };
-//		CCPoint pt(point.x, point.y);
-//		pt.x /= m_fFrameZoomFactor;
-//		pt.y /= m_fFrameZoomFactor;
-//		CCPoint tmp = ccp(pt.x, m_obScreenSize.height - pt.y);
-//		if (m_obViewPortRect.equals(CCRectZero) || m_obViewPortRect.containsPoint(tmp))
-//		{
-//			m_bCaptured = true;
-//			int id = 0;
-//			handleTouchesBegin(1, &id, &pt.x, &pt.y);
-//		}
-//	}
-//}
-//
-//void CCEGLView::MsgLBtnUp( UINT nFlags, long x, long y )
-//{
-//	if (m_bCaptured)
-//	{
-//		POINT point = {x, y };
-//		CCPoint pt(point.x, point.y);
-//		int id = 0;
-//		pt.x /= m_fFrameZoomFactor;
-//		pt.y /= m_fFrameZoomFactor;
-//		handleTouchesEnd(1, &id, &pt.x, &pt.y);
-//		m_bCaptured = false;
-//	}
-//}
 
 bool CCEGLView::Create()
 {
