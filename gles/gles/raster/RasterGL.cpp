@@ -22,11 +22,12 @@
 
 #include "RasterGL.h"
 #include "CCPointExtension.h"
-#include "CCShaderCache.h"
-#include "CCDrawingPrimitives.h"
-//#include "CCGL.h"
 #include "gl/glew.h"
 
+const GLchar * ccPositionColorLengthTexture_frag =
+#include "ccShader_PositionColorLengthTexture_frag.h"
+const GLchar * ccPositionColorLengthTexture_vert =
+#include "ccShader_PositionColorLengthTexture_vert.h"
 
 // ccVertex2F == CGPoint in 32-bits, but not in 64-bits (OS X)
 // that's why the "v2f" functions are needed
@@ -102,9 +103,22 @@ RasterGL::RasterGL()
 , m_nBufferCount(0)
 , m_pBuffer(NULL)
 , m_bDirty(false)
+, mProgram( 0 )
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
+	loadShaders();
+}
+
+void RasterGL::loadShaders()
+{
+	mProgram = new CCGLProgram();
+	mProgram->initWithVertexShaderByteArray(ccPositionColorLengthTexture_vert, ccPositionColorLengthTexture_frag);
+	mProgram->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+	mProgram->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+	mProgram->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+	mProgram->link();
+	mProgram->updateUniforms();
 }
 
 RasterGL::~RasterGL()
@@ -114,25 +128,12 @@ RasterGL::~RasterGL()
     
     glDeleteBuffers(1, &m_uVbo);
     m_uVbo = 0;
-    
-#if CC_TEXTURE_ATLAS_USE_VAO      
-    glDeleteVertexArrays(1, &m_uVao);
-    m_uVao = 0;
-#endif
 }
 
 RasterGL* RasterGL::create()
 {
     RasterGL* pRet = new RasterGL();
-    if (pRet && pRet->init())
-    {
-        pRet->autorelease();
-    }
-    else
-    {
-        CC_SAFE_DELETE(pRet);
-    }
-    
+    pRet->init();
     return pRet;
 }
 
@@ -150,14 +151,9 @@ bool RasterGL::init()
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 
-    setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionLengthTexureColor));
+    //setShaderProgram( mProgram );
     
     ensureCapacity(512);
-    
-#if CC_TEXTURE_ATLAS_USE_VAO    
-    glGenVertexArrays(1, &m_uVao);
-    ccGLBindVAO(m_uVao);
-#endif
     
     glGenBuffers(1, &m_uVbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
@@ -174,10 +170,6 @@ bool RasterGL::init()
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-#if CC_TEXTURE_ATLAS_USE_VAO 
-    ccGLBindVAO(0);
-#endif
-    
     m_bDirty = true;
     
     return true;
@@ -191,9 +183,7 @@ void RasterGL::render()
         glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
         m_bDirty = false;
     }
-#if CC_TEXTURE_ATLAS_USE_VAO     
-    ccGLBindVAO(m_uVao);
-#else
+
     ccGLEnableVertexAttribs(kCCVertexAttribFlag_PosColorTex);
     glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
     // vertex
@@ -204,7 +194,6 @@ void RasterGL::render()
     
     // texcood
     glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
-#endif
 
     glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -216,8 +205,10 @@ void RasterGL::draw()
 {
     ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
     
-    getShaderProgram()->use();
-    getShaderProgram()->setUniformsForBuiltins();
+    //getShaderProgram()->use();
+	mProgram->use();
+	mProgram->setUniformsForBuiltins();
+    //getShaderProgram()->setUniformsForBuiltins();
     
     render();
 }
@@ -494,7 +485,7 @@ void __stdcall endCallback( )
 		pdata[i].y = g_pintArray[i]->y;
 	}
 
-	ccDrawSolidPoly( pdata, count, green );
+	//ccDrawSolidPoly( pdata, count, green );
 	delete []pdata;
 	std::vector<CCPoint*>::iterator iter = g_pintArray.begin();
 	std::vector<CCPoint*>::iterator end = g_pintArray.end();

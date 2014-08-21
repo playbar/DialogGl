@@ -323,43 +323,11 @@
 				Name="raster"
 				>
 				<File
-					RelativePath=".\gles\raster\CCDrawingPrimitives.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCDrawingPrimitives.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCGrabber.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCGrabber.h"
-					>
-				</File>
-				<File
 					RelativePath=".\gles\raster\CCNode.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\gles\raster\CCNode.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCTexture2D.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCTexture2D.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCTexturePVR.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\raster\CCTexturePVR.h"
 					>
 				</File>
 				<File
@@ -391,79 +359,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\gles\shader\ccShader_Position_uColor_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_Position_uColor_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionColor_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionColor_vert.h"
-					>
-				</File>
-				<File
 					RelativePath=".\gles\shader\ccShader_PositionColorLengthTexture_frag.h"
 					>
 				</File>
 				<File
 					RelativePath=".\gles\shader\ccShader_PositionColorLengthTexture_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTexture_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTexture_uColor_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTexture_uColor_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTexture_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTextureA8Color_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTextureA8Color_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTextureColor_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTextureColor_vert.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShader_PositionTextureColorAlphaTest_frag.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\CCShaderCache.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\CCShaderCache.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShaders.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\shader\ccShaders.h"
 					>
 				</File>
 			</Filter>
@@ -487,14 +387,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\gles\support\CCCamera.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCCamera.h"
-					>
-				</File>
-				<File
 					RelativePath=".\gles\support\ccCArray.cpp"
 					>
 				</File>
@@ -511,14 +403,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\gles\support\CCDictionary.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCDictionary.h"
-					>
-				</File>
-				<File
 					RelativePath=".\gles\support\CCFileUtils.cpp"
 					>
 				</File>
@@ -532,22 +416,6 @@
 				</File>
 				<File
 					RelativePath=".\gles\support\CCGeometry.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCGrabber.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCGrabber.h"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCGrid.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\gles\support\CCGrid.h"
 					>
 				</File>
 				<File

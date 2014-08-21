@@ -7,8 +7,6 @@
 //#include "cctypes.h"
 #include "set"
 
-#include "CCDrawingPrimitives.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -135,11 +133,12 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	circle[17].x = 100;
 	circle[17].y = 50;
 
-	pRaster->setPosition( 300, 300 );
-	pRaster->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
-	pRaster->beginPolygon();
-	pRaster->drawAllPolygon();
-	pRaster->endPolygon();
+	pRaster->drawDot( ccp( 200, 200), 50, ccc4f( 1, 0, 1, 1 ) );
+	
+	//pRaster->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
+	//pRaster->beginPolygon();
+	//pRaster->drawAllPolygon();
+	//pRaster->endPolygon();
 
 	//drawNode->drawDot( ccp( 100, 100 ), 40, ccc4f( 1, 0, 1, 1 ));
 	//CCDirector *pDirector = ;
@@ -166,7 +165,8 @@ void COpenGLDialogDlg::OnPaint()
 	//ccDrawLine( ccp(100, 100), ccp( 800, 600) );
 	//ccDrawQuadBezier( ccp(0, 600), ccp( 400, 0), ccp( 800, 600), 6);
 	//drawNode->draw();
-	pRaster->visit();
+	//pRaster->visit();
+	pRaster->draw();
 	eglView->swapBuffers();
 
 	if (IsIconic())

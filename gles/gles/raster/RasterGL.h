@@ -42,7 +42,7 @@
  
  @since v2.1
  */
-class CC_DLL RasterGL : public CCNode
+class CC_DLL RasterGL //: public CCNode
 {
 protected:
     GLuint      m_uVao;
@@ -82,6 +82,8 @@ public:
     
     RasterGL();
 
+	void loadShaders();
+
 public:
 	void beginPolygon();
 	void endPolygon();
@@ -93,6 +95,9 @@ private:
 private:
     void ensureCapacity(unsigned int count);
     void render();
+
+private:
+	CCGLProgram *mProgram;
 };
 
 #endif // __CCDRAWNODES_CCDRAW_NODE_H__

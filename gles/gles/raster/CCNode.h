@@ -701,27 +701,6 @@ public:
 
     /// @} end of Children and Parent
     
-
-    
-    /// @{
-    /// @name Grid object for effects
-    
-    /**
-     * Returns a grid object that is used when applying effects
-     * 
-     * @return A CCGrid object that is used when applying effects
-     */
-    virtual CCGridBase* getGrid();
-    /**
-     * Changes a grid object that is used when applying effects
-     *
-     * @param A CCGrid object that is used when applying effects
-     */
-    virtual void setGrid(CCGridBase *pGrid);
-    
-    /// @} end of Grid
-    
-    
     /// @{
     /// @name Tag & User data
     
@@ -832,19 +811,6 @@ public:
     virtual void setShaderProgram(CCGLProgram *pShaderProgram);
     /// @} end of Shader Program
     
-    
-    /**
-     * Returns a camera object that lets you move the node using a gluLookAt
-     *
-     * @code
-     * CCCamera* camera = node->getCamera();
-     * camera->setEyeXYZ(0, 0, 415/2);
-     * camera->setCenterXYZ(0, 0, 0);
-     * @endcode
-     *
-     * @return A CCCamera object that lets you move the node using a gluLookAt
-     */
-    virtual CCCamera* getCamera();
     
     /** 
      * Returns whether or not the node accepts event callbacks.
@@ -1337,10 +1303,6 @@ protected:
     CCAffineTransform m_sAdditionalTransform; ///< transform
     CCAffineTransform m_sTransform;     ///< transform
     CCAffineTransform m_sInverse;       ///< transform
-    
-    CCCamera *m_pCamera;                ///< a camera
-    
-    CCGridBase *m_pGrid;                ///< a grid
     
     int m_nZOrder;                      ///< z-order value that affects the draw order
     

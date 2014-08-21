@@ -26,16 +26,7 @@ THE SOFTWARE.
 ****************************************************************************/
 #include "CCString.h"
 #include "CCNode.h"
-#include "CCGrid.h"
 #include "CCPointExtension.h"
-//#include "support/TransformUtils.h"
-#include "CCCamera.h"
-//#include "effects/CCGrid.h"
-//#include "CCDirector.h"
-//#include "CCScheduler.h"
-//#include "touch_dispatcher/CCTouch.h"
-//#include "actions/CCActionManager.h"
-//#include "script_support/CCScriptSupport.h"
 #include "CCGLProgram.h"
 #include "TransformUtils.h"
 #include "cclog.h"
@@ -66,10 +57,8 @@ CCNode::CCNode(void)
 , m_obAnchorPoint(CCPointZero)
 , m_obContentSize(CCSizeZero)
 , m_sAdditionalTransform(CCAffineTransformMakeIdentity())
-, m_pCamera(NULL)
 // children (lazy allocs)
 // lazy alloc
-, m_pGrid(NULL)
 , m_nZOrder(0)
 , m_pChildren(NULL)
 , m_pParent(NULL)
@@ -99,9 +88,7 @@ CCNode::~CCNode(void)
     unregisterScriptHandler();
 
     // attributes
-    CC_SAFE_RELEASE(m_pCamera);
 
-    CC_SAFE_RELEASE(m_pGrid);
     CC_SAFE_RELEASE(m_pShaderProgram);
     CC_SAFE_RELEASE(m_pUserObject);
 
@@ -316,33 +303,6 @@ unsigned int CCNode::getChildrenCount(void)
 {
     return m_pChildren ? m_pChildren->count() : 0;
 }
-
-/// camera getter: lazy alloc
-CCCamera* CCNode::getCamera()
-{
-    if (!m_pCamera)
-    {
-        m_pCamera = new CCCamera();
-    }
-    
-    return m_pCamera;
-}
-
-
-/// grid getter
-CCGridBase* CCNode::getGrid()
-{
-    return m_pGrid;
-}
-
-/// grid setter
-void CCNode::setGrid(CCGridBase* pGrid)
-{
-    CC_SAFE_RETAIN(pGrid);
-    CC_SAFE_RELEASE(m_pGrid);
-    m_pGrid = pGrid;
-}
-
 
 /// isVisible getter
 bool CCNode::isVisible()
@@ -779,11 +739,6 @@ void CCNode::visit()
     }
     kmGLPushMatrix();
 
-     if (m_pGrid && m_pGrid->isActive())
-     {
-         m_pGrid->beforeDraw();
-     }
-
     this->transform();
 
     CCNode* pNode = NULL;
@@ -826,12 +781,6 @@ void CCNode::visit()
 
     // reset for next frame
     m_uOrderOfArrival = 0;
-
-     if (m_pGrid && m_pGrid->isActive())
-     {
-         m_pGrid->afterDraw(this);
-    }
- 
     kmGLPopMatrix();
 }
 
@@ -856,21 +805,6 @@ void CCNode::transform()
     transfrom4x4.mat[14] = m_fVertexZ;
 
     kmGLMultMatrix( &transfrom4x4 );
-
-
-    // XXX: Expensive calls. Camera should be integrated into the cached affine matrix
-    if ( m_pCamera != NULL && !(m_pGrid != NULL && m_pGrid->isActive()) )
-    {
-        bool translate = (m_obAnchorPointInPoints.x != 0.0f || m_obAnchorPointInPoints.y != 0.0f);
-
-        if( translate )
-            kmGLTranslatef(RENDER_IN_SUBPIXEL(m_obAnchorPointInPoints.x), RENDER_IN_SUBPIXEL(m_obAnchorPointInPoints.y), 0 );
-
-        m_pCamera->locate();
-
-        if( translate )
-            kmGLTranslatef(RENDER_IN_SUBPIXEL(-m_obAnchorPointInPoints.x), RENDER_IN_SUBPIXEL(-m_obAnchorPointInPoints.y), 0 );
-    }
 
 }
 
