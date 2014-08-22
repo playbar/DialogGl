@@ -67,9 +67,10 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 
 	eglView = EGLView::sharedOpenGLView();
-	eglView->CreateGL( this->m_hWnd );
+	//eglView->CreateGL( this->m_hWnd );
 	//eglView->Create( this->m_hWnd );
-	eglView->setFrameSize( 800, 600 );
+	//eglView->setFrameSize( 800, 600 );
+	eglView->CreateView( m_hWnd, 0, 0, 800, 600 );
 	eglView->setGLDefaultValues();
 
 	pRaster = RasterGL::create();

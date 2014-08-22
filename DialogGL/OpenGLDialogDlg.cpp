@@ -92,7 +92,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	ccV2F_C4F_T2F p2 = { {200, 200},{0, 1, 0, 1},   {0, 0 } };
 	ccV2F_C4F_T2F p3 = { {300, 100}, {0, 0, 1, 1}, {0, 0}};
 	drawNode->setPosition( 100, 100 );
-	drawNode->drawTriangle( p1, p2, p3 );
+	//drawNode->drawTriangle( p1, p2, p3 );
 
 	//drawNode->setPosition( 300, 300 );
 	//drawNode->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
@@ -100,6 +100,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//drawNode->drawAllPolygon();
 	//drawNode->endPolygon();
 	//eglView->AddNode( drawNode );
+	drawNode->drawSegment(ccp( 0, 0,), ccp( 200, 200), 5, ccc4f(1, 1, 0, 1 ) );
 
 	CCDirector::sharedDirector()->addNode( drawNode );
 	//CCSprite *sprite = CCSprite::create( "test.png" );
