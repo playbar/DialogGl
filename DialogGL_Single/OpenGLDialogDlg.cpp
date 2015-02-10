@@ -65,7 +65,6 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	this->GetWindowRect( rect );
 	ScreenToClient(rect);
 
-
 	eglView = EGLView::sharedOpenGLView();
 	//eglView->CreateGL( this->m_hWnd );
 	//eglView->Create( this->m_hWnd );
@@ -81,8 +80,11 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	color->a = 1.0;
 	pctx->mpFileStyle.mpColor = color;
 	pctx->beginPath();
-	pctx->arc( 300, 300, 150, 0, 1.65, false );
-	pctx->stroke();
+	//pctx->moveto( 20, 20 );
+	//pctx->quadraticCurveTo( 20, 100, 200, 20 );
+	//pctx->stroke();
+	//pctx->arc( 300, 300, 150, 0, 1.65, true );
+	//pctx->stroke();
 	//pctx->rect( 120, 120, 150, 100 );
 	//pctx->fill();
 	//pctx->fillRect( 120, 120, 100, 100 );
@@ -100,18 +102,26 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//pctx->lineto( 300, 150 );
 	//pctx->stroke();
 
-	//pctx->beginPath();
-	//pctx->mLineWidth = 4;
+	pctx->beginPath();
+	pctx->mLineWidth = 2;
 	////ccColor4F *color1 = new ccColor4F;
 	//color->a = 1.0;
 	//color->r = 0.0;
 	//color->b = 1.0;
 	//color->g = 1.0;
 	//pctx->mpFileStyle.mpColor = color;
-	//pctx->moveto( 300, 300 );
-	//pctx->lineto( 400, 300 );
+	pctx->moveto( 80, 240 );
+	pctx->lineto( 140, 240 );
+	pctx->lineto( 110, 60 );
+	pctx->lineto( 240, 50 );
+	pctx->lineto( 20, 20 );
+	pctx->lineto( 0, 70 );
+	pctx->lineto( 100, 50 );
+	pctx->lineto( 80, 240 );
+	
 	//pctx->closePath();
-	//pctx->stroke();
+	pctx->stroke();
+	//pctx->fill();
 	
 	
 	

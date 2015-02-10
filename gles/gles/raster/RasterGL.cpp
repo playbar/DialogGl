@@ -109,6 +109,7 @@ XContext::XContext()
 {
 	pCurPath = NULL;
 	mEgPaths = NULL;
+	mLineWidth = 1;
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 	loadShaders();
@@ -226,7 +227,7 @@ void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, 
 	pCurPath->starty = y;
 
 	GLfloat angle = sAngle;
-	for ( angle = sAngle; angle <= eAngle; angle += 0.04f )
+	for ( angle = sAngle; angle <= eAngle; angle += 0.02f )
 	{
 		pCurPath->count++;
 		float x1 = 0.0;
@@ -334,7 +335,31 @@ void XContext::restore()
 // p2
 void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 {
-
+	pCurPath->cmdType = CTX_QUADRATICCURVETO;
+	if ( pCurPath->pEdges == NULL )
+	{
+		pCurPath->pEdges = new EgEdge();
+		memset( pCurPath->pEdges, 0, sizeof( EgEdge ));
+		pCurPath->pCurEdge = pCurPath->pEdges;
+		pCurPath->pCurEdge->cpx = cpx;
+		pCurPath->pCurEdge->cpy = cpy;
+		pCurPath->pCurEdge->endx = x;
+		pCurPath->pCurEdge->endy = y;
+		pCurPath->pCurEdge->isLine = false;
+	}
+	else
+	{
+		EgEdge *p = new EgEdge();
+		pCurPath->pCurEdge->pNext = p;
+		pCurPath->pCurEdge = p;
+		memset( pCurPath->pCurEdge, 0, sizeof( EgEdge ) );
+		pCurPath->pCurEdge->cpx = cpx;
+		pCurPath->pCurEdge->cpy = cpy;
+		pCurPath->pCurEdge->endx = x;
+		pCurPath->pCurEdge->endy = y;
+		pCurPath->pCurEdge->isLine = false;
+	}
+	return;
 }
 
 //p3
@@ -505,6 +530,32 @@ void XContext::DrawCommand()
 			}
 			m_nBufferCount += vertex_count;
 			m_bDirty = true;
+		}
+		else if( pTmpPath->cmdType == CTX_QUADRATICCURVETO )
+		{
+			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+			EgEdge *p = pTmpPath->pEdges;
+			ccColor4F color = {1.0, 0, 0, 1 };
+
+			float t = 0.0f;
+			int segments = 10;
+			float x = pTmpPath->startx;
+			float y = pTmpPath->starty;
+			for ( int i = 0; i < segments; i++ )
+			{
+				float x1 = powf(1 - t, 2) * pTmpPath->startx + 2.0f * (1 - t) * t * p->cpx + t * t * p->endx;
+
+
+			}
+
+			while( p )
+			{
+				CCPoint to( p->endx, p->endy );
+				drawSegment( from, to, mLineWidth, *mpFileStyle.mpColor );
+				from.x = to.x;
+				from.y = to.y;
+				p = p->pNext;
+			}
 		}
 		pTmpPath = pTmpPath->pNext;
 	}
