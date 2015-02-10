@@ -225,11 +225,26 @@ void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, 
 	pCurPath->starty = y;
 
 	GLfloat angle = sAngle;
-	for ( angle = sAngle; angle <= eAngle; angle += 0.1f )
+	for ( angle = sAngle; angle <= eAngle; angle += 0.04f )
 	{
 		pCurPath->count++;
-		int x1 = radius * cos( angle ) + x;
-		int y1 = radius * sin( angle ) + y;
+		float x1 = 0.0;
+		float y1 = 0.0;
+		if ( counterclockwise )
+		{
+			x1 = radius * cos( angle ) + x;
+			y1 = radius * sin( angle ) + y;
+		}
+		else
+		{
+			x1 = radius * cos( angle ) + x;
+			y1 = radius * -sin( angle ) + y;
+		}
+		
+
+		//char chTmp[256];
+		//sprintf( chTmp, "x:%f, y:%f", x1, y1 );
+		//OutputDebugStringA( chTmp );
 		
 		EgEdge *p = new EgEdge();
 		if ( pCurPath->pEdges == NULL )
@@ -464,7 +479,7 @@ void XContext::DrawCommand()
 		}
 		else if( pTmpPath->cmdType == CTX_ARC )
 		{
-			unsigned int vertex_count = 2 * pTmpPath->count;
+			unsigned int vertex_count = 3 * pTmpPath->count;
 			ensureCapacity( vertex_count );
 			EgEdge *p = pTmpPath->pEdges;
 			int icout = 0;
@@ -481,9 +496,10 @@ void XContext::DrawCommand()
 				};
 				triangles[icout] = triangle;
 				icout++;
-				char chTmp[256];
-				sprintf( chTmp, "%d", icout );
-				OutputDebugStringA( chTmp );
+				//char chTmp[256];
+				//sprintf( chTmp, "-->%d, x:%f, y:%f, xx:%f, yy:%f", icout, p->endx, p->endy,
+				//	p->pNext->endx, p->pNext->endy );
+				//OutputDebugStringA( chTmp );
 				p = p->pNext;
 			}
 			m_nBufferCount += vertex_count;
