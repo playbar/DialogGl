@@ -39,14 +39,6 @@ using namespace std;
 
 #include "tess.h"
 
-/** CCDrawNode
- Node that draws dots, segments and polygons.
- Faster than the "drawing primitives" since they it draws everything in one single batch.
- 
- @since v2.1
- */
-
-
 enum Gradient_Type
 {
 	Gradient_Line = 0,

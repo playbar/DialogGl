@@ -74,31 +74,39 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	eglView->setGLDefaultValues();
 
 	pctx = XContext::create();
-	pctx->beginPath();
-	pctx->mLineWidth = 10;
 	ccColor4F *color = new ccColor4F;
-	color->a = 1.0;
-	color->r = 1.0;
+	color->r = 0.0;
 	color->b = 0;
 	color->g = 1.0;
-	pctx->mpFileStyle.mpColor = color;
-	pctx->moveto( 0, 0 );
-	pctx->lineto( 300, 150 );
-	pctx->stroke();
-
-	pctx->beginPath();
-	pctx->mLineWidth = 4;
-	//ccColor4F *color1 = new ccColor4F;
 	color->a = 1.0;
-	color->r = 0.0;
-	color->b = 1.0;
-	color->g = 1.0;
 	pctx->mpFileStyle.mpColor = color;
-	pctx->moveto( 300, 300 );
-	pctx->lineto( 400, 300 );
-	pctx->stroke();
+	pctx->fillRect( 120, 120, 100, 100 );
+
+	// »æÖÆÖ±Ïß
+	//pctx->beginPath();
+	//pctx->mLineWidth = 10;
+	//ccColor4F *color = new ccColor4F;
+	//color->a = 1.0;
+	//color->r = 1.0;
+	//color->b = 0;
+	//color->g = 1.0;
+	//pctx->mpFileStyle.mpColor = color;
+	//pctx->moveto( 0, 0 );
+	//pctx->lineto( 300, 150 );
+	//pctx->stroke();
+
+	//pctx->beginPath();
+	//pctx->mLineWidth = 4;
+	////ccColor4F *color1 = new ccColor4F;
+	//color->a = 1.0;
+	//color->r = 0.0;
+	//color->b = 1.0;
+	//color->g = 1.0;
+	//pctx->mpFileStyle.mpColor = color;
+	//pctx->moveto( 300, 300 );
+	//pctx->lineto( 400, 300 );
+	//pctx->stroke();
 	
-	//pctx->drawDot( ccp( 60, 200), 50, ccc4f( 1, 0, 1, 1 ) );
 	
 	
 	return TRUE;  

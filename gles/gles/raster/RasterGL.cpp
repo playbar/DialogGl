@@ -236,7 +236,28 @@ void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 //p3
 void XContext::fillRect( float x, float y, float width, float height )
 {
-
+	unsigned int vertex_count = 2 * 6;
+	ensureCapacity( vertex_count );
+	ccColor4F color = { 1.0, 1.0, 0, 1.0};
+	ccColor4B col = ccc4BFromccc4F( *mpFileStyle.mpColor );
+	ccV2F_C4B_T2F_Triangle triangle =
+	{
+		{ vertex2( x, y), col, __t( v2fzero) },
+		{ vertex2( x + width, y), col, __t( v2fzero ) },
+		{ vertex2( x, y + height), col, __t( v2fzero ) }
+	};
+	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+	//ccV2F_C4B_T2F_Triangle triangle = { a, b, c };
+	triangles[0] = triangle;
+	ccV2F_C4B_T2F_Triangle triangle1 =
+	{
+		{ vertex2( x + width, y), col, __t( v2fzero) },
+		{ vertex2( x, y + height), col, __t( v2fzero ) },
+		{ vertex2( x + width, y + height ), col, __t( v2fzero ) }
+	};
+	triangles[1] = triangle1;
+	m_nBufferCount += vertex_count;
+	m_bDirty = true;
 }
 
 void XContext::strokeRect( float x, float y, float width, float height )
