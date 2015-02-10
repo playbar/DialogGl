@@ -147,16 +147,6 @@ enum CMDType
 	CTX_MAX,
 };
 
-struct XCommand
-{
-	CMDType cmdType;
-	union 
-	{
-		XStrokeStyle strokeStyle;
-		XFillStyle   fillStyle;
-	};
-
-};
 
 struct EgEdge
 {
@@ -175,16 +165,13 @@ struct EgPath
 
 	EgEdge *pEdges;
 	EgEdge *pCurEdge;
+
 	EgPath *pNext;
+	CMDType cmdType;
 	ccV2F_C4B_T2F *mBuffer;
 	int count;
-
-	union 
-	{
-		XStrokeStyle *strokeStyle;
-		XFillStyle   *fillStyle;
-	};
-
+	XStrokeStyle *strokeStyle;
+	XFillStyle   *fillStyle;
 };
 
 

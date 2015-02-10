@@ -80,7 +80,9 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	color->g = 1.0;
 	color->a = 1.0;
 	pctx->mpFileStyle.mpColor = color;
-	pctx->fillRect( 120, 120, 100, 100 );
+	pctx->rect( 120, 120, 150, 100 );
+	pctx->fill();
+	//pctx->fillRect( 120, 120, 100, 100 );
 
 	// »æÖÆÖ±Ïß
 	//pctx->beginPath();

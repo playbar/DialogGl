@@ -106,6 +106,7 @@ XContext::XContext()
 , m_bDirty(false)
 , mProgram( 0 )
 {
+	pCurPath = NULL;
 	mEgPaths = NULL;
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
@@ -135,7 +136,7 @@ XContext::~XContext()
 
 void XContext::fill()
 {
-
+	DrawCommand();
 }
 
 void XContext::beginPath()
@@ -176,6 +177,7 @@ void XContext::moveto( float x, float y )
 	pCurPath->startx = x;
 	pCurPath->starty = y;
 	pCurPath->count++;
+	pCurPath->cmdType = CTX_MOVETO;
 
 }
 
@@ -214,6 +216,53 @@ void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, 
 
 void XContext::rect( float x, float y, float width, float height )
 {
+	if ( mEgPaths == NULL )
+	{
+		mEgPaths = new EgPath();
+		memset( mEgPaths, 0, sizeof( EgPath ) );
+		pCurPath = mEgPaths;
+		pCurPath->pCurEdge = NULL;
+		pCurPath->pEdges = NULL;
+	}
+	else
+	{
+		EgPath *path = new EgPath();
+		memset( path, 0, sizeof( EgPath ) );
+		pCurPath->pNext = path;
+		pCurPath = path;
+	}
+	if ( pCurPath->pEdges == NULL )
+	{
+		pCurPath->pEdges = new EgEdge();
+		memset( pCurPath->pEdges, 0, sizeof( EgEdge ));
+		pCurPath->pCurEdge = pCurPath->pEdges;
+	}
+	EgEdge *p1 = pCurPath->pCurEdge;
+	pCurPath->cmdType = CTX_RECT;
+	pCurPath->startx = x;
+	pCurPath->starty = y;
+	p1->cpx = x + width;
+	p1->cpy = y;
+	p1->endx = x + width;
+	p1->endy = y;
+	p1->isLine = true;
+
+	EgEdge * p2 = new EgEdge();
+	p1->pNext = p2;
+	p2->cpx = x;
+	p2->cpy = y + height;
+	p2->endx = x;
+	p2->endy = y + height;
+	p2->isLine = true;
+
+	EgEdge * p3 = new EgEdge();
+	p2->pNext = p3;
+	p3->pNext = NULL;
+	p3->cpx = x + width;
+	p3->cpy = y + height;
+	p3->endx = x + width;
+	p3->endy = y + height;
+	p3->isLine = true;
 
 }
 
@@ -334,18 +383,46 @@ void XContext::DrawCommand()
 	EgPath *pTmpPath = mEgPaths;
 	while( pTmpPath )
 	{
-		CCPoint from( pTmpPath->startx, pTmpPath->starty );	
-		EgEdge *p = pTmpPath->pEdges;
-		ccColor4F color = {1.0, 0, 0, 1 };
-		while( p )
+		if ( pTmpPath->cmdType == CTX_MOVETO )
 		{
-			CCPoint to( p->endx, p->endy );
-			drawSegment( from, to, mLineWidth, *mpFileStyle.mpColor );
-			from.x = to.x;
-			from.y = to.y;
-			p = p->pNext;
+			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+			EgEdge *p = pTmpPath->pEdges;
+			ccColor4F color = {1.0, 0, 0, 1 };
+			while( p )
+			{
+				CCPoint to( p->endx, p->endy );
+				drawSegment( from, to, mLineWidth, *mpFileStyle.mpColor );
+				from.x = to.x;
+				from.y = to.y;
+				p = p->pNext;
+			}
 		}
-		
+		else if( pTmpPath->cmdType == CTX_RECT )
+		{
+			EgEdge *pEdge = pTmpPath->pEdges;
+			unsigned int vertex_cout = 2 * 6;
+			ensureCapacity( vertex_cout );
+			ccColor4F color = { 1.0, 0, 0, 1.0 };
+			ccColor4B col = ccc4BFromccc4F( color );
+			ccV2F_C4B_T2F_Triangle triangle =
+			{
+				{ vertex2( pTmpPath->startx,  pTmpPath->starty), col, __t( v2fzero) },
+				{ vertex2( pEdge->endx, pEdge->endy ), col, __t( v2fzero ) },
+				{ vertex2( pEdge->pNext->endx, pEdge->pNext->endy ), col, __t( v2fzero ) }
+			};
+			ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+			//ccV2F_C4B_T2F_Triangle triangle = { a, b, c };
+			triangles[0] = triangle;
+			ccV2F_C4B_T2F_Triangle triangle1 =
+			{
+				{ vertex2( pEdge->endx, pEdge->endy ), col, __t( v2fzero) },
+				{ vertex2( pEdge->pNext->endx, pEdge->pNext->endy ), col, __t( v2fzero ) },
+				{ vertex2( pEdge->pNext->pNext->endx, pEdge->pNext->pNext->endy ), col, __t( v2fzero ) }
+			};
+			triangles[1] = triangle1;
+			m_nBufferCount += vertex_cout;
+			m_bDirty = true;
+		}
 		pTmpPath = pTmpPath->pNext;
 	}
 	return;
