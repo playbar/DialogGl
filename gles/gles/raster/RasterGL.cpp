@@ -164,6 +164,14 @@ void XContext::beginPath()
 
 void XContext::closePath()
 {
+	EgEdge *p = new EgEdge();
+	pCurPath->pCurEdge->pNext = p;
+	p->pNext = NULL;
+	p->cpx = pCurPath->startx;
+	p->cpy = pCurPath->starty;
+	p->endx = pCurPath->startx;
+	p->endy = pCurPath->starty;
+	return;
 
 }
 
