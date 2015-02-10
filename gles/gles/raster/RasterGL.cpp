@@ -23,6 +23,7 @@
 #include "RasterGL.h"
 #include "CCPointExtension.h"
 #include "gl/glew.h"
+#include "windows.h"
 
 const GLchar * ccPositionColorLengthTexture_frag =
 #include "ccShader_PositionColorLengthTexture_frag.h"
@@ -219,7 +220,37 @@ void XContext::lineto( float x, float y )
 
 void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise )
 {
+	pCurPath->cmdType = CTX_ARC;
+	pCurPath->startx = x;
+	pCurPath->starty = y;
 
+	GLfloat angle = sAngle;
+	for ( angle = sAngle; angle <= eAngle; angle += 0.1f )
+	{
+		pCurPath->count++;
+		int x1 = radius * cos( angle ) + x;
+		int y1 = radius * sin( angle ) + y;
+		
+		EgEdge *p = new EgEdge();
+		if ( pCurPath->pEdges == NULL )
+		{
+			pCurPath->pEdges = p;
+			pCurPath->pCurEdge = p;
+		}
+		else
+		{
+			pCurPath->pCurEdge->pNext = p;
+			pCurPath->pCurEdge = p;
+		}
+		p->pNext = NULL;
+		p->cpx = x1;
+		p->cpy = y1;
+		p->endx = x1;
+		p->endy = y1;
+		p->isLine = true;
+		
+	}
+	return;
 }
 
 void XContext::rect( float x, float y, float width, float height )
@@ -429,6 +460,33 @@ void XContext::DrawCommand()
 			};
 			triangles[1] = triangle1;
 			m_nBufferCount += vertex_cout;
+			m_bDirty = true;
+		}
+		else if( pTmpPath->cmdType == CTX_ARC )
+		{
+			unsigned int vertex_count = 2 * pTmpPath->count;
+			ensureCapacity( vertex_count );
+			EgEdge *p = pTmpPath->pEdges;
+			int icout = 0;
+			ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+			ccColor4F color = { 1.0, 0, 0, 1.0 };
+			ccColor4B col = ccc4BFromccc4F( color );
+			while( p != NULL && p->pNext != NULL )
+			{
+				ccV2F_C4B_T2F_Triangle triangle =
+				{
+					{ vertex2( pTmpPath->startx,  pTmpPath->starty), col, __t( v2fzero) },
+					{ vertex2( p->endx, p->endy ), col, __t( v2fzero ) },
+					{ vertex2( p->pNext->endx, p->pNext->endy ), col, __t( v2fzero ) }
+				};
+				triangles[icout] = triangle;
+				icout++;
+				char chTmp[256];
+				sprintf( chTmp, "%d", icout );
+				OutputDebugStringA( chTmp );
+				p = p->pNext;
+			}
+			m_nBufferCount += vertex_count;
 			m_bDirty = true;
 		}
 		pTmpPath = pTmpPath->pNext;

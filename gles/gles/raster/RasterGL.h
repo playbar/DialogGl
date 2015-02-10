@@ -200,7 +200,7 @@ public:
 	void stroke();
 	void moveto( float x, float y );
 	void lineto( float x, float y );
-	void arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise );
+	void arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise = true );
 	void rect( float x, float y, float width, float height );
 	void save();
 	void restore();

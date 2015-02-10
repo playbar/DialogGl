@@ -74,27 +74,30 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	eglView->setGLDefaultValues();
 
 	pctx = XContext::create();
-	//ccColor4F *color = new ccColor4F;
-	//color->r = 0.0;
-	//color->b = 0;
-	//color->g = 1.0;
-	//color->a = 1.0;
-	//pctx->mpFileStyle.mpColor = color;
+	ccColor4F *color = new ccColor4F;
+	color->r = 0.0;
+	color->b = 0;
+	color->g = 1.0;
+	color->a = 1.0;
+	pctx->mpFileStyle.mpColor = color;
+	pctx->beginPath();
+	pctx->arc( 200, 200, 50, 0, 3.1415926 );
+	pctx->stroke();
 	//pctx->rect( 120, 120, 150, 100 );
 	//pctx->fill();
 	//pctx->fillRect( 120, 120, 100, 100 );
 
 	// »æÖÆÖ±Ïß
-	pctx->beginPath();
-	pctx->mLineWidth = 10;
-	ccColor4F *color = new ccColor4F;
-	color->a = 1.0;
-	color->r = 1.0;
-	color->b = 0;
-	color->g = 1.0;
-	pctx->mpFileStyle.mpColor = color;
-	pctx->moveto( 50, 50 );
-	pctx->lineto( 300, 150 );
+	//pctx->beginPath();
+	//pctx->mLineWidth = 10;
+	//ccColor4F *color = new ccColor4F;
+	//color->a = 1.0;
+	//color->r = 1.0;
+	//color->b = 0;
+	//color->g = 1.0;
+	//pctx->mpFileStyle.mpColor = color;
+	//pctx->moveto( 50, 50 );
+	//pctx->lineto( 300, 150 );
 	//pctx->stroke();
 
 	//pctx->beginPath();
@@ -106,9 +109,9 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//color->g = 1.0;
 	//pctx->mpFileStyle.mpColor = color;
 	//pctx->moveto( 300, 300 );
-	pctx->lineto( 400, 300 );
-	pctx->closePath();
-	pctx->stroke();
+	//pctx->lineto( 400, 300 );
+	//pctx->closePath();
+	//pctx->stroke();
 	
 	
 	
