@@ -212,11 +212,8 @@ typedef struct _ccQuad3 {
 //! a Point with a vertex point, a tex coord point and a color 4B
 typedef struct _ccV2F_C4B_T2F
 {
-    //! vertices (2F)
     ccVertex2F        vertices;
-    //! colors (4B)
     ccColor4B        colors;
-    //! tex coords (2F)
     ccTex2F            texCoords;
 } ccV2F_C4B_T2F;
 

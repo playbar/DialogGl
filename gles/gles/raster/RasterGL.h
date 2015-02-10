@@ -33,6 +33,9 @@
 #include "CCNode.h"
 #include "ccTypes.h"
 #include "platformtype.h"
+#include "map"
+#include "vector"
+using namespace std;
 
 #include "tess.h"
 
@@ -42,10 +45,160 @@
  
  @since v2.1
  */
-class CC_DLL RasterGL //: public CCNode
+
+
+enum Gradient_Type
+{
+	Gradient_Line = 0,
+	Gradient_radius,
+};
+
+struct XGradient
+{
+	Gradient_Type gradientType;
+	float xStart, yStart;
+	float xEnd, yEnd;
+	float radiusStart, radiusEnd;
+
+	typedef map<float, ccColor4F> XColors;
+	XColors mXColors;
+
+	void addColorStop( float index, ccColor4F color );
+
+};
+
+enum REPEAT_PAT
+{
+	en_REPEAT = 0,
+	en_REPEAT_X,
+	en_REPEAT_Y,
+	en_NO_REPEAT
+};
+
+struct XPattern
+{
+	REPEAT_PAT mRepeatePat;
+	GLuint texId;
+};
+
+
+struct XFillStyle
+{
+	enum FILLTYPE
+	{
+		FILL_COLOR = 0,
+		FILL_GRADIENT,
+		FILL_PATTERN 
+	};
+	FILLTYPE mFillType;
+	union
+	{
+		ccColor4F *mpColor;
+		XGradient *mpGradient;
+		XPattern *mpPattern;
+	};
+	//XFillStyle( XColor *color );
+	//XFillStyle( XGradient *gradient );
+	//XFillStyle( XPattern *pattern );
+};
+
+struct XStrokeStyle
+{
+	enum STROKEYPE
+	{
+		en_STROKE_COLOR = 0,
+		en_STROKEGRADIENT,
+		en_STROKEPATTERN 
+	};
+	STROKEYPE mFillType;
+	union
+	{
+		ccColor4F *mpColor;
+		XGradient *mpGradient;
+		XPattern *mpPattern;
+	};
+};
+
+enum LINECAP
+{
+	LINECAP_BUTT = 0,
+	LINECAP_ROUND,
+	LINECAP_SQUARE,
+};
+
+enum LINEJOIN
+{
+	LINEJOIN_BEVEL = 0,
+	LINEJOIN_ROUND,
+	LINEJOIN_MITER,
+};
+
+enum CMDType
+{
+	CTX_FILL = 0,
+	CTX_BEGINPATH,
+	CTX_CLOSEPATH,
+	CTX_STROKE,
+	CTX_MOVETO,
+	CTX_LINETO,
+	CTX_ARC,
+	CTX_RECT,
+	CTX_SAVE,
+	CTX_RESTORE,
+	CTX_QUADRATICCURVETO,
+	CTX_FILLRECT,
+	CTX_STROKERECT,
+	CTX_CLEARRECT,
+	CTX_CLIP,
+	CTX_BEZIERCURVETO,
+	CTX_ARCTO,
+	CTX_MAX,
+};
+
+struct XCommand
+{
+	CMDType cmdType;
+	union 
+	{
+		XStrokeStyle strokeStyle;
+		XFillStyle   fillStyle;
+	};
+
+};
+
+struct EgEdge
+{
+	float cpx;  //control point 
+	float cpy;
+	float endx;
+	float endy;
+	bool isLine;
+	EgEdge *pNext;
+};
+
+struct EgPath
+{
+	float startx;
+	float starty;
+
+	EgEdge *pEdges;
+	EgEdge *pCurEdge;
+	EgPath *pNext;
+	ccV2F_C4B_T2F *mBuffer;
+	int count;
+
+	union 
+	{
+		XStrokeStyle *strokeStyle;
+		XFillStyle   *fillStyle;
+	};
+
+};
+
+
+class CC_DLL XContext
 {
 protected:
-    GLuint      m_uVao;
     GLuint      m_uVbo;
     
     unsigned int    m_uBufferCapacity;
@@ -57,8 +210,55 @@ protected:
     bool            m_bDirty;
 
 public:
-    static RasterGL* create();
-    virtual ~RasterGL();
+	float mLineWidth;
+	XFillStyle mpFileStyle;
+	XStrokeStyle mpStrokeStyle;
+public:
+	// p1
+	void fill();
+	void beginPath();
+	void closePath();
+	void stroke();
+	void moveto( float x, float y );
+	void lineto( float x, float y );
+	void arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise );
+	void rect( float x, float y, float width, float height );
+	void save();
+	void restore();
+
+	// p2
+	void quadraticCurveTo( float cpx, float cpy, float x, float y );
+	//p3
+	void fillRect( float x, float y, float width, float height );
+	void strokeRect( float x, float y, float width, float height );
+	void clearRect( float x, float y, float width, float height );
+	void clip();
+	void bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, float x, float y );
+	void arcTo( float x1, float y1, float x2, float y2, float r );
+	bool isPointInPath( float x, float y );
+
+	void DrawCommand();
+
+public:
+	XGradient *CreateLinearGradient( float x1, float y1, float x2, float y2 );
+	XPattern *CreatePattern( GLuint texId, REPEAT_PAT repat);
+	XGradient *CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
+		float xEnd, float yEnd, float radiusEnd );
+	void addColorStop( float index, ccColor4F color );
+
+
+private:
+	vector< XGradient *> mVecGradient;
+	vector< XPattern *>mVecPattern;
+	EgPath *mEgPaths;
+	EgPath *pCurPath;
+	float mcurx;
+	float mcury;
+
+
+public:
+    static XContext* create();
+    virtual ~XContext();
     
     virtual bool init();
     virtual void draw();
@@ -80,7 +280,7 @@ public:
     ccBlendFunc getBlendFunc() const;
     void setBlendFunc(const ccBlendFunc &blendFunc);
     
-    RasterGL();
+    XContext();
 
 	void loadShaders();
 

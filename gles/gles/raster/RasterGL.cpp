@@ -96,21 +96,23 @@ static inline ccTex2F __t(const ccVertex2F &v)
 
 // implementation of CCDrawNode
 
-RasterGL::RasterGL()
-: m_uVao(0)
-, m_uVbo(0)
+
+
+XContext::XContext()
+: m_uVbo(0)
 , m_uBufferCapacity(0)
 , m_nBufferCount(0)
 , m_pBuffer(NULL)
 , m_bDirty(false)
 , mProgram( 0 )
 {
+	mEgPaths = NULL;
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 	loadShaders();
 }
 
-void RasterGL::loadShaders()
+void XContext::loadShaders()
 {
 	mProgram = new CCGLProgram();
 	mProgram->initWithVertexShaderByteArray(ccPositionColorLengthTexture_vert, ccPositionColorLengthTexture_frag);
@@ -121,7 +123,7 @@ void RasterGL::loadShaders()
 	mProgram->updateUniforms();
 }
 
-RasterGL::~RasterGL()
+XContext::~XContext()
 {
     free(m_pBuffer);
     m_pBuffer = NULL;
@@ -130,14 +132,212 @@ RasterGL::~RasterGL()
     m_uVbo = 0;
 }
 
-RasterGL* RasterGL::create()
+
+void XContext::fill()
 {
-    RasterGL* pRet = new RasterGL();
+
+}
+
+void XContext::beginPath()
+{
+	EgPath *pTmpPath = mEgPaths;
+	while( pTmpPath != NULL )
+	{
+		EgEdge *pEdge = pTmpPath->pEdges;
+		while( pEdge )
+		{
+			EgEdge *p = pEdge;
+			pEdge = pEdge->pNext;
+			delete p;
+		}
+		EgPath *ppath = pTmpPath;
+		pTmpPath = pTmpPath->pNext;
+		delete ppath;
+	}
+	mEgPaths = new EgPath();
+	memset( mEgPaths, 0, sizeof( EgPath ));
+	pCurPath = mEgPaths;
+	pCurPath->pCurEdge = NULL;
+	pCurPath->pEdges = NULL;
+}
+
+void XContext::closePath()
+{
+
+}
+
+void XContext::stroke()
+{
+	DrawCommand();
+}
+
+void XContext::moveto( float x, float y )
+{
+	pCurPath->startx = x;
+	pCurPath->starty = y;
+	pCurPath->count++;
+
+}
+
+void XContext::lineto( float x, float y )
+{
+	if ( pCurPath->pEdges == NULL )
+	{
+		pCurPath->pEdges = new EgEdge();
+		memset( pCurPath->pEdges, 0, sizeof( EgEdge ));
+		pCurPath->pCurEdge = pCurPath->pEdges;
+		pCurPath->pCurEdge->cpx = x;
+		pCurPath->pCurEdge->cpy = y;
+		pCurPath->pCurEdge->endx = x;
+		pCurPath->pCurEdge->endy = y;
+		pCurPath->pCurEdge->isLine = true;
+	}
+	else
+	{
+		EgEdge *p = new EgEdge();
+		pCurPath->pCurEdge->pNext = p;
+		pCurPath->pCurEdge = p;
+		memset( pCurPath->pCurEdge, 0, sizeof( EgEdge ) );
+		pCurPath->pCurEdge->cpx = x;
+		pCurPath->pCurEdge->cpy = y;
+		pCurPath->pCurEdge->endx = x;
+		pCurPath->pCurEdge->endy = y;
+		pCurPath->pCurEdge->isLine = true;
+	}
+	return;
+}
+
+void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise )
+{
+
+}
+
+void XContext::rect( float x, float y, float width, float height )
+{
+
+}
+
+void XContext::save()
+{
+
+}
+
+void XContext::restore()
+{
+
+}
+
+// p2
+void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
+{
+
+}
+
+//p3
+void XContext::fillRect( float x, float y, float width, float height )
+{
+
+}
+
+void XContext::strokeRect( float x, float y, float width, float height )
+{
+
+}
+
+void XContext::clearRect( float x, float y, float width, float height )
+{
+
+}
+
+void XContext::clip()
+{
+
+}
+
+void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, float x, float y )
+{
+
+}
+
+void XContext::arcTo( float x1, float y1, float x2, float y2, float r )
+{
+
+}
+
+bool XContext::isPointInPath( float x, float y )
+{
+	return false;
+}
+
+XGradient *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
+{
+	XGradient *p = new XGradient();
+	p->gradientType = Gradient_Line;
+	p->xStart = x1;
+	p->yStart = y1;
+	p->xEnd = x2;
+	p->yEnd = y2;
+	mVecGradient.push_back( p );
+	return p;
+}
+
+XPattern *XContext::CreatePattern( GLuint texId, REPEAT_PAT repat)
+{
+	XPattern *p = new XPattern();
+	p->texId = texId;
+	p->mRepeatePat = en_REPEAT;
+	mVecPattern.push_back( p );
+	return p;
+}
+XGradient *XContext::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
+										  float xEnd, float yEnd, float radiusEnd )
+{
+	XGradient *p = new XGradient();
+	p->gradientType = Gradient_radius;
+	p->xStart = xStart;
+	p->yStart = ySttart;
+	p->xEnd = xEnd;
+	p->yEnd = yEnd;
+	p->radiusStart = radiusStart;
+	p->radiusEnd = radiusEnd;
+	mVecGradient.push_back( p );
+	return p;
+}
+void XContext::addColorStop( float index, ccColor4F color )
+{
+
+}
+
+void XContext::DrawCommand()
+{
+	EgPath *pTmpPath = mEgPaths;
+	while( pTmpPath )
+	{
+		CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+		EgEdge *p = pTmpPath->pEdges;
+		ccColor4F color = {1.0, 0, 0, 1 };
+		while( p )
+		{
+			CCPoint to( p->endx, p->endy );
+			drawSegment( from, to, mLineWidth, *mpFileStyle.mpColor );
+			from.x = to.x;
+			from.y = to.y;
+			p = p->pNext;
+		}
+		
+		pTmpPath = pTmpPath->pNext;
+	}
+	return;
+}
+
+XContext* XContext::create()
+{
+    XContext* pRet = new XContext();
     pRet->init();
     return pRet;
 }
 
-void RasterGL::ensureCapacity(unsigned int count)
+void XContext::ensureCapacity(unsigned int count)
 {
     if(m_nBufferCount + count > m_uBufferCapacity)
     {
@@ -146,7 +346,7 @@ void RasterGL::ensureCapacity(unsigned int count)
 	}
 }
 
-bool RasterGL::init()
+bool XContext::init()
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
@@ -175,7 +375,7 @@ bool RasterGL::init()
     return true;
 }
 
-void RasterGL::render()
+void XContext::render()
 {
     if (m_bDirty)
     {
@@ -201,7 +401,7 @@ void RasterGL::render()
     //CC_INCREMENT_GL_DRAWS(1);
 }
 
-void RasterGL::draw()
+void XContext::draw()
 {
     ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
     
@@ -213,7 +413,7 @@ void RasterGL::draw()
     render();
 }
 
-void RasterGL::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
+void XContext::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 2*3;
     ensureCapacity(vertex_count);
@@ -234,7 +434,7 @@ void RasterGL::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
 	m_bDirty = true;
 }
 
-void RasterGL::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
+void XContext::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 6*3;
     ensureCapacity(vertex_count);
@@ -307,7 +507,7 @@ void RasterGL::drawSegment(const CCPoint &from, const CCPoint &to, float radius,
 	m_bDirty = true;
 }
 
-void RasterGL::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
+void XContext::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
 {
     struct ExtrudeVerts {ccVertex2F offset, n;};
 	struct ExtrudeVerts* extrude = (struct ExtrudeVerts*)malloc(sizeof(struct ExtrudeVerts)*count);
@@ -413,7 +613,7 @@ void RasterGL::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &
     free(extrude);
 }
 
-void RasterGL::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
+void XContext::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
 {
 	unsigned int vertex_count = 2 * 3;
 	ensureCapacity( vertex_count );
@@ -432,14 +632,14 @@ void RasterGL::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint
 	return;
 }
 
-void RasterGL::clear()
+void XContext::clear()
 {
     m_nBufferCount = 0;
     m_bDirty = true;
 }
 
 std::vector<CCPoint*> g_pintArray;
-RasterGL * pthis = NULL;
+XContext * pthis = NULL;
 void __stdcall vertexCallback(GLdouble *vertex)
 {
 	const GLdouble *pointer;
@@ -592,7 +792,7 @@ GLdouble star[10][6] =
 
 
 
-void RasterGL::beginPolygon()
+void XContext::beginPolygon()
 {
 	tobj = gluNewTess();
 	pthis = this;
@@ -623,7 +823,7 @@ void RasterGL::beginPolygon()
 	return;
 }
 
-void RasterGL::endPolygon()
+void XContext::endPolygon()
 {
 	 gluDeleteTess(tobj);
 
@@ -655,18 +855,18 @@ void RasterGL::endPolygon()
 
 }
 
-void RasterGL::drawAllPolygon()
+void XContext::drawAllPolygon()
 {
 
 }
 
 
-ccBlendFunc RasterGL::getBlendFunc() const
+ccBlendFunc XContext::getBlendFunc() const
 {
     return m_sBlendFunc;
 }
 
-void RasterGL::setBlendFunc(const ccBlendFunc &blendFunc)
+void XContext::setBlendFunc(const ccBlendFunc &blendFunc)
 {
     m_sBlendFunc = blendFunc;
 }

@@ -352,7 +352,7 @@ void EGLView::setProjection(ccDirectorProjection kProjection)
 			kmGLMatrixMode(KM_GL_PROJECTION);
 			kmGLLoadIdentity();
 			kmMat4 orthoMatrix;
-			kmMat4OrthographicProjection(&orthoMatrix, 0, size.width, 0, size.height, -1024, 1024 );
+			kmMat4OrthographicProjection(&orthoMatrix, 0, size.width, size.height, 0, -1024, 1024 );
 			kmGLMultMatrix(&orthoMatrix);
 			kmGLMatrixMode(KM_GL_MODELVIEW);
 			kmGLLoadIdentity();

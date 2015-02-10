@@ -91,22 +91,33 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	ccV2F_C4F_T2F p1 = { {100, 100},{ 1, 0, 0, 1 }, {0, 0 } };
 	ccV2F_C4F_T2F p2 = { {200, 200},{0, 1, 0, 1},   {0, 0 } };
 	ccV2F_C4F_T2F p3 = { {300, 100}, {0, 0, 1, 1}, {0, 0}};
-	drawNode->setPosition( 100, 100 );
+	//drawNode->setPosition( 100, 100 );
 	//drawNode->drawTriangle( p1, p2, p3 );
+	CCPoint circle[10];
+	circle[0].x = 50;
+	circle[0].y = 50;
+	circle[1].x = 100;
+	circle[1].y = 50;
+	circle[2].x = 100;
+	circle[2].y = 100;
 
 	//drawNode->setPosition( 300, 300 );
-	//drawNode->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
+	//ccColor4F green = {1, 0, 1, 1 };
+	//drawNode->drawPolygon(circle, 3, green, 1, green );//绘制这个多边形!
 	//drawNode->drawDot( ccp( 200, 200 ), 50, ccc4f( 1.0, 0, 0, 1.0f ));
 	//drawNode->drawAllPolygon();
 	//drawNode->endPolygon();
 	//eglView->AddNode( drawNode );
-	drawNode->drawSegment(ccp( 0, 0,), ccp( 200, 200), 5, ccc4f(1, 1, 0, 1 ) );
+	drawNode->drawSegment(ccp( 0, 0,), ccp( 200, 200), 4.5, ccc4f(1, 1, 0, 1 ) );
+	drawNode->drawSegment( ccp( 200, 200), ccp( 400, 300), 4.5, ccc4f(1, 1, 0, 1 ) );
 
-	CCDirector::sharedDirector()->addNode( drawNode );
-	//CCSprite *sprite = CCSprite::create( "test.png" );
-	//sprite->setPosition( ccp(100, 300) );
-	//sprite->setAnchorPoint( ccp( 0, 0.5 ));
+	//CCDirector::sharedDirector()->addNode( drawNode );
+	CCSprite *sprite = CCSprite::create( "test.png" );
+	sprite->setPosition( ccp(100, 300) );
+	sprite->setAnchorPoint( ccp( 0, 0.5 ));
 	//CCDirector::sharedDirector()->addNode( sprite );
+	mMainLayer = MainLayer::create();
+	CCDirector::sharedDirector()->addNode( mMainLayer );
 	eglView->MakeCurrent( false );
 
 	return TRUE;  // Geben Sie TRUE zur點k, au遝r ein Steuerelement soll den Fokus erhalten

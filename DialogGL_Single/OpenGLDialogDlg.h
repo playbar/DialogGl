@@ -41,7 +41,7 @@ protected:
 	HICON m_hIcon;
 
 	EGLView* eglView;
-	RasterGL *pRaster;
+	XContext *pctx;
 	//MainLayer *mMainLayer;
 	//BwGLView mBwGLView;
 

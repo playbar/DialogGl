@@ -38,7 +38,7 @@ typedef enum
 	kCCDirectorProjection3D,
 
 	/// Default projection is 3D projection
-	kCCDirectorProjectionDefault = kCCDirectorProjection3D,
+	kCCDirectorProjectionDefault = kCCDirectorProjection2D,
 } ccDirectorProjection;
 
 enum ResolutionPolicy

@@ -73,106 +73,46 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	eglView->CreateView( m_hWnd, 0, 0, 800, 600 );
 	eglView->setGLDefaultValues();
 
-	pRaster = RasterGL::create();
-	static ccColor4F green ={0,1,0,1};
-	float fRadius=200.0f;
-	const int nCount=100;
-	//const float coef= 2.0f* (float)M_PI/nCount;
-	static CCPoint circle[nCount];
+	pctx = XContext::create();
+	pctx->beginPath();
+	pctx->mLineWidth = 10;
+	ccColor4F *color = new ccColor4F;
+	color->a = 1.0;
+	color->r = 1.0;
+	color->b = 0;
+	color->g = 1.0;
+	pctx->mpFileStyle.mpColor = color;
+	pctx->moveto( 0, 0 );
+	pctx->lineto( 300, 150 );
+	pctx->stroke();
 
-	//circle[0].x = 100;
-	//circle[0].y = 100;
-	//circle[4].x = -100;
-	//circle[4].y = 100;
-	//circle[3].x = -100;
-	//circle[3].y = -100;
-	//circle[2].x = 100;
-	//circle[2].y = -100;
-	//circle[1].x = 0;
-	//circle[1].y = 0;
-	//for(unsigned int i= 0;i< nCount;i++)
-	//{
-	//	float rads =i*coef;
-	//	circle[i].x= fRadius* cosf(rads);
-	//	circle[i].y= fRadius* sinf(rads);
-	//}
+	pctx->beginPath();
+	pctx->mLineWidth = 4;
+	//ccColor4F *color1 = new ccColor4F;
+	color->a = 1.0;
+	color->r = 0.0;
+	color->b = 1.0;
+	color->g = 1.0;
+	pctx->mpFileStyle.mpColor = color;
+	pctx->moveto( 300, 300 );
+	pctx->lineto( 400, 300 );
+	pctx->stroke();
 	
-	circle[0].x = 50;
-	circle[0].y = 100;
-	circle[1].x = 0;
-	circle[1].y = 0;
-	circle[2].x = -50;
-	circle[2].y = 100;
-	circle[3].x = -100;
-	circle[3].y = 50;
-	circle[4].x = -150;
-	circle[4].y = 100;
-	circle[5].x = -100;
-	circle[5].y = 0;
-	circle[6].x = -120;
-	circle[6].y = -100;
-	circle[7].x = -80;
-	circle[7].y = -50;
-	circle[8].x = -30;
-	circle[8].y = -140;
-	circle[9].x = -10;
-	circle[9].y = -60;
-	circle[10].x = 0;
-	circle[10].y = -80;
-	circle[11].x = 40;
-	circle[11].y = -30;
-	circle[12].x = 110;
-	circle[12].y = -100;
-	circle[13].x = 120;
-	circle[13].y = -80;
-	circle[14].x = 200;
-	circle[14].y = 0;
-	circle[15].x = 150;
-	circle[15].y = 50;
-	circle[16].x = 150;
-	circle[16].y = 100;
-	circle[17].x = 100;
-	circle[17].y = 50;
-
-	pRaster->drawDot( ccp( 200, 200), 50, ccc4f( 1, 0, 1, 1 ) );
+	//pctx->drawDot( ccp( 60, 200), 50, ccc4f( 1, 0, 1, 1 ) );
 	
-	//pRaster->drawPolygon(circle, 18, green, 1, green );//绘制这个多边形!
-	//pRaster->beginPolygon();
-	//pRaster->drawAllPolygon();
-	//pRaster->endPolygon();
-
-	//drawNode->drawDot( ccp( 100, 100 ), 40, ccc4f( 1, 0, 1, 1 ));
-	//CCDirector *pDirector = ;
-	//CCDirector::sharedDirector()->setOpenGLView( eglView );
-	//pDirector->setOpenGLView( eglView );
-	//pDirector->initScene();
-	//CCSize frameSize = eglView->getFrameSize();
-
-	//mMainLayer = MainLayer::create();
-	//mMainLayer->retain();
-	//pDirector->addNode( mMainLayer );
 	
-	//mBwGLView.Create( this->GetDC()->GetSafeHdc() );
-	//mBwGLView.OnSize(0, rect.Width(), rect.Height() );
-	//openGLControl.Create(rect,this);
-
 	return TRUE;  
 } 
 
 
 void COpenGLDialogDlg::OnPaint() 
 {
-	//ccDrawColor4B(255,0,0,255);
-	//ccDrawLine( ccp(100, 100), ccp( 800, 600) );
-	//ccDrawQuadBezier( ccp(0, 600), ccp( 400, 0), ccp( 800, 600), 6);
-	//drawNode->draw();
-	//pRaster->visit();
-	pRaster->draw();
+	pctx->draw();
 	eglView->swapBuffers();
 
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // Ger鋞ekontext f黵 Zeichnen
+		CPaintDC dc(this); 
 
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 

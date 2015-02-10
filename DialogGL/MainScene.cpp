@@ -33,8 +33,10 @@ bool MainLayer::init()
     //CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     //CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	ParallaxTest();
+	//ParallaxTest();
 
+	//DrawTexture();
+	DrawCCCipingNode();
 	//DrawTexture();
 	
 
@@ -105,17 +107,18 @@ void MainLayer::DrawCCCipingNode()
 	};
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
-	CCSprite * background = CCSprite::create( "background.png" );
-	background->setPosition( ccp( size.width / 2, size.height / 2 ));
-	this->addChild( background, 0 );
+	//CCSprite * background = CCSprite::create( "background.png" );
+	//background->setPosition( ccp( size.width / 2, size.height / 2 ));
+	//this->addChild( background, 0 );
 
 	CCClippingNode * clippingNode = CCClippingNode::create();
+	clippingNode->setAlphaThreshold( 0.5 );
 	clippingNode->setContentSize( CCSizeMake( 200, 200 ) );
 	clippingNode->setAnchorPoint( ccp( 0.5, 0.5 ) );
 	clippingNode->setPosition( ccp( size.width /2, size.height / 2 ) );
 	this->addChild( clippingNode, 1, clippingNodeTag );
 
-	CCSprite * sprite = CCSprite::create( "HelloWorld.png" );
+	CCSprite * sprite = CCSprite::create( "background.png" );
 	sprite->setPosition( ccp( clippingNode->getContentSize().width / 2, clippingNode->getContentSize().height / 2 ));
 	clippingNode->addChild( sprite, 1, spriteTag );
 
@@ -148,7 +151,8 @@ void MainLayer::DrawCCCipingNode()
 	ccColor4F white = { 1, 1, 1, 1 };
 	stencil->drawPolygon( rectangle, 8, white, 1, white );
 	clippingNode->setStencil( stencil );
-	clippingNode->setInverted( false );
+	clippingNode->setInverted( true );
+	
 	return; 
 }
 
@@ -172,7 +176,7 @@ void MainLayer::DrawTexture()
 	pMenu->setPosition(CCPointZero);
 	this->addChild(pMenu, 1);
 
-	CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 20 );
+	CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 100 );
 	
 	// position the label on the center of the screen
 	pLabel->setPosition(ccp(origin.x + visibleSize.width/2,

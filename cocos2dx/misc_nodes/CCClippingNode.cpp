@@ -226,7 +226,8 @@ void CCClippingNode::visit()
     
     // all bits on the stencil buffer are readonly, except the current layer bit,
     // this means that operation like glClear or glStencilOp will be masked with this value
-    glStencilMask(mask_layer);
+    //glStencilMask(mask_layer);
+	glStencilMask( mask_layer );
     
     // manually save the depth test state
     //GLboolean currentDepthTestEnabled = GL_TRUE;
