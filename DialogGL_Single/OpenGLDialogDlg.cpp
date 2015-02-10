@@ -81,7 +81,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	color->a = 1.0;
 	pctx->mpFileStyle.mpColor = color;
 	pctx->beginPath();
-	pctx->arc( 200, 200, 50, 0, 1.56, true );
+	pctx->arc( 300, 300, 150, 0, 1.65, false );
 	pctx->stroke();
 	//pctx->rect( 120, 120, 150, 100 );
 	//pctx->fill();

@@ -192,6 +192,7 @@ void XContext::moveto( float x, float y )
 
 void XContext::lineto( float x, float y )
 {
+	pCurPath->cmdType = CTX_LINETO;
 	if ( pCurPath->pEdges == NULL )
 	{
 		pCurPath->pEdges = new EgEdge();
@@ -437,7 +438,7 @@ void XContext::DrawCommand()
 	EgPath *pTmpPath = mEgPaths;
 	while( pTmpPath )
 	{
-		if ( pTmpPath->cmdType == CTX_MOVETO )
+		if ( pTmpPath->cmdType == CTX_LINETO )
 		{
 			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
 			EgEdge *p = pTmpPath->pEdges;
