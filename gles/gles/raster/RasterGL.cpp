@@ -1096,6 +1096,7 @@ XContext* XContext::create()
 {
     XContext* pRet = new XContext();
     pRet->init();
+	pRet->initTest();
     return pRet;
 }
 
@@ -1108,8 +1109,11 @@ void XContext::ensureCapacity(unsigned int count)
 	}
 }
 
+
+
 bool XContext::init()
 {
+
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 
@@ -1137,6 +1141,36 @@ bool XContext::init()
     m_bDirty = true;
     
     return true;
+}
+
+void XContext::initTest()
+{
+	FILE *pFile = fopen( "c:/test.png", "rb" );
+	fseek( pFile, 0, SEEK_END );
+	int ilen = ftell( pFile );
+	fseek( pFile, 0, SEEK_SET );
+	unsigned char *pData = new unsigned char[ilen ];
+	fread( pData, ilen, 1, pFile );
+	fclose( pFile );
+
+	int width = 0;
+	int height = 0;
+	unsigned char *pImgData = DecodePngDate( pData, ilen, width, height );
+
+}
+
+void XContext::initTexData( const void *pData, int width, int height )
+{
+	GLuint texId = 0;
+	glGenTextures( 1, &texId );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, texId );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData );
+	return;
 }
 
 void XContext::render()
