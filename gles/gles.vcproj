@@ -359,11 +359,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\gles\shader\ccShader_PositionColorLengthTexture_frag.h"
+					RelativePath=".\gles\shader\shader_frag.h"
 					>
 				</File>
 				<File
-					RelativePath=".\gles\shader\ccShader_PositionColorLengthTexture_vert.h"
+					RelativePath=".\gles\shader\shader_vert.h"
 					>
 				</File>
 			</Filter>

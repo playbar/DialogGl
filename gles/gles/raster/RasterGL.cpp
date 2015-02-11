@@ -26,10 +26,10 @@
 #include "windows.h"
 #include "png.h"
 
-const GLchar * ccPositionColorLengthTexture_frag =
-#include "ccShader_PositionColorLengthTexture_frag.h"
-const GLchar * ccPositionColorLengthTexture_vert =
-#include "ccShader_PositionColorLengthTexture_vert.h"
+const GLchar * shader_frag =
+#include "shader_frag.h"
+const GLchar * shader_vert =
+#include "shader_vert.h"
 
 // ccVertex2F == CGPoint in 32-bits, but not in 64-bits (OS X)
 // that's why the "v2f" functions are needed
@@ -328,7 +328,7 @@ XContext::XContext()
 void XContext::loadShaders()
 {
 	mProgram = new CCGLProgram();
-	mProgram->initWithVertexShaderByteArray(ccPositionColorLengthTexture_vert, ccPositionColorLengthTexture_frag);
+	mProgram->initWithVertexShaderByteArray(shader_vert, shader_frag);
 	mProgram->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
 	mProgram->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
 	mProgram->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
