@@ -45,7 +45,7 @@ enum Gradient_Type
 	Gradient_radius,
 };
 
-struct XGradient
+struct CC_DLL XGradient
 {
 	Gradient_Type gradientType;
 	float xStart, yStart;
@@ -74,7 +74,7 @@ struct XPattern
 };
 
 
-struct XFillStyle
+struct CC_DLL XFillStyle
 {
 	enum FILLTYPE
 	{
@@ -93,6 +93,13 @@ struct XFillStyle
 	XFillStyle( ccColor4F *color );
 	XFillStyle( XGradient *gradient );
 	XFillStyle( XPattern *pattern );
+	void setFillType( ccColor4F * color );
+	void setFillType( XGradient *gradient );
+	void setFillType( XPattern *pattern );
+	XFillStyle *operator=( XFillStyle * fs );
+	XFillStyle *operator=( ccColor4F * color );
+	XFillStyle *operator=( XGradient *gradient );
+	XFillStyle *operator=( XPattern *pattern );
 };
 
 struct XStrokeStyle
@@ -227,8 +234,6 @@ public:
 	XPattern *CreatePattern( GLuint texId, REPEAT_PAT repat);
 	XGradient *CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
 		float xEnd, float yEnd, float radiusEnd );
-	void addColorStop( float index, ccColor4F color );
-
 
 private:
 	vector< XGradient *> mVecGradient;

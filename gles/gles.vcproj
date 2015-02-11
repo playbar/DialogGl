@@ -42,8 +42,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;gles;gles/kazmath;gles/raster;gles/shader;gles/support;glew;glu"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL"
+				AdditionalIncludeDirectories="./;gles;gles/kazmath;gles/raster;gles/shader;gles/support;glew;glu;gles/libpng;gles/zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PNG_NO_INDEX_SUPPORTED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -581,6 +581,134 @@
 			</File>
 			<File
 				RelativePath=".\glu\tessmono.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="png"
+			>
+			<File
+				RelativePath=".\gles\libpng\png.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\png.h"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngerror.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pnggccrd.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngget.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngmem.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngpread.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngread.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngrio.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngrtran.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngrutil.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngset.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngtrans.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngvcrd.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngwio.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngwrite.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngwtran.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\libpng\pngwutil.c"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="zlib"
+			>
+			<File
+				RelativePath=".\gles\zlib\adler32.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\compress.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\crc32.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\deflate.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\gzio.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\infback.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\inffast.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\inflate.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\inftrees.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\trees.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\uncompr.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gles\zlib\zutil.c"
 				>
 			</File>
 		</Filter>

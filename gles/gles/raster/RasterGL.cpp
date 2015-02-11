@@ -24,6 +24,7 @@
 #include "CCPointExtension.h"
 #include "gl/glew.h"
 #include "windows.h"
+#include "png.h"
 
 const GLchar * ccPositionColorLengthTexture_frag =
 #include "ccShader_PositionColorLengthTexture_frag.h"
@@ -95,7 +96,141 @@ static inline ccTex2F __t(const ccVertex2F &v)
 	return *(ccTex2F*)&v;
 }
 
+
+typedef struct 
+{
+	unsigned char* data;
+	int size;
+	int offset;
+}ImageSource;
+
+static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+	ImageSource* isource = (ImageSource*) png_get_io_ptr(png_ptr);
+	if (isource->offset + length <= isource->size)
+	{
+		memcpy(data, isource->data + isource->offset, length);
+		isource->offset += length;
+	}
+	else
+	{
+		png_error(png_ptr, "pngReaderCallback failed");
+	}
+}
+
+
+unsigned char* DecodePngDate(unsigned char* fData, long fSize, int& width, int& height)
+{
+	unsigned char* image_data = NULL;
+#ifdef _WIN32
+	png_structp png_ptr;
+	png_infop info_ptr;
+	int bit_depth, color_type;
+	png_bytep *row_pointers = NULL;
+	int rowbytes;
+
+	/* Create a png read struct */
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+	{
+		return NULL;
+	}
+
+	/* Create a png info struct */
+	info_ptr = png_create_info_struct (png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct (&png_ptr, NULL, NULL);
+		return NULL;
+	}
+
+	/* Initialize the setjmp for returning properly after a libpng error occured */
+	if (setjmp (png_jmpbuf (png_ptr)))
+	{
+		png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+		if (row_pointers)
+			free (row_pointers);
+		return NULL;
+	}
+
+	ImageSource imgsource;
+	imgsource.data = fData;
+	imgsource.size = fSize;
+	imgsource.offset = 0;
+	png_set_read_fn(png_ptr, &imgsource, memReadFuncPng);
+
+	/* Read png info */
+	png_read_info (png_ptr, info_ptr);
+
+	/* Get some usefull information from header */
+	bit_depth = png_get_bit_depth (png_ptr, info_ptr);
+	color_type = png_get_color_type (png_ptr, info_ptr);
+
+	/* Convert index color images to RGB images */
+	if (color_type == PNG_COLOR_TYPE_PALETTE)
+		png_set_palette_to_rgb (png_ptr);
+
+	/* Convert RGB images to RGBA images */
+	if (color_type == PNG_COLOR_TYPE_RGB)
+		png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
+
+	/* Convert 1-2-4 bits grayscale images to 8 bits grayscale. */
+	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+		png_set_gray_1_2_4_to_8 (png_ptr);
+
+	if (png_get_valid (png_ptr, info_ptr, PNG_INFO_tRNS))
+		png_set_tRNS_to_alpha (png_ptr);
+
+	if (bit_depth == 16)
+		png_set_strip_16 (png_ptr);
+	else if (bit_depth < 8)
+		png_set_packing (png_ptr);
+
+	/* Update info structure to apply transformations */
+	png_read_update_info (png_ptr, info_ptr);
+
+	/* Retrieve updated information */
+	png_get_IHDR (png_ptr, info_ptr, (png_uint_32*)&width, (png_uint_32*)&height, &bit_depth, &color_type, NULL, NULL, NULL);
+
+	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	if ((image_data =(unsigned char *) malloc(height * rowbytes)) == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		return NULL;
+	}
+
+	/* Setup a pointer array.  Each one points at the begening of a row. */
+	if ((row_pointers =(png_bytepp) malloc(height * sizeof(png_bytep))) == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		free(image_data);
+		return NULL;
+	}
+	for (int i = 0; i < height; i++)
+		row_pointers[height - 1 - i] = image_data + i*rowbytes;
+
+	/* Read pixel data using row pointers */
+	png_read_image (png_ptr, row_pointers);
+
+	/* Finish decompression and release memory */
+	png_read_end (png_ptr, NULL);
+	png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+
+	/* We don't need row pointers anymore */
+	free (row_pointers);
+
+#endif
+	return image_data;
+
+}
+
+
 // implementation of CCDrawNode
+
+void XGradient::addColorStop( float index, ccColor4F color )
+{
+
+}
 
 XFillStyle::XFillStyle()
 {
@@ -104,18 +239,67 @@ XFillStyle::XFillStyle()
 
 XFillStyle::XFillStyle( ccColor4F *color )
 {
-
+	mFillType = FILL_COLOR;
+	mpColor = color;
 }
 
 XFillStyle::XFillStyle( XGradient *gradient )
 {
-
+	mFillType = FILL_GRADIENT;
+	mpGradient = gradient;
 }
 
 XFillStyle::XFillStyle( XPattern *pattern )
 {
-
+	mFillType = FILL_PATTERN;
+	mpPattern = pattern;
 }
+
+void XFillStyle::setFillType( ccColor4F * color )
+{
+	mFillType = FILL_COLOR;
+	mpColor = color;
+}
+void XFillStyle::setFillType( XGradient *gradient )
+{
+	mFillType = FILL_GRADIENT;
+	mpGradient = gradient;
+}
+
+void XFillStyle::setFillType( XPattern *pattern )
+{
+	mFillType = FILL_PATTERN;
+	mpPattern = pattern;
+}
+
+XFillStyle * XFillStyle::operator=( ccColor4F * color )
+{
+	mFillType = FILL_COLOR;
+	mpColor = color;
+	return this;
+}
+
+XFillStyle * XFillStyle::operator=( XGradient *gradient )
+{
+	mFillType = FILL_GRADIENT;
+	mpGradient = gradient;
+	return this;
+}
+
+XFillStyle * XFillStyle::operator=( XPattern *pattern )
+{
+	mFillType = FILL_PATTERN;
+	mpPattern = pattern;
+	return this;
+}
+
+//void XFillStyle::addColorStop( float index, ccColor4F color )
+//{
+//	if ( mFillType == FILL_GRADIENT )
+//	{
+//		mpGradient->addColorStop( index, color );
+//	}
+//}
 
 
 XContext::XContext()
@@ -616,7 +800,7 @@ void XContext::fillRect( float x, float y, float width, float height )
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity( vertex_count );
 	ccColor4F color = { 1.0, 1.0, 0, 1.0};
-	ccColor4B col = ccc4BFromccc4F( *mpFillStyle->mpColor );
+	ccColor4B col = ccc4BFromccc4F( color );
 	ccV2F_C4B_T2F_Triangle triangle =
 	{
 		{ vertex2( x, y), col, __t( v2fzero) },
@@ -624,7 +808,7 @@ void XContext::fillRect( float x, float y, float width, float height )
 		{ vertex2( x, y + height), col, __t( v2fzero ) }
 	};
 	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
-	//ccV2F_C4B_T2F_Triangle triangle = { a, b, c };
+	
 	triangles[0] = triangle;
 	ccV2F_C4B_T2F_Triangle triangle1 =
 	{
@@ -775,10 +959,6 @@ XGradient *XContext::CreateRadialGradient( float xStart, float ySttart, float ra
 	p->radiusEnd = radiusEnd;
 	mVecGradient.push_back( p );
 	return p;
-}
-void XContext::addColorStop( float index, ccColor4F color )
-{
-
 }
 
 void XContext::DrawCommand()

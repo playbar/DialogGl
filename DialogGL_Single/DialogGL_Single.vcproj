@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;..\gles\gles;..\gles\gles/kazmath;..\gles\gles/raster;..\gles\gles/shader;..\gles\gles/support;..\gles\glew;..\gles\glu;..\gles"
+				AdditionalIncludeDirectories=".\;..\gles\gles;..\gles\gles/kazmath;..\gles\gles/raster;..\gles\gles/shader;..\gles\gles/support;..\gles\glew;..\gles\glu;..\gles;.\libpng;.\zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
