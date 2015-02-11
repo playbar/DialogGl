@@ -69,19 +69,30 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//eglView->CreateGL( this->m_hWnd );
 	//eglView->Create( this->m_hWnd );
 	//eglView->setFrameSize( 800, 600 );
-	eglView->CreateView( m_hWnd, 0, 0, 800, 600 );
+	eglView->CreateView( m_hWnd, 0, 0, rect.Width(), rect.Height() );
 	eglView->setGLDefaultValues();
 
 	pctx = XContext::create();
+	pctx->mWidth = rect.Width();
+	pctx->mHeight = rect.Height();
 	ccColor4F *color = new ccColor4F;
 	color->r = 0.0;
 	color->b = 0;
 	color->g = 1.0;
 	color->a = 1.0;
-	pctx->mpFileStyle.mpColor = color;
-	pctx->beginPath();
+	pctx->mpFillStyle->mpColor = color;
+	pctx->rect(50,20,200,120);
+	pctx->stroke();
+	pctx->clip();
+	
+	pctx->fillRect(0,0,200,120);
+
+	//pctx->strokeRect( 200, 200, 100, 100 );
+	//pctx->clearRect( 210, 210, 20, 20 );
+	//pctx->beginPath();
 	//pctx->moveto( 20, 20 );
-	//pctx->quadraticCurveTo( 20, 100, 200, 20 );
+	//pctx->quadraticCurveTo( 20, 200, 200, 20 );
+	//pctx->bezierCurveTo( 20, 100, 100, 100, 100, 20 );
 	//pctx->stroke();
 	//pctx->arc( 300, 300, 150, 0, 1.65, true );
 	//pctx->stroke();
@@ -102,26 +113,26 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//pctx->lineto( 300, 150 );
 	//pctx->stroke();
 
-	pctx->beginPath();
-	pctx->mLineWidth = 2;
-	////ccColor4F *color1 = new ccColor4F;
-	//color->a = 1.0;
-	//color->r = 0.0;
-	//color->b = 1.0;
-	//color->g = 1.0;
-	//pctx->mpFileStyle.mpColor = color;
-	pctx->moveto( 80, 240 );
-	pctx->lineto( 140, 240 );
-	pctx->lineto( 110, 60 );
-	pctx->lineto( 240, 50 );
-	pctx->lineto( 20, 20 );
-	pctx->lineto( 0, 70 );
-	pctx->lineto( 100, 50 );
-	pctx->lineto( 80, 240 );
-	
-	//pctx->closePath();
-	pctx->stroke();
-	//pctx->fill();
+	//pctx->beginPath();
+	//pctx->mLineWidth = 2;
+	//////ccColor4F *color1 = new ccColor4F;
+	////color->a = 1.0;
+	////color->r = 0.0;
+	////color->b = 1.0;
+	////color->g = 1.0;
+	////pctx->mpFileStyle.mpColor = color;
+	//pctx->moveto( 80, 240 );
+	//pctx->lineto( 140, 240 );
+	//pctx->lineto( 110, 60 );
+	//pctx->lineto( 240, 50 );
+	//pctx->lineto( 20, 20 );
+	//pctx->lineto( 0, 70 );
+	//pctx->lineto( 100, 50 );
+	//pctx->lineto( 80, 240 );
+	//
+	////pctx->closePath();
+	//pctx->stroke();
+	////pctx->fill();
 	
 	
 	
@@ -131,7 +142,12 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 void COpenGLDialogDlg::OnPaint() 
 {
+	//glEnable( GL_SCISSOR_TEST );
+	//glClearColor(1.0f, 0.0f, 0.0f, 0.0f); 
+	//glScissor( 50, 200, 100, 500 );
+	//glClear(GL_COLOR_BUFFER_BIT);  
 	pctx->draw();
+	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
 
 	if (IsIconic())

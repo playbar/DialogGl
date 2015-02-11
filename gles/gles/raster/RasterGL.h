@@ -89,9 +89,10 @@ struct XFillStyle
 		XGradient *mpGradient;
 		XPattern *mpPattern;
 	};
-	//XFillStyle( XColor *color );
-	//XFillStyle( XGradient *gradient );
-	//XFillStyle( XPattern *pattern );
+	XFillStyle();
+	XFillStyle( ccColor4F *color );
+	XFillStyle( XGradient *gradient );
+	XFillStyle( XPattern *pattern );
 };
 
 struct XStrokeStyle
@@ -164,7 +165,7 @@ struct EgPath
 	float starty;
 
 	EgEdge *pEdges;
-	EgEdge *pCurEdge;
+	EgEdge *pEndEdge;
 
 	EgPath *pNext;
 	CMDType cmdType;
@@ -190,8 +191,11 @@ protected:
 
 public:
 	float mLineWidth;
-	XFillStyle mpFileStyle;
-	XStrokeStyle mpStrokeStyle;
+	XFillStyle *mpFillStyle;
+	XStrokeStyle *mpStrokeStyle;
+	ccColor4B mbgcolor;
+	int mWidth;
+	int mHeight;
 public:
 	// p1
 	void fill();
@@ -230,6 +234,7 @@ private:
 	vector< XGradient *> mVecGradient;
 	vector< XPattern *>mVecPattern;
 	EgPath *mEgPaths;
+	EgPath *pEndPath;
 	EgPath *pCurPath;
 	float mcurx;
 	float mcury;
