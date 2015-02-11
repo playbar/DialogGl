@@ -197,25 +197,13 @@ void CCGLProgram::updateUniforms()
     m_uUniforms[kCCUniformPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformPMatrix_s);
 	m_uUniforms[kCCUniformMVMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVMatrix_s);
 	m_uUniforms[kCCUniformMVPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVPMatrix_s);
-	
-	m_uUniforms[kCCUniformTime] = glGetUniformLocation(m_uProgram, kCCUniformTime_s);
-	m_uUniforms[kCCUniformSinTime] = glGetUniformLocation(m_uProgram, kCCUniformSinTime_s);
-	m_uUniforms[kCCUniformCosTime] = glGetUniformLocation(m_uProgram, kCCUniformCosTime_s);
-	
-	m_bUsesTime = (
-                 m_uUniforms[kCCUniformTime] != -1 ||
-                 m_uUniforms[kCCUniformSinTime] != -1 ||
-                 m_uUniforms[kCCUniformCosTime] != -1
-                 );
-    
-	m_uUniforms[kCCUniformRandom01] = glGetUniformLocation(m_uProgram, kCCUniformRandom01_s);
-
-    m_uUniforms[kCCUniformSampler] = glGetUniformLocation(m_uProgram, kCCUniformSampler_s);
+    m_uUniforms[kCCUniformTexture0] = glGetUniformLocation(m_uProgram, kCCUniformTextrue0_s);
+	m_uUniforms[kCCuniformDrawType] = glGetUniformLocation( m_uProgram, kCCUniformDrawType );
 
     this->use();
     
     // Since sample most probably won't change, set it to 0 now.
-    this->setUniformLocationWith1i(m_uUniforms[kCCUniformSampler], 0);
+	glUniform1i( (GLint)m_uUniforms[kCCUniformTexture0],  0 );
 }
 
 bool CCGLProgram::link()
@@ -506,24 +494,6 @@ void CCGLProgram::setUniformsForBuiltins()
     setUniformLocationWithMatrix4fv(m_uUniforms[kCCUniformMVMatrix], matrixMV.mat, 1);
     setUniformLocationWithMatrix4fv(m_uUniforms[kCCUniformMVPMatrix], matrixMVP.mat, 1);
 	
-	if(m_bUsesTime)
-    {
-		//CCDirector *director = CCDirector::sharedDirector();
-		// This doesn't give the most accurate global time value.
-		// Cocos2D doesn't store a high precision time value, so this will have to do.
-		// Getting Mach time per frame per shader using time could be extremely expensive.
-        //float time = director->getTotalFrames() * director->getAnimationInterval();
-		float time = 100;
-		
-        setUniformLocationWith4f(m_uUniforms[kCCUniformTime], time/10.0, time, time*2, time*4);
-        setUniformLocationWith4f(m_uUniforms[kCCUniformSinTime], time/8.0, time/4.0, time/2.0, sinf(time));
-        setUniformLocationWith4f(m_uUniforms[kCCUniformCosTime], time/8.0, time/4.0, time/2.0, cosf(time));
-	}
-	
-	if (m_uUniforms[kCCUniformRandom01] != -1)
-    {
-        setUniformLocationWith4f(m_uUniforms[kCCUniformRandom01], CCRANDOM_0_1(), CCRANDOM_0_1(), CCRANDOM_0_1(), CCRANDOM_0_1());
-	}
 }
 
 void CCGLProgram::reset()

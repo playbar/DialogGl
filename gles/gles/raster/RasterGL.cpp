@@ -1,24 +1,3 @@
-/* Copyright (c) 2012 Scott Lembcke and Howling Moon Software
- * Copyright (c) 2012 cocos2d-x.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 #include "RasterGL.h"
 #include "CCPointExtension.h"
@@ -245,7 +224,7 @@ XFillStyle::XFillStyle( ccColor4F *color )
 
 XFillStyle::XFillStyle( XGradient *gradient )
 {
-	mFillType = FILL_GRADIENT;
+	mFillType = gradient->gradientType;
 	mpGradient = gradient;
 }
 
@@ -262,7 +241,7 @@ void XFillStyle::setFillType( ccColor4F * color )
 }
 void XFillStyle::setFillType( XGradient *gradient )
 {
-	mFillType = FILL_GRADIENT;
+	mFillType = gradient->gradientType;
 	mpGradient = gradient;
 }
 
@@ -281,7 +260,7 @@ XFillStyle * XFillStyle::operator=( ccColor4F * color )
 
 XFillStyle * XFillStyle::operator=( XGradient *gradient )
 {
-	mFillType = FILL_GRADIENT;
+	mFillType = gradient->gradientType;
 	mpGradient = gradient;
 	return this;
 }
@@ -929,7 +908,7 @@ bool XContext::isPointInPath( float x, float y )
 XGradient *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
 {
 	XGradient *p = new XGradient();
-	p->gradientType = Gradient_Line;
+	p->gradientType = FILL_Gradient_Line;
 	p->xStart = x1;
 	p->yStart = y1;
 	p->xEnd = x2;
@@ -950,7 +929,7 @@ XGradient *XContext::CreateRadialGradient( float xStart, float ySttart, float ra
 										  float xEnd, float yEnd, float radiusEnd )
 {
 	XGradient *p = new XGradient();
-	p->gradientType = Gradient_radius;
+	p->gradientType = FILL_Gradient_radius;
 	p->xStart = xStart;
 	p->yStart = ySttart;
 	p->xEnd = xEnd;
@@ -1305,9 +1284,10 @@ void XContext::drawSegment(const CCPoint &from, const CCPoint &to, float radius,
 	m_bDirty = true;
 }
 
+ struct ExtrudeVerts {ccVertex2F offset, n;};
+
 void XContext::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
 {
-    struct ExtrudeVerts {ccVertex2F offset, n;};
 	struct ExtrudeVerts* extrude = (struct ExtrudeVerts*)malloc(sizeof(struct ExtrudeVerts)*count);
 	memset(extrude, 0, sizeof(struct ExtrudeVerts)*count);
 	

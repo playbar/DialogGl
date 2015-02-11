@@ -1,31 +1,3 @@
-/* Copyright (c) 2012 Scott Lembcke and Howling Moon Software
- * Copyright (c) 2012 cocos2d-x.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-/*
- * Code copied & pasted from SpacePatrol game https://github.com/slembcke/SpacePatrol
- *
- * Renamed and added some changes for cocos2d
- *
- */
 
 #ifndef __RASTERGL_H__
 #define __RASTERGL_H__
@@ -39,15 +11,18 @@ using namespace std;
 
 #include "tess.h"
 
-enum Gradient_Type
+enum CTX_FILLTYPE
 {
-	Gradient_Line = 0,
-	Gradient_radius,
+	FILL_NONE = 0,
+	FILL_COLOR,
+	FILL_Gradient_Line,
+	FILL_Gradient_radius,
+	FILL_PATTERN,	
 };
 
 struct CC_DLL XGradient
 {
-	Gradient_Type gradientType;
+	CTX_FILLTYPE gradientType;
 	float xStart, yStart;
 	float xEnd, yEnd;
 	float radiusStart, radiusEnd;
@@ -73,16 +48,9 @@ struct XPattern
 	GLuint texId;
 };
 
-
 struct CC_DLL XFillStyle
 {
-	enum FILLTYPE
-	{
-		FILL_COLOR = 0,
-		FILL_GRADIENT,
-		FILL_PATTERN 
-	};
-	FILLTYPE mFillType;
+	CTX_FILLTYPE mFillType;
 	union
 	{
 		ccColor4F *mpColor;

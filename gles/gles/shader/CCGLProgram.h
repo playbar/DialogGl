@@ -43,7 +43,7 @@ THE SOFTWARE.
 
 enum 
 {
-    kCCVertexAttrib_Position,
+    kCCVertexAttrib_Position = 0,
     kCCVertexAttrib_Color,
     kCCVertexAttrib_TexCoords,
     kCCVertexAttrib_MAX,
@@ -51,42 +51,25 @@ enum
 
 enum 
 {
-	kCCUniformPMatrix,
+	kCCUniformPMatrix= 0,
 	kCCUniformMVMatrix,
 	kCCUniformMVPMatrix,
-	kCCUniformTime,
-	kCCUniformSinTime,
-	kCCUniformCosTime,
-	kCCUniformRandom01,
-	kCCUniformSampler,
-    
+	kCCUniformTexture0,
+	kCCuniformDrawType,
 	kCCUniform_MAX,
 };
-
-#define kCCShader_PositionTextureColor              "ShaderPositionTextureColor"
-#define kCCShader_PositionTextureColorAlphaTest     "ShaderPositionTextureColorAlphaTest"
-#define kCCShader_PositionColor                     "ShaderPositionColor"
-#define kCCShader_PositionTexture                   "ShaderPositionTexture"
-#define kCCShader_PositionTexture_uColor            "ShaderPositionTexture_uColor"
-#define kCCShader_PositionTextureA8Color            "ShaderPositionTextureA8Color"
-#define kCCShader_Position_uColor                   "ShaderPosition_uColor"
-#define kCCShader_PositionLengthTexureColor         "ShaderPositionLengthTextureColor"
 
 // uniform names
 #define kCCUniformPMatrix_s				"CC_PMatrix"
 #define kCCUniformMVMatrix_s			"CC_MVMatrix"
 #define kCCUniformMVPMatrix_s			"CC_MVPMatrix"
-#define kCCUniformTime_s				"CC_Time"
-#define kCCUniformSinTime_s				"CC_SinTime"
-#define kCCUniformCosTime_s				"CC_CosTime"
-#define kCCUniformRandom01_s			"CC_Random01"
-#define kCCUniformSampler_s				"CC_Texture0"
-#define kCCUniformAlphaTestValue		"CC_alpha_value"
+#define kCCUniformTextrue0_s			"CC_Texture0"
+#define kCCUniformDrawType				"u_drawType"
 
 // Attribute names
-#define    kCCAttributeNameColor           "a_color"
-#define    kCCAttributeNamePosition        "a_position"
-#define    kCCAttributeNameTexCoord        "a_texCoord"
+#define kCCAttributeNameColor           "a_color"
+#define kCCAttributeNamePosition        "a_position"
+#define kCCAttributeNameTexCoord        "a_texCoord"
 
 struct _hashUniformEntry;
 
