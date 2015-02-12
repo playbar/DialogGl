@@ -77,7 +77,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	pctx = XContext::create();
 	pctx->mWidth = rect.Width();
 	pctx->mHeight = rect.Height();
-	XGradient *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
+	XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
 	ccColor4F color = {255, 0, 0, 255};
 	pgradient->addColorStop( 0, color );
 	ccColor4F blue = { 0, 255, 0, 255 };

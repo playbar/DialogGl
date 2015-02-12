@@ -20,15 +20,21 @@ enum CTX_FILLTYPE
 	FILL_PATTERN,	
 };
 
-struct CC_DLL XGradient
+struct CC_DLL XGradientLinear
 {
-	CTX_FILLTYPE gradientType;
-	float xStart, yStart;
-	float xEnd, yEnd;
-	float radiusStart, radiusEnd;
+	GLuint texId;
+	int mTexLen;
+	GLubyte *pTexData;
 
-	typedef map<float, ccColor4F> XColors;
-	XColors mXColors;
+	void addColorStop( float index, ccColor4F color );
+
+};
+
+struct CC_DLL XGradientRadial
+{
+	GLuint texId;
+	int mTexLen;
+	GLubyte *pTexData;
 
 	void addColorStop( float index, ccColor4F color );
 
@@ -54,20 +60,20 @@ struct CC_DLL XFillStyle
 	union
 	{
 		ccColor4F *mpColor;
-		XGradient *mpGradient;
+		XGradientLinear *mpGradientLinear;
+		XGradientRadial *mpGradientRadial;
 		XPattern *mpPattern;
 	};
 	XFillStyle();
 	XFillStyle( ccColor4F *color );
-	XFillStyle( XGradient *gradient );
+	XFillStyle( XGradientLinear *gradient );
+	XFillStyle( XGradientRadial *gradient );
 	XFillStyle( XPattern *pattern );
 	void setFillType( ccColor4F * color );
-	void setFillType( XGradient *gradient );
+	void setFillType( XGradientLinear *gradient );
+	void setFillType( XGradientRadial *gradient );
 	void setFillType( XPattern *pattern );
-	XFillStyle *operator=( XFillStyle * fs );
-	XFillStyle *operator=( ccColor4F * color );
-	XFillStyle *operator=( XGradient *gradient );
-	XFillStyle *operator=( XPattern *pattern );
+
 };
 
 struct XStrokeStyle
@@ -82,7 +88,8 @@ struct XStrokeStyle
 	union
 	{
 		ccColor4F *mpColor;
-		XGradient *mpGradient;
+		XGradientLinear *mpGradientLinear;
+		XGradientRadial *mpGradientRadial;
 		XPattern *mpPattern;
 	};
 };
@@ -198,13 +205,13 @@ public:
 	void DrawCommand();
 
 public:
-	XGradient *CreateLinearGradient( float x1, float y1, float x2, float y2 );
+	XGradientLinear *CreateLinearGradient( float x1, float y1, float x2, float y2 );
 	XPattern *CreatePattern( GLuint texId, REPEAT_PAT repat);
-	XGradient *CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
+	XGradientRadial *CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
 		float xEnd, float yEnd, float radiusEnd );
 
 private:
-	vector< XGradient *> mVecGradient;
+	vector< XGradientLinear *> mVecGradient;
 	vector< XPattern *>mVecPattern;
 	EgPath *mEgPaths;
 	EgPath *pEndPath;

@@ -206,7 +206,7 @@ unsigned char* DecodePngDate(unsigned char* fData, long fSize, int& width, int& 
 
 // implementation of CCDrawNode
 
-void XGradient::addColorStop( float index, ccColor4F color )
+void XGradientLinear::addColorStop( float index, ccColor4F color )
 {
 
 }
@@ -222,10 +222,16 @@ XFillStyle::XFillStyle( ccColor4F *color )
 	mpColor = color;
 }
 
-XFillStyle::XFillStyle( XGradient *gradient )
+XFillStyle::XFillStyle( XGradientLinear *gradient )
 {
-	mFillType = gradient->gradientType;
-	mpGradient = gradient;
+	mFillType = FILL_Gradient_Line;
+	mpGradientLinear = gradient;
+}
+
+XFillStyle::XFillStyle( XGradientRadial *gradient )
+{
+	mFillType = FILL_Gradient_radius;
+	mpGradientRadial = gradient;
 }
 
 XFillStyle::XFillStyle( XPattern *pattern )
@@ -239,10 +245,16 @@ void XFillStyle::setFillType( ccColor4F * color )
 	mFillType = FILL_COLOR;
 	mpColor = color;
 }
-void XFillStyle::setFillType( XGradient *gradient )
+void XFillStyle::setFillType( XGradientLinear *gradient )
 {
-	mFillType = gradient->gradientType;
-	mpGradient = gradient;
+	mFillType = FILL_Gradient_Line;
+	mpGradientLinear = gradient;
+}
+
+void XFillStyle::setFillType( XGradientRadial *gradient )
+{
+	mFillType = FILL_Gradient_radius;
+	mpGradientRadial = gradient;
 }
 
 void XFillStyle::setFillType( XPattern *pattern )
@@ -251,26 +263,6 @@ void XFillStyle::setFillType( XPattern *pattern )
 	mpPattern = pattern;
 }
 
-XFillStyle * XFillStyle::operator=( ccColor4F * color )
-{
-	mFillType = FILL_COLOR;
-	mpColor = color;
-	return this;
-}
-
-XFillStyle * XFillStyle::operator=( XGradient *gradient )
-{
-	mFillType = gradient->gradientType;
-	mpGradient = gradient;
-	return this;
-}
-
-XFillStyle * XFillStyle::operator=( XPattern *pattern )
-{
-	mFillType = FILL_PATTERN;
-	mpPattern = pattern;
-	return this;
-}
 
 //void XFillStyle::addColorStop( float index, ccColor4F color )
 //{
@@ -905,14 +897,10 @@ bool XContext::isPointInPath( float x, float y )
 	return false;
 }
 
-XGradient *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
+XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
 {
-	XGradient *p = new XGradient();
-	p->gradientType = FILL_Gradient_Line;
-	p->xStart = x1;
-	p->yStart = y1;
-	p->xEnd = x2;
-	p->yEnd = y2;
+	XGradientLinear *p = new XGradientLinear();
+	
 	mVecGradient.push_back( p );
 	return p;
 }
@@ -925,18 +913,11 @@ XPattern *XContext::CreatePattern( GLuint texId, REPEAT_PAT repat)
 	mVecPattern.push_back( p );
 	return p;
 }
-XGradient *XContext::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
+XGradientRadial *XContext::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
 										  float xEnd, float yEnd, float radiusEnd )
 {
-	XGradient *p = new XGradient();
-	p->gradientType = FILL_Gradient_radius;
-	p->xStart = xStart;
-	p->yStart = ySttart;
-	p->xEnd = xEnd;
-	p->yEnd = yEnd;
-	p->radiusStart = radiusStart;
-	p->radiusEnd = radiusEnd;
-	mVecGradient.push_back( p );
+	XGradientRadial *p = new XGradientRadial();
+	
 	return p;
 }
 
@@ -1185,8 +1166,8 @@ GLuint XContext::initTexData( const void *pData, int width, int height )
 	glBindTexture( GL_TEXTURE_2D, texId );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
 	glBindTexture( GL_TEXTURE_2D, 0 );
 	return texId;
@@ -1228,7 +1209,7 @@ void XContext::testDrawTexWithMatixCoord()
 	kmMat4 texMat = 
 	{
 		256, 0, 0, 0,
-		0, 256, 0, 0,
+		0, 128, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
@@ -1239,15 +1220,15 @@ void XContext::testDrawTexWithMatixCoord()
 	kmMat4RotationZ( &rotaMat, -60 );
 	kmMat4Identity( &texMatIn );
 	kmMat4Inverse( &texMatIn, &texMat );
-	kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+	//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
 
 	glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
 	GLfloat verts[4][9] = 
 	{
-		{0.0f,  0.0f,0.0f,		0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f,  256.0f, 0.0f,	0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
-		{256.0f, 0.0f,0.0f,		1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
-		{256.0f, 256.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f,  256.0f,0.0f,		0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,	0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{256.0f, 256.0f,0.0f,		1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{256.0f, 0.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
 	};
 
 	glActiveTexture( GL_TEXTURE0 );
