@@ -78,6 +78,8 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	pctx->mHeight = rect.Height();
 
 	//fillRectWithPattern();
+	//fillRectWithColor();
+	fillRectGradientLinear();
 
 
 	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
@@ -176,9 +178,9 @@ void COpenGLDialogDlg::fillRectWithPattern()
 
 	unsigned char *pImgData = pctx->DecodePngData( pData, ilen, width, height );
 	pat->texId = pctx->initTexData( pImgData, width, height );
-	pat->widht = width;
+	pat->width = width;
 	pat->height = height;
-	pat->mRepeatePat = en_REPEAT_Y;
+	pat->mRepeatePat = en_REPEAT_X;
 
 	delete []pData;
 	//free( pImgData );
@@ -186,6 +188,18 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	pctx->mpFillStyle->setFillType( pat );
 	pctx->fillRect( 20, 20, 300, 300 );
 
+}
+
+void COpenGLDialogDlg::fillRectGradientLinear()
+{
+	XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 40, 0 );
+	ccColor4F red = { 1, 0, 0, 1 };
+	ccColor4F green = { 0, 1, 0, 1 };
+	pgradient->addColorStop( 0, red );
+	pgradient->addColorStop( 1, green );
+	pctx->mpFillStyle->setFillType( pgradient );
+	pctx->fillRect( 0, 0, 150, 100 );
+	return;
 }
 
 void COpenGLDialogDlg::OnPaint() 

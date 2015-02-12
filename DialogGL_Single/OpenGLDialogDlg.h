@@ -46,6 +46,7 @@ protected:
 	// test graphics funs
 	void fillRectWithColor();
 	void fillRectWithPattern();
+	void fillRectGradientLinear();
 	//{{AFX_MSG(COpenGLDialogDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();

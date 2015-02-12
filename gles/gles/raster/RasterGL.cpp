@@ -75,6 +75,12 @@ static inline ccTex2F __t(const ccVertex2F &v)
 	return *(ccTex2F*)&v;
 }
 
+static inline ccTex2F __t( float u, float v )
+{
+	ccTex2F tf = { u, v };
+	return tf;
+}
+
 
 typedef struct 
 {
@@ -772,13 +778,34 @@ void XContext::fillRect( float x, float y, float width, float height )
 	{
 		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_COLOR );
 		glUniform4fv( (GLint)gUniforms[kCCUniformFillColor], 1, (GLfloat*)&mpFillStyle->mColor );
+		unsigned int vertex_count = 2 * 6;
+		ensureCapacity( vertex_count );
+		ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
+		ccV2F_C4B_T2F_Triangle triangle =
+		{
+			{ vertex2( x, y), col, {0, 0} },
+			{ vertex2( x, y + height), col, {0, 0 } },
+			{ vertex2( x + width, y), col, { 0, 0 }  },
+		};
+		ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+
+		triangles[0] = triangle;
+		ccV2F_C4B_T2F_Triangle triangle1 =
+		{
+			{ vertex2( x, y + height), col, { 0, 0 } },
+			{ vertex2( x + width, y), col,  { 0, 0 } },
+			{ vertex2( x + width, y + height ), col, { 0, 0 } }
+		};
+		triangles[1] = triangle1;
+		m_nBufferCount += vertex_count;
+		m_bDirty = true;
 	}
 	else if( mpFillStyle->mFillType == FILL_PATTERN )
 	{
 		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_PATTERN );
 		kmMat4 texMat = 
 		{
-			mpFillStyle->mpPattern->widht, 0, 0, 0,
+			mpFillStyle->mpPattern->width, 0, 0, 0,
 			0, mpFillStyle->mpPattern->height, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1
@@ -815,30 +842,29 @@ void XContext::fillRect( float x, float y, float width, float height )
 
 		//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
 		glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
+		unsigned int vertex_count = 2 * 6;
+		ensureCapacity( vertex_count );
+		ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
+		ccV2F_C4B_T2F_Triangle triangle =
+		{
+			{ vertex2( x, y + height), col, {0, 0 } },
+			{ vertex2( x, y), col, {0, height / mpFillStyle->mpPattern->height } },
+			{ vertex2( x + width, y + height ), col, { width / mpFillStyle->mpPattern->width, 0 }  },
+		};
+		ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+
+		triangles[0] = triangle;
+		ccV2F_C4B_T2F_Triangle triangle1 =
+		{
+			{ vertex2( x, y), col, { 0, height / mpFillStyle->mpPattern->height } },
+			{ vertex2( x + width, y + height), col,  { width / mpFillStyle->mpPattern->width, 0 } },
+			{ vertex2( x + width, y ), col, { width / mpFillStyle->mpPattern->width, height / mpFillStyle->mpPattern->height } }
+		};
+		triangles[1] = triangle1;
+		m_nBufferCount += vertex_count;
+		m_bDirty = true;
 	}
-
-
-	unsigned int vertex_count = 2 * 6;
-	ensureCapacity( vertex_count );
-	ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
-	ccV2F_C4B_T2F_Triangle triangle =
-	{
-		{ vertex2( x, y), col, __t( v2fzero) },
-		{ vertex2( x + width, y), col, __t( v2fzero ) },
-		{ vertex2( x, y + height), col, __t( v2fzero ) }
-	};
-	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
-	
-	triangles[0] = triangle;
-	ccV2F_C4B_T2F_Triangle triangle1 =
-	{
-		{ vertex2( x + width, y), col, __t( v2fzero) },
-		{ vertex2( x, y + height), col, __t( v2fzero ) },
-		{ vertex2( x + width, y + height ), col, __t( v2fzero ) }
-	};
-	triangles[1] = triangle1;
-	m_nBufferCount += vertex_count;
-	m_bDirty = true;
+	return;
 }
 
 void XContext::strokeRect( float x, float y, float width, float height )
@@ -949,7 +975,9 @@ bool XContext::isPointInPath( float x, float y )
 XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
 {
 	XGradientLinear *p = new XGradientLinear();
-	
+	float flen = sqrt( (x2-x1) * (x2 - x1) + (y2 - y1) * ( y2 - y1 ));
+	p->miLen = ceil( flen );
+	p->pTexData = new GLubyte[ p->miLen * 4 ];
 	mVecGradient.push_back( p );
 	return p;
 }
@@ -1173,7 +1201,7 @@ void XContext::initTest()
 
 	XPattern *pattern = new XPattern();
 	pattern->texId = texid;
-	pattern->widht = width;
+	pattern->width = width;
 	pattern->height = height;
 	pattern->mRepeatePat = en_REPEAT;
 	mpFillStyle->setFillType( pattern );
@@ -1188,8 +1216,8 @@ GLuint XContext::initTexData( const void *pData, int width, int height )
 	glBindTexture( GL_TEXTURE_2D, texId );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
 	glBindTexture( GL_TEXTURE_2D, 0 );
 	return texId;
@@ -1239,18 +1267,22 @@ void XContext::testDrawTexWithMatixCoord()
 	kmMat4 rotaMat;
 	kmMat4 tranMat;
 	kmMat4Identity( &rotaMat );
-	kmMat4RotationX( &rotaMat, 180 );
+	kmMat4RotationX( &rotaMat, 3.14 );
 	kmMat4Identity( &texMatIn );
 	kmMat4Inverse( &texMatIn, &texMat );
 	//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
 
+	kmVec3 in = { 64.0f, 64.0f, 0.0f };
+	kmVec3 out;
+	kmVec3Transform( &out, &in, &texMatIn );
+
 	glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
 	GLfloat verts[4][9] = 
 	{
-		{0.0f,  256.0f,0.0f,	0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f,  0.0f, 0.0f,		0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
-		{256.0f, 256.0f,0.0f,	1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
-		{256.0f, 0.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f,  64.0f,0.0f,	0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,	0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{64.0f, 64.0f,0.0f,	1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{64.0f, 0.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
 	};
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -1325,8 +1357,8 @@ void XContext::draw()
 	mProgram->setMatrixValue();
     //getShaderProgram()->setUniformsForBuiltins();
 
-	testDrawTexWithMatixCoord();
-	return;
+	//testDrawTexWithMatixCoord();
+	//return;
     
     render();
 }

@@ -25,7 +25,7 @@ enum CTX_FILLTYPE
 struct CC_DLL XGradientLinear
 {
 	GLuint texId;
-	int mTexLen;
+	int miLen;
 	GLubyte *pTexData;
 
 	void addColorStop( float index, ccColor4F color );
@@ -54,7 +54,7 @@ struct XPattern
 {
 	REPEAT_PAT mRepeatePat;
 	GLuint texId;
-	int widht;
+	int width;
 	int height;
 };
 

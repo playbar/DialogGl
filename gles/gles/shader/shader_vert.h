@@ -28,6 +28,7 @@ void main()															\n\
 	else if( u_drawType == 4 ) \n\
 	{ \n\
 		gl_Position = CC_MVPMatrix * a_position;	\n\
+		//v_texcoord = a_texcoord; \n\
 		v_texcoord = vec2( CC_TEXMatrix * a_position );					\n\
 	} \n\
 	else if( u_drawType == 5 ) \n\
