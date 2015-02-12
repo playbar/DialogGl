@@ -16,13 +16,17 @@ void main()														\n\
 	}\n\
 	else if( u_drawType == 1 ) \n\
 	{ \n\
+		gl_FragColor = CC_FillColor;\n\
+	} \n\
+	else if( u_drawType == 4 ) \n\
+	{ \n\
 		gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
 		//gl_FragColor = vec4( 1, 0, 0, 1 ); \n\
 	} \n\
-	else if( u_drawType == 2 ) \n\
+	else if( u_drawType == 5 ) \n\
 	{ \n\
-	gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
-	//gl_FragColor = vec4( 1, 0, 0, 1 ); \n\
+		gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
+		//gl_FragColor = vec4( 1, 0, 0, 1 ); \n\
 	} \n\
 }																\n\
 ";

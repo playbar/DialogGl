@@ -73,15 +73,18 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//eglView->setFrameSize( 800, 600 );
 	eglView->CreateView( m_hWnd, 0, 0, rect.Width(), rect.Height() );
 	eglView->setGLDefaultValues();
-
 	pctx = XContext::create();
 	pctx->mWidth = rect.Width();
 	pctx->mHeight = rect.Height();
-	XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
-	ccColor4F color = {255, 0, 0, 255};
-	pgradient->addColorStop( 0, color );
-	ccColor4F blue = { 0, 255, 0, 255 };
-	pgradient->addColorStop( 1, blue );
+
+	fillRectWithPattern();
+
+
+	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
+	//ccColor4F color = {255, 0, 0, 255};
+	//pgradient->addColorStop( 0, color );
+	//ccColor4F blue = { 0, 255, 0, 255 };
+	//pgradient->addColorStop( 1, blue );
 
 	//pctx->mpFillStyle->setFillType( pgradient );
 	//pctx->fillRect( 20, 20, 150, 100 );
@@ -150,6 +153,39 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	return TRUE;  
 } 
 
+void COpenGLDialogDlg::fillRectWithColor()
+{
+	ccColor4F color = { 1, 0.9, 0, 1 };
+	pctx->mpFillStyle->setFillType( color );
+	pctx->fillRect( 20, 20, 100, 100 );
+}
+
+void COpenGLDialogDlg::fillRectWithPattern()
+{
+	XPattern *pat = new XPattern();
+	FILE *pFile = fopen( "c:/test.png", "rb" );
+	fseek( pFile, 0, SEEK_END );
+	int ilen = ftell( pFile );
+	fseek( pFile, 0, SEEK_SET );
+	unsigned char *pData = new unsigned char[ilen ];
+	fread( pData, ilen, 1, pFile );
+	fclose( pFile );
+
+	int width = 0;
+	int height = 0;
+
+	unsigned char *pImgData = pctx->DecodePngData( pData, ilen, width, height );
+	pat->texId = pctx->initTexData( pImgData, width, height );
+	pat->widht = width;
+	pat->height = height;
+
+	delete []pData;
+	//free( pImgData );
+
+	pctx->mpFillStyle->setFillType( pat );
+	pctx->fillRect( 20, 20, 300, 300 );
+
+}
 
 void COpenGLDialogDlg::OnPaint() 
 {

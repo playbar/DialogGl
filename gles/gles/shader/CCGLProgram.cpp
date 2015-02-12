@@ -124,6 +124,7 @@ bool CCGLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* sour
 		"uniform mat4 CC_TEXMatrix; \n"
         "uniform sampler2D CC_Texture0;	\n"
 		"uniform int u_drawType; \n"
+		"uniform vec4 CC_FillColor; \n"
         "//CC INCLUDES END\n\n",
         source,
     };

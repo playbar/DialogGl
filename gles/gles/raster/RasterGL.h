@@ -11,13 +11,15 @@ using namespace std;
 
 #include "tess.h"
 
+// 着色器填充方式
 enum CTX_FILLTYPE
 {
 	FILL_NONE = 0,
-	FILL_COLOR,
-	FILL_Gradient_Line,
-	FILL_Gradient_radius,
-	FILL_PATTERN,	
+	FILL_COLOR = 1,
+	FILL_Gradient_Line = 2,
+	FILL_Gradient_radius = 3,
+	FILL_PATTERN = 4,	
+	FILL_TEST = 5,
 };
 
 struct CC_DLL XGradientLinear
@@ -52,6 +54,8 @@ struct XPattern
 {
 	REPEAT_PAT mRepeatePat;
 	GLuint texId;
+	int widht;
+	int height;
 };
 
 struct CC_DLL XFillStyle
@@ -59,17 +63,17 @@ struct CC_DLL XFillStyle
 	CTX_FILLTYPE mFillType;
 	union
 	{
-		ccColor4F *mpColor;
+		ccColor4F mColor;
 		XGradientLinear *mpGradientLinear;
 		XGradientRadial *mpGradientRadial;
 		XPattern *mpPattern;
 	};
 	XFillStyle();
-	XFillStyle( ccColor4F *color );
+	XFillStyle( ccColor4F color );
 	XFillStyle( XGradientLinear *gradient );
 	XFillStyle( XGradientRadial *gradient );
 	XFillStyle( XPattern *pattern );
-	void setFillType( ccColor4F * color );
+	void setFillType( ccColor4F  color );
 	void setFillType( XGradientLinear *gradient );
 	void setFillType( XGradientRadial *gradient );
 	void setFillType( XPattern *pattern );
@@ -228,6 +232,7 @@ public:
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
 	void testDrawTex();
+	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
 	void testDrawTexWithMatixCoord();
     virtual void draw();
     

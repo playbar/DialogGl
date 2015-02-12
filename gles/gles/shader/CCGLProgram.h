@@ -57,6 +57,7 @@ enum
 	kCCUniformTexMatrix,
 	kCCUniformTexture0,
 	kCCuniformDrawType,
+	kCCUniformFillColor,
 	kCCUniform_MAX,
 };
 
@@ -67,6 +68,7 @@ enum
 #define kCCUniformTexMatrix_s			"CC_TEXMatrix"
 #define kCCUniformTextrue0_s			"CC_Texture0"
 #define kCCUniformDrawType_s			"u_drawType"
+#define kCCUniformFillColor_s			"CC_FillColor"
 
 // Attribute names
 #define kCCAttributeNameColor           "a_color"

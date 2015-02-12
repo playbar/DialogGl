@@ -98,7 +98,7 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 }
 
 
-unsigned char* DecodePngDate(unsigned char* fData, long fSize, int& width, int& height)
+unsigned char* XContext::DecodePngData(unsigned char* fData, long fSize, int& width, int& height)
 {
 	unsigned char* image_data = NULL;
 #ifdef _WIN32
@@ -216,10 +216,10 @@ XFillStyle::XFillStyle()
 
 }
 
-XFillStyle::XFillStyle( ccColor4F *color )
+XFillStyle::XFillStyle( ccColor4F color )
 {
 	mFillType = FILL_COLOR;
-	mpColor = color;
+	mColor = color;
 }
 
 XFillStyle::XFillStyle( XGradientLinear *gradient )
@@ -240,10 +240,10 @@ XFillStyle::XFillStyle( XPattern *pattern )
 	mpPattern = pattern;
 }
 
-void XFillStyle::setFillType( ccColor4F * color )
+void XFillStyle::setFillType( ccColor4F color )
 {
 	mFillType = FILL_COLOR;
-	mpColor = color;
+	mColor = color;
 }
 void XFillStyle::setFillType( XGradientLinear *gradient )
 {
@@ -330,7 +330,7 @@ void XContext::fill()
 			while( p )
 			{
 				CCPoint to( p->endx, p->endy );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				from.x = to.x;
 				from.y = to.y;
 				p = p->pNext;
@@ -407,7 +407,7 @@ void XContext::fill()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				char chTmp[256];
 				sprintf( chTmp, "-->x1:%f, y1:%f, x2:%f, y2:%f", x, y, x1, y1 );
 				OutputDebugStringA( chTmp );
@@ -438,7 +438,7 @@ void XContext::fill()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				x = x1;
 				y = y1;
 			}
@@ -497,7 +497,7 @@ void XContext::stroke()
 			while( p )
 			{
 				CCPoint to( p->endx, p->endy );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				from.x = to.x;
 				from.y = to.y;
 				p = p->pNext;
@@ -510,10 +510,10 @@ void XContext::stroke()
 			CCPoint tr( pEdge->endx, pTmpPath->starty );
 			CCPoint bl( pTmpPath->startx, pEdge->endy );
 			CCPoint br( pEdge->endx, pEdge->endy );
-			drawSegment( tl, tr, mLineWidth, *mpFillStyle->mpColor );
-			drawSegment( tr, br, mLineWidth, *mpFillStyle->mpColor );
-			drawSegment( br, bl, mLineWidth, *mpFillStyle->mpColor );
-			drawSegment( bl, tl, mLineWidth, *mpFillStyle->mpColor );
+			drawSegment( tl, tr, mLineWidth, mpFillStyle->mColor );
+			drawSegment( tr, br, mLineWidth, mpFillStyle->mColor );
+			drawSegment( br, bl, mLineWidth, mpFillStyle->mColor );
+			drawSegment( bl, tl, mLineWidth, mpFillStyle->mColor );
 			pCurPath = pTmpPath;
 		}
 		else if( pTmpPath->cmdType == CTX_ARC )
@@ -561,7 +561,7 @@ void XContext::stroke()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				char chTmp[256];
 				sprintf( chTmp, "-->x1:%f, y1:%f, x2:%f, y2:%f", x, y, x1, y1 );
 				OutputDebugStringA( chTmp );
@@ -592,7 +592,7 @@ void XContext::stroke()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				x = x1;
 				y = y1;
 			}
@@ -768,10 +768,35 @@ void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 //p3
 void XContext::fillRect( float x, float y, float width, float height )
 {
+	if ( mpFillStyle->mFillType == FILL_COLOR )
+	{
+		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_COLOR );
+		glUniform4fv( (GLint)gUniforms[kCCUniformFillColor], 1, (GLfloat*)&mpFillStyle->mColor );
+	}
+	else if( mpFillStyle->mFillType == FILL_PATTERN )
+	{
+		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_PATTERN );
+		kmMat4 texMat = 
+		{
+			mpFillStyle->mpPattern->widht, 0, 0, 0,
+			0, mpFillStyle->mpPattern->height, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		};
+		kmMat4 texMatIn;
+		kmMat4 rotaMat;
+		kmMat4 tranMat;
+		kmMat4Identity( &rotaMat );
+		kmMat4RotationZ( &rotaMat, -60 );
+		kmMat4Identity( &texMatIn );
+		kmMat4Inverse( &texMatIn, &texMat );
+		//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+		glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
+	}
+
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity( vertex_count );
-	ccColor4F color = { 1.0, 1.0, 0, 1.0};
-	ccColor4B col = ccc4BFromccc4F( color );
+	ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
 	ccV2F_C4B_T2F_Triangle triangle =
 	{
 		{ vertex2( x, y), col, __t( v2fzero) },
@@ -798,10 +823,10 @@ void XContext::strokeRect( float x, float y, float width, float height )
 	CCPoint tr( x + width, y );
 	CCPoint bl( x, y + height );
 	CCPoint br( x + width, y + height );
-	drawSegment( tl, tr, mLineWidth, *mpFillStyle->mpColor );
-	drawSegment( tr, br, mLineWidth, *mpFillStyle->mpColor );
-	drawSegment( br, bl, mLineWidth, *mpFillStyle->mpColor );
-	drawSegment( bl, tl, mLineWidth, *mpFillStyle->mpColor );
+	drawSegment( tl, tr, mLineWidth, mpFillStyle->mColor );
+	drawSegment( tr, br, mLineWidth, mpFillStyle->mColor );
+	drawSegment( br, bl, mLineWidth, mpFillStyle->mColor );
+	drawSegment( bl, tl, mLineWidth, mpFillStyle->mColor );
 	return;
 }
 
@@ -934,7 +959,7 @@ void XContext::DrawCommand()
 			while( p )
 			{
 				CCPoint to( p->endx, p->endy );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				from.x = to.x;
 				from.y = to.y;
 				p = p->pNext;
@@ -1011,7 +1036,7 @@ void XContext::DrawCommand()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				char chTmp[256];
 				sprintf( chTmp, "-->x1:%f, y1:%f, x2:%f, y2:%f", x, y, x1, y1 );
 				OutputDebugStringA( chTmp );
@@ -1042,7 +1067,7 @@ void XContext::DrawCommand()
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
-				drawSegment( from, to, mLineWidth, *mpFillStyle->mpColor );
+				drawSegment( from, to, mLineWidth, mpFillStyle->mColor );
 				x = x1;
 				y = y1;
 			}
@@ -1056,7 +1081,7 @@ XContext* XContext::create()
 {
     XContext* pRet = new XContext();
     pRet->init();
-	pRet->initTest();
+	//pRet->initTest();
     return pRet;
 }
 
@@ -1103,35 +1128,6 @@ bool XContext::init()
     return true;
 }
 
-#define	checkImageWidth 64
-#define	checkImageHeight 64
-static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
-static GLubyte otherImage[checkImageHeight][checkImageWidth][4];
-
-static GLuint texName[2];
-
-void makeCheckImages(void)
-{
-	int i, j, c;
-
-	for (i = 0; i < checkImageHeight; i++) 
-	{
-		for (j = 0; j < checkImageWidth; j++) 
-		{
-			c = ((((i&0x8)==0)^((j&0x8))==0))*255;
-			checkImage[i][j][0] = (GLubyte) c;
-			checkImage[i][j][1] = (GLubyte) c;
-			checkImage[i][j][2] = (GLubyte) c;
-			checkImage[i][j][3] = (GLubyte) 255;
-			c = ((((i&0x10)==0)^((j&0x10))==0))*255;
-			otherImage[i][j][0] = (GLubyte) c;
-			otherImage[i][j][1] = (GLubyte) 0;
-			otherImage[i][j][2] = (GLubyte) 0;
-			otherImage[i][j][3] = (GLubyte) 255;
-		}
-	}
-}
-
 
 void XContext::initTest()
 {
@@ -1145,7 +1141,7 @@ void XContext::initTest()
 
 	int width = 0;
 	int height = 0;
-	unsigned char *pImgData = DecodePngDate( pData, ilen, width, height );
+	unsigned char *pImgData = DecodePngData( pData, ilen, width, height );
 
 	GLuint texid = initTexData( pImgData, width, height );
 	//makeCheckImages();
@@ -1153,6 +1149,8 @@ void XContext::initTest()
 
 	XPattern *pattern = new XPattern();
 	pattern->texId = texid;
+	pattern->widht = width;
+	pattern->height = height;
 	pattern->mRepeatePat = en_REPEAT;
 	mpFillStyle->setFillType( pattern );
 
@@ -1257,19 +1255,39 @@ void XContext::render()
         m_bDirty = false;
     }
 
-    ccGLEnableVertexAttribs(kCCVertexAttribFlag_PosColorTex);
-    glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-    // vertex
-    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
-    
-    // color
-    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, colors));
-    
-    // texcood
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+	if ( mpFillStyle->mFillType == FILL_COLOR )
+	{
+		glEnableVertexAttribArray(kCCVertexAttrib_Position);
+		glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
+		glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glDisableVertexAttribArray( kCCVertexAttrib_Position );
+	}
 
-    glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if ( mpFillStyle->mFillType == FILL_PATTERN )
+	{
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpPattern->texId );
+		glEnableVertexAttribArray( kCCVertexAttrib_Position );
+		glVertexAttribPointer( kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof( ccV2F_C4B_T2F),( GLvoid*)offsetof(ccV2F_C4B_T2F, vertices));
+		glDrawArrays( GL_TRIANGLES, 0, m_nBufferCount );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glDisableVertexAttribArray( kCCVertexAttrib_Position );
+	}
+
+    //ccGLEnableVertexAttribs(kCCVertexAttribFlag_PosColorTex);
+    //glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
+    // vertex
+	
+    //glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
+    
+    // glEnableVertexAttribArray(kCCVertexAttrib_Color);
+    //glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, colors));
+    
+    // glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
+    //glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+
+  
     
     //CC_INCREMENT_GL_DRAWS(1);
 }
@@ -1283,8 +1301,8 @@ void XContext::draw()
 	mProgram->setMatrixValue();
     //getShaderProgram()->setUniformsForBuiltins();
 
-	testDrawTexWithMatixCoord();
-	return;
+	//testDrawTexWithMatixCoord();
+	//return;
     
     render();
 }

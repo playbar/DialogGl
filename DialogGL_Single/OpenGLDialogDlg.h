@@ -42,10 +42,10 @@ protected:
 
 	EGLView* eglView;
 	XContext *pctx;
-	//MainLayer *mMainLayer;
-	//BwGLView mBwGLView;
 
-	// Generierte Message-Map-Funktionen
+	// test graphics funs
+	void fillRectWithColor();
+	void fillRectWithPattern();
 	//{{AFX_MSG(COpenGLDialogDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
