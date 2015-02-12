@@ -1198,10 +1198,10 @@ void XContext::testDrawTex()
 	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 1 );
 	GLfloat verts[4][9] = 
 	{
-		{0.0f,  256.0f,0.0f,	0.0f, 1.0f,	0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f,  0.0f, 0.0f,		0.0f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f},
-		{256.0f, 256.0f,0.0f,	1.0f, 1.0f,	1.0f, 1.0f, 0.0f, 1.0f},
-		{256.0f, 00.0f, 0.0f,	1.0f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f,  256.0f,0.0f,	0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,		0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{256.0f, 256.0f,0.0f,	1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{256.0f, 00.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
 	};
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -1217,6 +1217,52 @@ void XContext::testDrawTex()
 	glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
 	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE,  9 * sizeof(GLfloat), &verts[0][3] );
 	
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	return;
+}
+
+void XContext::testDrawTexWithMatixCoord()
+{
+	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 2 );
+
+	kmMat4 texMat = 
+	{
+		256, 0, 0, 0,
+		0, 256, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+	kmMat4 texMatIn;
+	kmMat4 rotaMat;
+	kmMat4 tranMat;
+	kmMat4Identity( &rotaMat );
+	kmMat4RotationZ( &rotaMat, -60 );
+	kmMat4Identity( &texMatIn );
+	kmMat4Inverse( &texMatIn, &texMat );
+	kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+
+	glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
+	GLfloat verts[4][9] = 
+	{
+		{0.0f,  0.0f,0.0f,		0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  256.0f, 0.0f,	0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{256.0f, 0.0f,0.0f,		1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{256.0f, 256.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
+	};
+
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpPattern->texId );
+	//int ilen = sizeof(ccV2F_C4F_T2F);
+	glEnableVertexAttribArray( kCCVertexAttrib_Position);
+	glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE,  9 * sizeof( GLfloat), &verts[0][0] );
+
+	//color
+	//glEnableVertexAttribArray( kCCVertexAttrib_Color );
+	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 9*sizeof(GLfloat), &verts[0][5]);
+
+	//glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
+	//glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE,  9 * sizeof(GLfloat), &verts[0][3] );
+
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	return;
 }
@@ -1256,7 +1302,7 @@ void XContext::draw()
 	mProgram->setMatrixValue();
     //getShaderProgram()->setUniformsForBuiltins();
 
-	testDrawTex();
+	testDrawTexWithMatixCoord();
 	return;
     
     render();

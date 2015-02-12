@@ -121,6 +121,7 @@ bool CCGLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* sour
         "uniform mat4 CC_PMatrix;\n"
         "uniform mat4 CC_MVMatrix;\n"
         "uniform mat4 CC_MVPMatrix;\n"
+		"uniform mat4 CC_TEXMatrix; \n"
         "uniform sampler2D CC_Texture0;	\n"
 		"uniform int u_drawType; \n"
         "//CC INCLUDES END\n\n",
@@ -167,6 +168,7 @@ void CCGLProgram::updateUniforms()
     gUniforms[kCCUniformPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformPMatrix_s);
 	gUniforms[kCCUniformMVMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVMatrix_s);
 	gUniforms[kCCUniformMVPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVPMatrix_s);
+	gUniforms[kCCUniformTexMatrix] = glGetUniformLocation( m_uProgram, kCCUniformTexMatrix_s );
     gUniforms[kCCUniformTexture0] = glGetUniformLocation(m_uProgram, kCCUniformTextrue0_s);
 	gUniforms[kCCuniformDrawType] = glGetUniformLocation( m_uProgram, kCCUniformDrawType_s );
 

@@ -54,6 +54,7 @@ enum
 	kCCUniformPMatrix= 0,
 	kCCUniformMVMatrix,
 	kCCUniformMVPMatrix,
+	kCCUniformTexMatrix,
 	kCCUniformTexture0,
 	kCCuniformDrawType,
 	kCCUniform_MAX,
@@ -63,6 +64,7 @@ enum
 #define kCCUniformPMatrix_s				"CC_PMatrix"
 #define kCCUniformMVMatrix_s			"CC_MVMatrix"
 #define kCCUniformMVPMatrix_s			"CC_MVPMatrix"
+#define kCCUniformTexMatrix_s			"CC_TEXMatrix"
 #define kCCUniformTextrue0_s			"CC_Texture0"
 #define kCCUniformDrawType_s			"u_drawType"
 

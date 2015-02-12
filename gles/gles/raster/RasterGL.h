@@ -221,6 +221,7 @@ public:
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
 	void testDrawTex();
+	void testDrawTexWithMatixCoord();
     virtual void draw();
     
     /** draw a dot at a position, with a given radius and color */

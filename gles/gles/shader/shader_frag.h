@@ -19,5 +19,10 @@ void main()														\n\
 		gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
 		//gl_FragColor = vec4( 1, 0, 0, 1 ); \n\
 	} \n\
+	else if( u_drawType == 2 ) \n\
+	{ \n\
+	gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
+	//gl_FragColor = vec4( 1, 0, 0, 1 ); \n\
+	} \n\
 }																\n\
 ";
