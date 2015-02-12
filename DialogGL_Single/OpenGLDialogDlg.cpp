@@ -77,7 +77,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	pctx->mWidth = rect.Width();
 	pctx->mHeight = rect.Height();
 
-	fillRectWithPattern();
+	//fillRectWithPattern();
 
 
 	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );

@@ -1105,7 +1105,7 @@ XContext* XContext::create()
 {
     XContext* pRet = new XContext();
     pRet->init();
-	//pRet->initTest();
+	pRet->initTest();
     return pRet;
 }
 
@@ -1226,12 +1226,12 @@ void XContext::testDrawTex()
 
 void XContext::testDrawTexWithMatixCoord()
 {
-	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 2 );
+	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 4 );
 
 	kmMat4 texMat = 
 	{
-		256, 0, 0, 0,
-		0, 128, 0, 0,
+		64, 0, 0, 0,
+		0, 64, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
@@ -1239,7 +1239,7 @@ void XContext::testDrawTexWithMatixCoord()
 	kmMat4 rotaMat;
 	kmMat4 tranMat;
 	kmMat4Identity( &rotaMat );
-	kmMat4RotationZ( &rotaMat, -60 );
+	kmMat4RotationX( &rotaMat, 180 );
 	kmMat4Identity( &texMatIn );
 	kmMat4Inverse( &texMatIn, &texMat );
 	//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
@@ -1247,9 +1247,9 @@ void XContext::testDrawTexWithMatixCoord()
 	glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
 	GLfloat verts[4][9] = 
 	{
-		{0.0f,  256.0f,0.0f,		0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f,  0.0f, 0.0f,	0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
-		{256.0f, 256.0f,0.0f,		1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f,  256.0f,0.0f,	0.0f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,		0.0f, 1.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{256.0f, 256.0f,0.0f,	1.0f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f},
 		{256.0f, 0.0f, 0.0f,	1.0f, 1.0f,	0.0f, 1.0f, 0.0f, 1.0f},
 	};
 
@@ -1325,8 +1325,8 @@ void XContext::draw()
 	mProgram->setMatrixValue();
     //getShaderProgram()->setUniformsForBuiltins();
 
-	//testDrawTexWithMatixCoord();
-	//return;
+	testDrawTexWithMatixCoord();
+	return;
     
     render();
 }
