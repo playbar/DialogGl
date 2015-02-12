@@ -1122,6 +1122,36 @@ bool XContext::init()
     return true;
 }
 
+#define	checkImageWidth 64
+#define	checkImageHeight 64
+static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
+static GLubyte otherImage[checkImageHeight][checkImageWidth][4];
+
+static GLuint texName[2];
+
+void makeCheckImages(void)
+{
+	int i, j, c;
+
+	for (i = 0; i < checkImageHeight; i++) 
+	{
+		for (j = 0; j < checkImageWidth; j++) 
+		{
+			c = ((((i&0x8)==0)^((j&0x8))==0))*255;
+			checkImage[i][j][0] = (GLubyte) c;
+			checkImage[i][j][1] = (GLubyte) c;
+			checkImage[i][j][2] = (GLubyte) c;
+			checkImage[i][j][3] = (GLubyte) 255;
+			c = ((((i&0x10)==0)^((j&0x10))==0))*255;
+			otherImage[i][j][0] = (GLubyte) c;
+			otherImage[i][j][1] = (GLubyte) 0;
+			otherImage[i][j][2] = (GLubyte) 0;
+			otherImage[i][j][3] = (GLubyte) 255;
+		}
+	}
+}
+
+
 void XContext::initTest()
 {
 	FILE *pFile = fopen( "c:/test.png", "rb" );
@@ -1137,6 +1167,8 @@ void XContext::initTest()
 	unsigned char *pImgData = DecodePngDate( pData, ilen, width, height );
 
 	GLuint texid = initTexData( pImgData, width, height );
+	//makeCheckImages();
+	//GLuint texid = initTexData( checkImage, checkImageWidth, checkImageHeight );
 
 	XPattern *pattern = new XPattern();
 	pattern->texId = texid;
@@ -1155,7 +1187,8 @@ GLuint XContext::initTexData( const void *pData, int width, int height )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
+	glBindTexture( GL_TEXTURE_2D, 0 );
 	return texId;
 
 }
@@ -1165,10 +1198,10 @@ void XContext::testDrawTex()
 	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 1 );
 	GLfloat verts[4][9] = 
 	{
-		{0.0f,  138.0f,0.0f,	0.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f,  0.0f, 0.0f,	    0.0f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f},
-		{206.0f, 138.0f,0.0f,	1.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f},
-		{206.0f, 00.0f, 0.0f,	1.0f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f,  256.0f,0.0f,	0.0f, 1.0f,	0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,		0.0f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f},
+		{256.0f, 256.0f,0.0f,	1.0f, 1.0f,	1.0f, 1.0f, 0.0f, 1.0f},
+		{256.0f, 00.0f, 0.0f,	1.0f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f},
 	};
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -1178,8 +1211,8 @@ void XContext::testDrawTex()
 	glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE,  9 * sizeof( GLfloat), &verts[0][0] );
 
 	//color
-	//glEnableVertexAttribArray( kCCVertexAttrib_Color );
-	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 9*sizeof(GLfloat), &verts[0][5]);
+	glEnableVertexAttribArray( kCCVertexAttrib_Color );
+	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 9*sizeof(GLfloat), &verts[0][5]);
 	
 	glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
 	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE,  9 * sizeof(GLfloat), &verts[0][3] );

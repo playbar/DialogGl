@@ -83,8 +83,8 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	ccColor4F blue = { 0, 255, 0, 255 };
 	pgradient->addColorStop( 1, blue );
 
-	pctx->mpFillStyle->setFillType( pgradient );
-	pctx->fillRect( 20, 20, 150, 100 );
+	//pctx->mpFillStyle->setFillType( pgradient );
+	//pctx->fillRect( 20, 20, 150, 100 );
 
 	//ccColor4F *color = new ccColor4F;
 	//color->r = 0.0;

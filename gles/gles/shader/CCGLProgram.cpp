@@ -121,10 +121,8 @@ bool CCGLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* sour
         "uniform mat4 CC_PMatrix;\n"
         "uniform mat4 CC_MVMatrix;\n"
         "uniform mat4 CC_MVPMatrix;\n"
-        "uniform vec4 CC_Time;\n"
-        "uniform vec4 CC_SinTime;\n"
-        "uniform vec4 CC_CosTime;\n"
-        "uniform vec4 CC_Random01;\n"
+        "uniform sampler2D CC_Texture0;	\n"
+		"uniform int u_drawType; \n"
         "//CC INCLUDES END\n\n",
         source,
     };
