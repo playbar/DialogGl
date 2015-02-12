@@ -790,9 +790,33 @@ void XContext::fillRect( float x, float y, float width, float height )
 		kmMat4RotationZ( &rotaMat, -60 );
 		kmMat4Identity( &texMatIn );
 		kmMat4Inverse( &texMatIn, &texMat );
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpPattern->texId );
+		if ( mpFillStyle->mpPattern->mRepeatePat == en_REPEAT )
+		{
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		}
+		else if ( mpFillStyle->mpPattern->mRepeatePat == en_REPEAT_X )
+		{
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+		}
+		else if( mpFillStyle->mpPattern->mRepeatePat == en_REPEAT_Y )
+		{
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		}
+		else if( mpFillStyle->mpPattern->mRepeatePat == en_NO_REPEAT )
+		{
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+		}
+
 		//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
 		glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
 	}
+
 
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity( vertex_count );
