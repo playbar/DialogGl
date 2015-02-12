@@ -64,14 +64,14 @@ enum
 #define kCCUniformMVMatrix_s			"CC_MVMatrix"
 #define kCCUniformMVPMatrix_s			"CC_MVPMatrix"
 #define kCCUniformTextrue0_s			"CC_Texture0"
-#define kCCUniformDrawType				"u_drawType"
+#define kCCUniformDrawType_s			"u_drawType"
 
 // Attribute names
 #define kCCAttributeNameColor           "a_color"
 #define kCCAttributeNamePosition        "a_position"
 #define kCCAttributeNameTexCoord        "a_texCoord"
 
-struct _hashUniformEntry;
+extern GLint gUniforms[kCCUniform_MAX];
 
 typedef void (*GLInfoFunction)(GLuint program, GLenum pname, GLint* params);
 typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog);
@@ -158,7 +158,7 @@ public:
     void setUniformLocationWithMatrix4fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
     
     /** will update the builtin uniforms if they are different than the previous call for this same shader program. */
-    void setUniformsForBuiltins();
+    void setMatrixValue();
 
     /** returns the vertexShader error log */
     const char* vertexShaderLog();
@@ -183,8 +183,6 @@ private:
     GLuint            m_uProgram;
     GLuint            m_uVertShader;
     GLuint            m_uFragShader;
-    GLint             m_uUniforms[kCCUniform_MAX];
-    struct _hashUniformEntry* m_pHashForUniforms;
     bool              m_bUsesTime;
 };
 

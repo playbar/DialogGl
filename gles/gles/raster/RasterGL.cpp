@@ -1136,9 +1136,16 @@ void XContext::initTest()
 	int height = 0;
 	unsigned char *pImgData = DecodePngDate( pData, ilen, width, height );
 
+	GLuint texid = initTexData( pImgData, width, height );
+
+	XPattern *pattern = new XPattern();
+	pattern->texId = texid;
+	pattern->mRepeatePat = en_REPEAT;
+	mpFillStyle->setFillType( pattern );
+
 }
 
-void XContext::initTexData( const void *pData, int width, int height )
+GLuint XContext::initTexData( const void *pData, int width, int height )
 {
 	GLuint texId = 0;
 	glGenTextures( 1, &texId );
@@ -1149,6 +1156,35 @@ void XContext::initTexData( const void *pData, int width, int height )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pData );
+	return texId;
+
+}
+
+void XContext::testDrawTex()
+{
+	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 1 );
+	GLfloat verts[4][9] = 
+	{
+		{0.0f,  138.0f,0.0f,	0.0f, 1.0f,		0.0f, 0.0f, 1.0f, 1.0f},
+		{0.0f,  0.0f, 0.0f,	    0.0f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f},
+		{206.0f, 138.0f,0.0f,	1.0f, 1.0f,		1.0f, 1.0f, 0.0f, 1.0f},
+		{206.0f, 00.0f, 0.0f,	1.0f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f},
+	};
+
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpPattern->texId );
+	//int ilen = sizeof(ccV2F_C4F_T2F);
+	glEnableVertexAttribArray( kCCVertexAttrib_Position);
+	glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE,  9 * sizeof( GLfloat), &verts[0][0] );
+
+	//color
+	//glEnableVertexAttribArray( kCCVertexAttrib_Color );
+	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 9*sizeof(GLfloat), &verts[0][5]);
+	
+	glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
+	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE,  9 * sizeof(GLfloat), &verts[0][3] );
+	
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	return;
 }
 
@@ -1184,8 +1220,11 @@ void XContext::draw()
     
     //getShaderProgram()->use();
 	mProgram->use();
-	mProgram->setUniformsForBuiltins();
+	mProgram->setMatrixValue();
     //getShaderProgram()->setUniformsForBuiltins();
+
+	testDrawTex();
+	return;
     
     render();
 }

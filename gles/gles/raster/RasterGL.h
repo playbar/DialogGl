@@ -219,7 +219,8 @@ public:
     
     virtual bool init();
 	void initTest();
-	void initTexData( const void *pData, int width, int height );
+	GLuint initTexData( const void *pData, int width, int height );
+	void testDrawTex();
     virtual void draw();
     
     /** draw a dot at a position, with a given radius and color */

@@ -36,32 +36,22 @@ THE SOFTWARE.
 #include "CCFileUtils.h"
 
 
-//#include "ccMacros.h"
-//#include "platform/CCFileUtils.h"
-//#include "support/data_support/uthash.h"
-//#include "cocoa/CCString.h"
 // extern
 #include "kazmath/GL/matrix.h"
 #include "kazmath/kazmath.h"
 #include "ccMacros.h"
 
 
+GLint gUniforms[kCCUniform_MAX];
 
-//typedef struct _hashUniformEntry
-//{
-//    GLvoid*         value;       // value
-//    unsigned int    location;    // Key
-//    UT_hash_handle  hh;          // hash entry
-//} tHashUniformEntry;
 
 CCGLProgram::CCGLProgram()
 : m_uProgram(0)
 , m_uVertShader(0)
 , m_uFragShader(0)
-, m_pHashForUniforms( 0 )
 , m_bUsesTime(false)
 {
-    memset(m_uUniforms, 0, sizeof(m_uUniforms));
+    memset(gUniforms, 0, sizeof(gUniforms));
 }
 
 CCGLProgram::~CCGLProgram()
@@ -70,16 +60,6 @@ CCGLProgram::~CCGLProgram()
     {
         ccGLDeleteProgram(m_uProgram);
     }
-
-    //tHashUniformEntry *current_element, *tmp;
-
-    //// Purge uniform hash
-    //HASH_ITER(hh, m_pHashForUniforms, current_element, tmp)
-    //{
-    //    HASH_DEL(m_pHashForUniforms, current_element);
-    //    free(current_element->value);
-    //    free(current_element);
-    //}
 }
 
 bool CCGLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray)
@@ -92,7 +72,7 @@ bool CCGLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, 
     {
         if (!compileShader(&m_uVertShader, GL_VERTEX_SHADER, vShaderByteArray))
         {
-            CCLOG("cocos2d: ERROR: Failed to compile vertex shader");
+            ;
         }
     }
 
@@ -101,7 +81,7 @@ bool CCGLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, 
     {
         if (!compileShader(&m_uFragShader, GL_FRAGMENT_SHADER, fShaderByteArray))
         {
-            CCLOG("cocos2d: ERROR: Failed to compile fragment shader");
+            ;
         }
     }
 
@@ -114,19 +94,11 @@ bool CCGLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, 
     {
         glAttachShader(m_uProgram, m_uFragShader);
     }
-    m_pHashForUniforms = NULL;
     
 
     return true;
 }
 
-//bool CCGLProgram::initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename)
-//{
-//    const GLchar * vertexSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(vShaderFilename).c_str())->getCString();
-//    const GLchar * fragmentSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(fShaderFilename).c_str())->getCString();
-//
-//    return initWithVertexShaderByteArray(vertexSource, fragmentSource);
-//}
 
 const char* CCGLProgram::description()
 {
@@ -194,16 +166,17 @@ void CCGLProgram::addAttribute(const char* attributeName, GLuint index)
 
 void CCGLProgram::updateUniforms()
 {
-    m_uUniforms[kCCUniformPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformPMatrix_s);
-	m_uUniforms[kCCUniformMVMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVMatrix_s);
-	m_uUniforms[kCCUniformMVPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVPMatrix_s);
-    m_uUniforms[kCCUniformTexture0] = glGetUniformLocation(m_uProgram, kCCUniformTextrue0_s);
-	m_uUniforms[kCCuniformDrawType] = glGetUniformLocation( m_uProgram, kCCUniformDrawType );
+    gUniforms[kCCUniformPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformPMatrix_s);
+	gUniforms[kCCUniformMVMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVMatrix_s);
+	gUniforms[kCCUniformMVPMatrix] = glGetUniformLocation(m_uProgram, kCCUniformMVPMatrix_s);
+    gUniforms[kCCUniformTexture0] = glGetUniformLocation(m_uProgram, kCCUniformTextrue0_s);
+	gUniforms[kCCuniformDrawType] = glGetUniformLocation( m_uProgram, kCCUniformDrawType_s );
 
     this->use();
     
     // Since sample most probably won't change, set it to 0 now.
-	glUniform1i( (GLint)m_uUniforms[kCCUniformTexture0],  0 );
+	glUniform1i( (GLint)gUniforms[kCCUniformTexture0],  0 );
+	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 0 );
 }
 
 bool CCGLProgram::link()
@@ -285,33 +258,6 @@ bool CCGLProgram::updateUniformLocation(GLint location, GLvoid* data, unsigned i
     }
     
     bool updated = true;
-    //tHashUniformEntry *element = NULL;
-    //HASH_FIND_INT(m_pHashForUniforms, &location, element);
-
-    //if (! element)
-    //{
-    //    element = (tHashUniformEntry*)malloc( sizeof(*element) );
-
-    //    // key
-    //    element->location = location;
-
-    //    // value
-    //    element->value = malloc( bytes );
-    //    memcpy(element->value, data, bytes );
-
-    //    HASH_ADD_INT(m_pHashForUniforms, location, element);
-    //}
-    //else
-    //{
-    //    if (memcmp(element->value, data, bytes) == 0)
-    //    {
-    //        updated = false;
-    //    }
-    //    else
-    //    {
-    //        memcpy(element->value, data, bytes);
-    //    }
-    //}
 
     return updated;
 }
@@ -479,7 +425,7 @@ void CCGLProgram::setUniformLocationWithMatrix4fv(GLint location, GLfloat* matri
     }
 }
 
-void CCGLProgram::setUniformsForBuiltins()
+void CCGLProgram::setMatrixValue()
 {
     kmMat4 matrixP;
 	kmMat4 matrixMV;
@@ -490,32 +436,17 @@ void CCGLProgram::setUniformsForBuiltins()
 	
 	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
     
-    setUniformLocationWithMatrix4fv(m_uUniforms[kCCUniformPMatrix], matrixP.mat, 1);
-    setUniformLocationWithMatrix4fv(m_uUniforms[kCCUniformMVMatrix], matrixMV.mat, 1);
-    setUniformLocationWithMatrix4fv(m_uUniforms[kCCUniformMVPMatrix], matrixMVP.mat, 1);
+    setUniformLocationWithMatrix4fv(gUniforms[kCCUniformPMatrix], matrixP.mat, 1);
+    setUniformLocationWithMatrix4fv(gUniforms[kCCUniformMVMatrix], matrixMV.mat, 1);
+    setUniformLocationWithMatrix4fv(gUniforms[kCCUniformMVPMatrix], matrixMVP.mat, 1);
 	
 }
 
 void CCGLProgram::reset()
 {
     m_uVertShader = m_uFragShader = 0;
-    memset(m_uUniforms, 0, sizeof(m_uUniforms));
-    
-
-    // it is already deallocated by android
-    //ccGLDeleteProgram(m_uProgram);
+    memset(gUniforms, 0, sizeof(gUniforms));
     m_uProgram = 0;
-
-    
-    //tHashUniformEntry *current_element, *tmp;
-    //
-    //// Purge uniform hash
-    //HASH_ITER(hh, m_pHashForUniforms, current_element, tmp) 
-    //{
-    //    HASH_DEL(m_pHashForUniforms, current_element);
-    //    free(current_element->value);
-    //    free(current_element);
-    //}
-    //m_pHashForUniforms = NULL;
+ 
 }
 
