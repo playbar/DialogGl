@@ -25,6 +25,11 @@ void main()															\n\
 		gl_Position = CC_MVPMatrix * a_position; \n\
 		v_color = vec4(a_color.rgb * a_color.a, a_color.a); \n\
 	} \n\
+	else if( u_drawType == 2 ) \n\
+	{ \n\
+		gl_Position = CC_MVPMatrix * a_position; \n\
+		v_texcoord = vec2( CC_TEXMatrix * a_position ); \n\
+	} \n\
 	else if( u_drawType == 4 ) \n\
 	{ \n\
 		gl_Position = CC_MVPMatrix * a_position;	\n\

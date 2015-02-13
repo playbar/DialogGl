@@ -22,13 +22,24 @@ enum CTX_FILLTYPE
 	FILL_TEST = 5,
 };
 
+struct GradientData
+{
+	float index;
+	ccColor4F color;
+	GradientData *pNext;
+};
+
 struct CC_DLL XGradientLinear
 {
 	GLuint texId;
 	int miLen;
-	GLubyte *pTexData;
+	float x;
+	float y;
+	GradientData *pGraData;
+	bool mbDirty;
 
 	void addColorStop( float index, ccColor4F color );
+	void CreateTextrue();
 
 };
 

@@ -18,6 +18,10 @@ void main()														\n\
 	{ \n\
 		gl_FragColor = CC_FillColor;\n\
 	} \n\
+	else if( u_drawType == 2 ) \n\
+	{ \n\
+	gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
+	} \n\
 	else if( u_drawType == 4 ) \n\
 	{ \n\
 		gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\

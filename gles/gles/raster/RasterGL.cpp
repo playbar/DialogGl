@@ -103,118 +103,81 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 	}
 }
 
-
-unsigned char* XContext::DecodePngData(unsigned char* fData, long fSize, int& width, int& height)
-{
-	unsigned char* image_data = NULL;
-#ifdef _WIN32
-	png_structp png_ptr;
-	png_infop info_ptr;
-	int bit_depth, color_type;
-	png_bytep *row_pointers = NULL;
-	int rowbytes;
-
-	/* Create a png read struct */
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (!png_ptr)
-	{
-		return NULL;
-	}
-
-	/* Create a png info struct */
-	info_ptr = png_create_info_struct (png_ptr);
-	if (!info_ptr)
-	{
-		png_destroy_read_struct (&png_ptr, NULL, NULL);
-		return NULL;
-	}
-
-	/* Initialize the setjmp for returning properly after a libpng error occured */
-	if (setjmp (png_jmpbuf (png_ptr)))
-	{
-		png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
-		if (row_pointers)
-			free (row_pointers);
-		return NULL;
-	}
-
-	ImageSource imgsource;
-	imgsource.data = fData;
-	imgsource.size = fSize;
-	imgsource.offset = 0;
-	png_set_read_fn(png_ptr, &imgsource, memReadFuncPng);
-
-	/* Read png info */
-	png_read_info (png_ptr, info_ptr);
-
-	/* Get some usefull information from header */
-	bit_depth = png_get_bit_depth (png_ptr, info_ptr);
-	color_type = png_get_color_type (png_ptr, info_ptr);
-
-	/* Convert index color images to RGB images */
-	if (color_type == PNG_COLOR_TYPE_PALETTE)
-		png_set_palette_to_rgb (png_ptr);
-
-	/* Convert RGB images to RGBA images */
-	if (color_type == PNG_COLOR_TYPE_RGB)
-		png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
-
-	/* Convert 1-2-4 bits grayscale images to 8 bits grayscale. */
-	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
-		png_set_gray_1_2_4_to_8 (png_ptr);
-
-	if (png_get_valid (png_ptr, info_ptr, PNG_INFO_tRNS))
-		png_set_tRNS_to_alpha (png_ptr);
-
-	if (bit_depth == 16)
-		png_set_strip_16 (png_ptr);
-	else if (bit_depth < 8)
-		png_set_packing (png_ptr);
-
-	/* Update info structure to apply transformations */
-	png_read_update_info (png_ptr, info_ptr);
-
-	/* Retrieve updated information */
-	png_get_IHDR (png_ptr, info_ptr, (png_uint_32*)&width, (png_uint_32*)&height, &bit_depth, &color_type, NULL, NULL, NULL);
-
-	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-	if ((image_data =(unsigned char *) malloc(height * rowbytes)) == NULL)
-	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		return NULL;
-	}
-
-	/* Setup a pointer array.  Each one points at the begening of a row. */
-	if ((row_pointers =(png_bytepp) malloc(height * sizeof(png_bytep))) == NULL)
-	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		free(image_data);
-		return NULL;
-	}
-	for (int i = 0; i < height; i++)
-		row_pointers[height - 1 - i] = image_data + i*rowbytes;
-
-	/* Read pixel data using row pointers */
-	png_read_image (png_ptr, row_pointers);
-
-	/* Finish decompression and release memory */
-	png_read_end (png_ptr, NULL);
-	png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
-
-	/* We don't need row pointers anymore */
-	free (row_pointers);
-
-#endif
-	return image_data;
-
-}
-
-
 // implementation of CCDrawNode
 
 void XGradientLinear::addColorStop( float index, ccColor4F color )
 {
+	mbDirty = true;
+	if ( this->pGraData == NULL )
+	{
+		pGraData = new GradientData();
+		pGraData->index = index;
+		pGraData->color = color;
+	}
+	else
+	{
+		GradientData *p = pGraData;
+		GradientData *pn = p->pNext;
+		GradientData *cur = new GradientData();
+		cur->color = color;
+		cur->index = index;
+		cur->pNext = NULL;
+		while( p != NULL && pn != NULL )
+		{
+			if ( p->index < index && index < pn->index )
+			{
+				p->pNext = cur;
+				cur->pNext = pn;
+				return;
+			}
+			p = pn;
+			pn = pn->pNext;
+		}
+		p->pNext = cur;
 
+	}
+}
+
+void XGradientLinear::CreateTextrue()
+{
+	if ( ! mbDirty )
+	{
+		return;
+	}
+	GLubyte *pTexData = new GLubyte[miLen * 4 + 4 ];
+	memset( pTexData, 0, miLen * 4 );
+	ccColor4B *pdata = (ccColor4B*)pTexData;
+	GradientData *pgd = pGraData;
+	GradientData *pn = pgd->pNext;
+	int icout = 0;
+	while( pgd != NULL && pn != NULL )
+	{
+		int index1 = floor(pgd->index * miLen + 0.5);
+		int step = floor( pn->index *miLen + 0.5 ) - index1;
+		//pdata += index1;
+		for ( int i = 0; i < step; i++ )
+		{
+			icout++;
+			pdata->a = pgd->color.a * 255 - (pgd->color.a - pn->color.a ) * 255 * i / step;
+			pdata->r = pgd->color.r * 255 - (pgd->color.r - pn->color.r ) * 255 * i / step;
+			pdata->g = pgd->color.g * 255 - (pgd->color.g - pn->color.g ) * 255 * i / step;
+			pdata->b = pgd->color.b * 255 - (pgd->color.b - pn->color.b ) * 255 * i / step;
+			pdata++;
+		}
+		pgd = pn;
+		pn = pn->pNext;
+	}
+
+	glGenTextures( 1, &texId );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, texId );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)miLen, (GLsizei)1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pTexData );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	delete []pTexData;
+
+	return;
 }
 
 XFillStyle::XFillStyle()
@@ -864,6 +827,56 @@ void XContext::fillRect( float x, float y, float width, float height )
 		m_nBufferCount += vertex_count;
 		m_bDirty = true;
 	}
+	else if ( mpFillStyle->mFillType == FILL_Gradient_Line )
+	{
+		mpFillStyle->mpGradientLinear->CreateTextrue();
+
+		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_Gradient_Line );
+		kmMat4 texMat = 
+		{
+			mpFillStyle->mpGradientLinear->miLen, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			mpFillStyle->mpGradientLinear->x, 0, 0, 1
+		};
+		kmMat4 texMatIn;
+		kmMat4 rotaMat;
+		kmMat4 tranMat;
+		kmMat4Identity( &rotaMat );
+		kmMat4RotationZ( &rotaMat, -60 );
+		kmMat4Identity( &texMatIn );
+		kmMat4Inverse( &texMatIn, &texMat );
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpGradientLinear->texId );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+		//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+		glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
+		unsigned int vertex_count = 2 * 6;
+		ensureCapacity( vertex_count );
+		ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
+		ccV2F_C4B_T2F_Triangle triangle =
+		{
+			{ vertex2( x, y + height), col, {0, 0 } },
+			{ vertex2( x, y), col, {0, 0 } },
+			{ vertex2( x + width, y + height ), col, {0, 0 }  },
+		};
+		ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+
+		triangles[0] = triangle;
+		ccV2F_C4B_T2F_Triangle triangle1 =
+		{
+			{ vertex2( x, y), col, {0, 0 } },
+			{ vertex2( x + width, y + height), col,  {0, 0 } },
+			{ vertex2( x + width, y ), col, {0, 0 } }
+		};
+		triangles[1] = triangle1;
+		m_nBufferCount += vertex_count;
+		m_bDirty = true;
+
+	}
 	return;
 }
 
@@ -975,9 +988,11 @@ bool XContext::isPointInPath( float x, float y )
 XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
 {
 	XGradientLinear *p = new XGradientLinear();
+	memset( p, 0, sizeof( XGradientLinear ) );
 	float flen = sqrt( (x2-x1) * (x2 - x1) + (y2 - y1) * ( y2 - y1 ));
 	p->miLen = ceil( flen );
-	p->pTexData = new GLubyte[ p->miLen * 4 ];
+	p->x = x1;
+	p->y = y1;
 	mVecGradient.push_back( p );
 	return p;
 }
@@ -1208,6 +1223,112 @@ void XContext::initTest()
 
 }
 
+
+unsigned char* XContext::DecodePngData(unsigned char* fData, long fSize, int& width, int& height)
+{
+	unsigned char* image_data = NULL;
+#ifdef _WIN32
+	png_structp png_ptr;
+	png_infop info_ptr;
+	int bit_depth, color_type;
+	png_bytep *row_pointers = NULL;
+	int rowbytes;
+
+	/* Create a png read struct */
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+	{
+		return NULL;
+	}
+
+	/* Create a png info struct */
+	info_ptr = png_create_info_struct (png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct (&png_ptr, NULL, NULL);
+		return NULL;
+	}
+
+	/* Initialize the setjmp for returning properly after a libpng error occured */
+	if (setjmp (png_jmpbuf (png_ptr)))
+	{
+		png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+		if (row_pointers)
+			free (row_pointers);
+		return NULL;
+	}
+
+	ImageSource imgsource;
+	imgsource.data = fData;
+	imgsource.size = fSize;
+	imgsource.offset = 0;
+	png_set_read_fn(png_ptr, &imgsource, memReadFuncPng);
+
+	/* Read png info */
+	png_read_info (png_ptr, info_ptr);
+
+	/* Get some usefull information from header */
+	bit_depth = png_get_bit_depth (png_ptr, info_ptr);
+	color_type = png_get_color_type (png_ptr, info_ptr);
+
+	/* Convert index color images to RGB images */
+	if (color_type == PNG_COLOR_TYPE_PALETTE)
+		png_set_palette_to_rgb (png_ptr);
+
+	/* Convert RGB images to RGBA images */
+	if (color_type == PNG_COLOR_TYPE_RGB)
+		png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
+
+	/* Convert 1-2-4 bits grayscale images to 8 bits grayscale. */
+	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+		png_set_gray_1_2_4_to_8 (png_ptr);
+
+	if (png_get_valid (png_ptr, info_ptr, PNG_INFO_tRNS))
+		png_set_tRNS_to_alpha (png_ptr);
+
+	if (bit_depth == 16)
+		png_set_strip_16 (png_ptr);
+	else if (bit_depth < 8)
+		png_set_packing (png_ptr);
+
+	/* Update info structure to apply transformations */
+	png_read_update_info (png_ptr, info_ptr);
+
+	/* Retrieve updated information */
+	png_get_IHDR (png_ptr, info_ptr, (png_uint_32*)&width, (png_uint_32*)&height, &bit_depth, &color_type, NULL, NULL, NULL);
+
+	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	if ((image_data =(unsigned char *) malloc(height * rowbytes)) == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		return NULL;
+	}
+
+	/* Setup a pointer array.  Each one points at the begening of a row. */
+	if ((row_pointers =(png_bytepp) malloc(height * sizeof(png_bytep))) == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		free(image_data);
+		return NULL;
+	}
+	for (int i = 0; i < height; i++)
+		row_pointers[height - 1 - i] = image_data + i*rowbytes;
+
+	/* Read pixel data using row pointers */
+	png_read_image (png_ptr, row_pointers);
+
+	/* Finish decompression and release memory */
+	png_read_end (png_ptr, NULL);
+	png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+
+	/* We don't need row pointers anymore */
+	free (row_pointers);
+
+#endif
+	return image_data;
+
+}
+
 GLuint XContext::initTexData( const void *pData, int width, int height )
 {
 	GLuint texId = 0;
@@ -1324,6 +1445,16 @@ void XContext::render()
 	{
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpPattern->texId );
+		glEnableVertexAttribArray( kCCVertexAttrib_Position );
+		glVertexAttribPointer( kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof( ccV2F_C4B_T2F),( GLvoid*)offsetof(ccV2F_C4B_T2F, vertices));
+		glDrawArrays( GL_TRIANGLES, 0, m_nBufferCount );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glDisableVertexAttribArray( kCCVertexAttrib_Position );
+	}
+	if ( mpFillStyle->mFillType == FILL_Gradient_Line )
+	{
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpGradientLinear->texId );
 		glEnableVertexAttribArray( kCCVertexAttrib_Position );
 		glVertexAttribPointer( kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof( ccV2F_C4B_T2F),( GLvoid*)offsetof(ccV2F_C4B_T2F, vertices));
 		glDrawArrays( GL_TRIANGLES, 0, m_nBufferCount );
