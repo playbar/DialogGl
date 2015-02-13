@@ -192,7 +192,7 @@ void COpenGLDialogDlg::fillRectWithPattern()
 
 void COpenGLDialogDlg::fillRectGradientLinear()
 {
-	XGradientLinear *pgradient = pctx->CreateLinearGradient( 20, 0, 160, 0 );
+	XGradientLinear *pgradient = pctx->CreateLinearGradient( 40, 0, 100, 100 );
 	ccColor4F red = { 1, 0, 0, 1 };
 	ccColor4F green = { 0, 1, 0, 1 };
 	ccColor4F blue = { 0, 0, 1, 1 };
@@ -202,7 +202,7 @@ void COpenGLDialogDlg::fillRectGradientLinear()
 	pgradient->addColorStop( 0.5, blue );
 	pgradient->addColorStop( 0.75, rg );
 	pctx->mpFillStyle->setFillType( pgradient );
-	pctx->fillRect( 20, 20, 150, 100 );
+	pctx->fillRect( 0, 0, 100, 100 );
 	return;
 }
 

@@ -842,10 +842,12 @@ void XContext::fillRect( float x, float y, float width, float height )
 		kmMat4 texMatIn;
 		kmMat4 rotaMat;
 		kmMat4 tranMat;
-		kmMat4Identity( &rotaMat );
-		kmMat4RotationZ( &rotaMat, -60 );
+		kmMat4Identity( &rotaMat ); 
+		kmMat4RotationZ( &rotaMat, -mpFillStyle->mpGradientLinear->angle );
 		kmMat4Identity( &texMatIn );
 		kmMat4Inverse( &texMatIn, &texMat );
+		kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+		//texMatIn.mat[12] = mpFillStyle->mpGradientLinear->x;
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpGradientLinear->texId );
 
@@ -992,8 +994,7 @@ XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, f
 	float flen = sqrt( (x2-x1) * (x2 - x1) + (y2 - y1) * ( y2 - y1 ));
 	p->miLen = ceil( flen );
 	p->x = x1;
-	p->y = y1;
-	mVecGradient.push_back( p );
+	p->angle = atan2( ( y2 - y1), (x2 - x1 ) );// * 180 / 3.1415926;
 	return p;
 }
 
@@ -1002,7 +1003,6 @@ XPattern *XContext::CreatePattern( GLuint texId, REPEAT_PAT repat)
 	XPattern *p = new XPattern();
 	p->texId = texId;
 	p->mRepeatePat = en_REPEAT;
-	mVecPattern.push_back( p );
 	return p;
 }
 XGradientRadial *XContext::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 

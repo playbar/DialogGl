@@ -34,7 +34,7 @@ struct CC_DLL XGradientLinear
 	GLuint texId;
 	int miLen;
 	float x;
-	float y;
+	float angle;
 	GradientData *pGraData;
 	bool mbDirty;
 
@@ -226,8 +226,8 @@ public:
 		float xEnd, float yEnd, float radiusEnd );
 
 private:
-	vector< XGradientLinear *> mVecGradient;
-	vector< XPattern *>mVecPattern;
+	//vector< XGradientLinear *> mVecGradient;
+	//vector< XPattern *>mVecPattern;
 	EgPath *mEgPaths;
 	EgPath *pEndPath;
 	EgPath *pCurPath;
