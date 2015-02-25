@@ -154,8 +154,9 @@ struct EgEdge
 {
 	float cpx;  //control point 
 	float cpy;
-	float endx;
-	float endy;
+	//float endx;
+	//float endy;
+	GLdouble endxyz[3];
 	bool isLine;
 	EgEdge *pNext;
 };
@@ -163,8 +164,9 @@ struct EgEdge
 struct EgPath
 {
 public:	
-	float startx;
-	float starty;
+	//float startx;
+	//float starty;
+	GLdouble xyz[3];
 
 	EgEdge *pEdges;
 	EgEdge *pEndEdge;

@@ -237,10 +237,10 @@ void COpenGLDialogDlg::fillLineTo()
 	pctx->moveto( 80, 240 );
 	pctx->lineto( 140, 240 );
 	pctx->lineto( 110, 60 );
-	//pctx->lineto( 240, 50 );
-	//pctx->lineto( 20, 20 );
-	//pctx->lineto( 0, 70 );
-	//pctx->lineto( 100, 50 );
+	pctx->lineto( 240, 50 );
+	pctx->lineto( 20, 20 );
+	pctx->lineto( 0, 70 );
+	pctx->lineto( 100, 50 );
 	//pctx->lineto( 80, 240 );
 	
 	//pctx->closePath();

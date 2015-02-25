@@ -437,13 +437,6 @@ void XContext::LineWidth(  float width )
 	pCurPath->mLineWidth = width;
 }
 
-GLdouble gTmpData[3][3] = 
-{
-	80, 240, 0,
-	140, 240, 0,
-	110, 60, 0
-};
-
 void XContext::fill()
 {
 
@@ -460,20 +453,13 @@ void XContext::fill()
 			InitPolygon();
 			gluTessBeginPolygon(tobj, NULL);
 			gluTessBeginContour(tobj);
-			GLdouble xyz[3] = { pCurPath->startx, pCurPath->starty, 0 };
-			for ( int i = 0; i < 3; i++ )
-			{
-				gluTessVertex( tobj, gTmpData[i], gTmpData[i] );
-			}
-			//gluTessVertex(tobj, xyz, xyz);
-			//while( p )
-			//{
-			//	xyz[0] = p->endx;
-			//	xyz[1] = p->endy;
-			//	xyz[2] = 0;
-			//	gluTessVertex(tobj, xyz, xyz);
-			//	p = p->pNext;
-			//}	
+
+			gluTessVertex(tobj, pCurPath->xyz, pCurPath->xyz);
+			while( p )
+			{	
+				gluTessVertex(tobj, p->endxyz, p->endxyz );
+				p = p->pNext;
+			}	
 			gluTessEndContour(tobj);
 			gluTessEndPolygon(tobj);
 			pCurPath->mbufferLen = gVertexIndex * sizeof(ccV2F_C4B_T2F);
@@ -641,10 +627,10 @@ void XContext::closePath()
 	EgEdge *p = new EgEdge();
 	pCurPath->pEndEdge->pNext = p;
 	p->pNext = NULL;
-	p->cpx = pCurPath->startx;
-	p->cpy = pCurPath->starty;
-	p->endx = pCurPath->startx;
-	p->endy = pCurPath->starty;
+	p->cpx = pCurPath->xyz[0];
+	p->cpy = pCurPath->xyz[1];
+	p->endxyz[0] = pCurPath->xyz[0];
+	p->endxyz[1] = pCurPath->xyz[1];
 	return;
 
 }
@@ -664,13 +650,13 @@ void XContext::stroke()
 			pCurPath->BufferData( pCurPath->mbufferLen, gsGLData );
 			pCurPath->pointCount = (pCurPath->count - 1) * 3 * 6;
 			pCurPath->mCurIndex = 0;
-			CCPoint from( pCurPath->startx, pCurPath->starty );	
+			CCPoint from( pCurPath->xyz[0], pCurPath->xyz[1] );	
 			EgEdge *p = pCurPath->pEdges;
 			ccColor4F color = {1.0, 0, 0, 1 };
 			int ilen = 3 * 6 * sizeof(ccV2F_C4B_T2F );
 			while( p )
 			{
-				CCPoint to( p->endx, p->endy );
+				CCPoint to( p->endxyz[0], p->endxyz[1] );
 				drawSegment( from, to, pCurPath->mLineWidth, mpFillStyle->mColor );
 				pCurPath->BufferSubData( pCurPath->mCurIndex,  ilen, gsGLData );
 				pCurPath->mCurIndex += ilen;
@@ -780,8 +766,8 @@ void XContext::stroke()
 
 void XContext::moveto( float x, float y )
 {
-	pCurPath->startx = x;
-	pCurPath->starty = y;
+	pCurPath->xyz[0] = x;
+	pCurPath->xyz[1] = y;
 	pCurPath->count++;
 	pCurPath->cmdType = CTX_MOVETO;
 
@@ -797,8 +783,8 @@ void XContext::lineto( float x, float y )
 		pCurPath->pEndEdge = pCurPath->pEdges;
 		pCurPath->pEndEdge->cpx = x;
 		pCurPath->pEndEdge->cpy = y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = true;
 	}
 	else
@@ -809,8 +795,8 @@ void XContext::lineto( float x, float y )
 		memset( pCurPath->pEndEdge, 0, sizeof( EgEdge ) );
 		pCurPath->pEndEdge->cpx = x;
 		pCurPath->pEndEdge->cpy = y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = true;
 	}
 	pCurPath->count++;
@@ -820,8 +806,8 @@ void XContext::lineto( float x, float y )
 void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise )
 {
 	pCurPath->cmdType = CTX_ARC;
-	pCurPath->startx = x;
-	pCurPath->starty = y;
+	pCurPath->xyz[0] = x;
+	pCurPath->xyz[1] = y;
 
 	GLfloat angle = sAngle;
 	for ( angle = sAngle; angle <= eAngle; angle += 0.02f )
@@ -859,8 +845,8 @@ void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, 
 		p->pNext = NULL;
 		p->cpx = x1;
 		p->cpy = y1;
-		p->endx = x1;
-		p->endy = y1;
+		p->endxyz[0] = x1;
+		p->endxyz[1] = y1;
 		p->isLine = true;
 		
 	}
@@ -892,12 +878,12 @@ void XContext::rect( float x, float y, float width, float height )
 	}
 	EgEdge *p1 = pCurPath->pEndEdge;
 	pCurPath->cmdType = CTX_RECT;
-	pCurPath->startx = x;
-	pCurPath->starty = y;
+	pCurPath->xyz[0] = x;
+	pCurPath->xyz[1] = y;
 	p1->cpx = x;
 	p1->cpy = y;
-	p1->endx = x + width;
-	p1->endy = y + height;
+	p1->endxyz[0] = x + width;
+	p1->endxyz[1] = y + height;
 	p1->isLine = true;
 
 }
@@ -923,8 +909,8 @@ void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 		pCurPath->pEndEdge = pCurPath->pEdges;
 		pCurPath->pEndEdge->cpx = cpx;
 		pCurPath->pEndEdge->cpy = cpy;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 	}
 	else
@@ -935,8 +921,8 @@ void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 		memset( pCurPath->pEndEdge, 0, sizeof( EgEdge ) );
 		pCurPath->pEndEdge->cpx = cpx;
 		pCurPath->pEndEdge->cpy = cpy;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 	}
 	return;
@@ -1203,8 +1189,8 @@ void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, fl
 		pCurPath->pEndEdge = pCurPath->pEdges;
 		pCurPath->pEndEdge->cpx = cp1x;
 		pCurPath->pEndEdge->cpy = cp1y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 
 		EgEdge *p = new EgEdge();
@@ -1213,8 +1199,8 @@ void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, fl
 		pCurPath->pEndEdge = p;
 		pCurPath->pEndEdge->cpx = cp2x;
 		pCurPath->pEndEdge->cpy = cp2y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 	}
 	else
@@ -1225,8 +1211,8 @@ void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, fl
 		memset( pCurPath->pEndEdge, 0, sizeof( EgEdge ) );
 		pCurPath->pEndEdge->cpx = cp1x;
 		pCurPath->pEndEdge->cpy = cp1y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 
 		EgEdge *p1 = new EgEdge();
@@ -1235,8 +1221,8 @@ void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, fl
 		pCurPath->pEndEdge = p1;
 		pCurPath->pEndEdge->cpx = cp2x;
 		pCurPath->pEndEdge->cpy = cp2y;
-		pCurPath->pEndEdge->endx = x;
-		pCurPath->pEndEdge->endy = y;
+		pCurPath->pEndEdge->endxyz[0] = x;
+		pCurPath->pEndEdge->endxyz[1] = y;
 		pCurPath->pEndEdge->isLine = false;
 	}
 	return;
@@ -1292,12 +1278,12 @@ void XContext::DrawCommand()
 	{
 		if ( pTmpPath->cmdType == CTX_LINETO )
 		{
-			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+			CCPoint from( pTmpPath->xyz[0], pTmpPath->xyz[1] );	
 			EgEdge *p = pTmpPath->pEdges;
 			ccColor4F color = {1.0, 0, 0, 1 };
 			while( p )
 			{
-				CCPoint to( p->endx, p->endy );
+				CCPoint to( p->endxyz[0], p->endxyz[1] );
 				drawSegment( from, to, pTmpPath->mLineWidth, mpFillStyle->mColor );
 				from.x = to.x;
 				from.y = to.y;
@@ -1313,18 +1299,18 @@ void XContext::DrawCommand()
 			ccColor4B col = ccc4BFromccc4F( color );
 			ccV2F_C4B_T2F_Triangle triangle =
 			{
-				{ vertex2( pTmpPath->startx,  pTmpPath->starty), col, __t( v2fzero) },
-				{ vertex2( pEdge->endx, pEdge->endy ), col, __t( v2fzero ) },
-				{ vertex2( pEdge->pNext->endx, pEdge->pNext->endy ), col, __t( v2fzero ) }
+				{ vertex2( pTmpPath->xyz[0],  pTmpPath->xyz[1]), col, __t( v2fzero) },
+				{ vertex2( pEdge->endxyz[0], pEdge->endxyz[1] ), col, __t( v2fzero ) },
+				{ vertex2( pEdge->pNext->endxyz[0], pEdge->pNext->endxyz[1] ), col, __t( v2fzero ) }
 			};
 			ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
 			//ccV2F_C4B_T2F_Triangle triangle = { a, b, c };
 			triangles[0] = triangle;
 			ccV2F_C4B_T2F_Triangle triangle1 =
 			{
-				{ vertex2( pEdge->endx, pEdge->endy ), col, __t( v2fzero) },
-				{ vertex2( pEdge->pNext->endx, pEdge->pNext->endy ), col, __t( v2fzero ) },
-				{ vertex2( pEdge->pNext->pNext->endx, pEdge->pNext->pNext->endy ), col, __t( v2fzero ) }
+				{ vertex2( pEdge->endxyz[0], pEdge->endxyz[1] ), col, __t( v2fzero) },
+				{ vertex2( pEdge->pNext->endxyz[0], pEdge->pNext->endxyz[1] ), col, __t( v2fzero ) },
+				{ vertex2( pEdge->pNext->pNext->endxyz[0], pEdge->pNext->pNext->endxyz[1] ), col, __t( v2fzero ) }
 			};
 			triangles[1] = triangle1;
 			m_nBufferCount += vertex_cout;
@@ -1343,9 +1329,9 @@ void XContext::DrawCommand()
 			{
 				ccV2F_C4B_T2F_Triangle triangle =
 				{
-					{ vertex2( pTmpPath->startx,  pTmpPath->starty), col, __t( v2fzero) },
-					{ vertex2( p->endx, p->endy ), col, __t( v2fzero ) },
-					{ vertex2( p->pNext->endx, p->pNext->endy ), col, __t( v2fzero ) }
+					{ vertex2( pTmpPath->xyz[0],  pTmpPath->xyz[1]), col, __t( v2fzero) },
+					{ vertex2( p->endxyz[0], p->endxyz[1] ), col, __t( v2fzero ) },
+					{ vertex2( p->pNext->endxyz[0], p->pNext->endxyz[1] ), col, __t( v2fzero ) }
 				};
 				triangles[icout] = triangle;
 				icout++;
@@ -1360,18 +1346,18 @@ void XContext::DrawCommand()
 		}
 		else if( pTmpPath->cmdType == CTX_QUADRATICCURVETO )
 		{
-			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+			CCPoint from( pTmpPath->xyz[0], pTmpPath->xyz[1] );	
 			EgEdge *p = pTmpPath->pEdges;
 			ccColor4F color = {1.0, 0, 0, 1 };
 
 			float t = 0.0f;
 			int segments = 60;
-			float x = pTmpPath->startx;
-			float y = pTmpPath->starty;
+			float x = pTmpPath->xyz[0];
+			float y = pTmpPath->xyz[1];
 			for ( int i = 0; i < segments; i++ )
 			{
-				float x1 = powf(1 - t, 2) * pTmpPath->startx + 2.0f * (1 - t) * t * p->cpx + t * t * p->endx;
-				float y1 = powf(1 - t, 2 ) *pTmpPath->starty + 2.0f * (1 - t) * t * p->cpy + t * t * p->endy;
+				float x1 = powf(1 - t, 2) * pTmpPath->xyz[0] + 2.0f * (1 - t) * t * p->cpx + t * t * p->endxyz[0];
+				float y1 = powf(1 - t, 2 ) *pTmpPath->xyz[1] + 2.0f * (1 - t) * t * p->cpy + t * t * p->endxyz[1];
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
@@ -1385,24 +1371,24 @@ void XContext::DrawCommand()
 		}
 		else if( pCurPath->cmdType == CTX_BEZIERCURVETO )
 		{
-			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
+			CCPoint from( pTmpPath->xyz[0], pTmpPath->xyz[1] );	
 			EgEdge *p = pTmpPath->pEdges;
 			ccColor4F color = {1.0, 0, 0, 1 };
 
 			float t = 0.0f;
 			int segments = 60;
-			float x = pTmpPath->startx;
-			float y = pTmpPath->starty;
+			float x = pTmpPath->xyz[0];
+			float y = pTmpPath->xyz[1];
 			float cp1x = pTmpPath->pEdges->cpx;
 			float cp1y = pTmpPath->pEdges->cpy;
 			float cp2x = pTmpPath->pEdges->pNext->cpx;
 			float cp2y = pTmpPath->pEdges->pNext->cpy;
-			float endx = pTmpPath->pEdges->endx;
-			float endy = pTmpPath->pEdges->endy;
+			float endx = pTmpPath->pEdges->endxyz[0];
+			float endy = pTmpPath->pEdges->endxyz[1];
 			for ( int i = 0; i < segments; i++ )
 			{
-				float x1 = powf(1 - t, 3) * pTmpPath->startx + 3.0f * powf(1 - t, 2) * t * cp1x + 3.0f * (1 - t) * t * t * cp2x + t * t * t * endx;
-				float y1 = powf(1 - t, 3) * pTmpPath->starty + 3.0f * powf(1 - t, 2) * t * cp1y + 3.0f * (1 - t) * t * t * cp2y + t * t * t * endy;
+				float x1 = powf(1 - t, 3) * pTmpPath->xyz[0] + 3.0f * powf(1 - t, 2) * t * cp1x + 3.0f * (1 - t) * t * t * cp2x + t * t * t * endx;
+				float y1 = powf(1 - t, 3) * pTmpPath->xyz[1] + 3.0f * powf(1 - t, 2) * t * cp1y + 3.0f * (1 - t) * t * t * cp2y + t * t * t * endy;
 				t += 1.0f / segments;
 				CCPoint from( x, y );
 				CCPoint to( x1, y1 );
@@ -1709,7 +1695,7 @@ void XContext::render()
 		glBindBuffer( GL_ARRAY_BUFFER, pCurPath->muVbo );
 		glEnableVertexAttribArray(kCCVertexAttrib_Position);
 		glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
-		glDrawArrays(GL_TRIANGLES, 0, pCurPath->pointCount );
+		glDrawArrays(GL_TRIANGLE_FAN, 0, pCurPath->pointCount );
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDisableVertexAttribArray( kCCVertexAttrib_Position );
 	}
