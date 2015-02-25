@@ -226,7 +226,7 @@ void COpenGLDialogDlg::fillRectGradientRadial()
 void COpenGLDialogDlg::fillLineTo()
 {
 	pctx->beginPath();
-	pctx->mLineWidth = 1;
+	pctx->LineWidth( 5 );
 	//ccColor4F *color1 = new ccColor4F;
 	ccColor4F color = { 1.0, 0.0, 0.0, 1.0 }; // new ccColor4F;
 	//color->a = 1.0;
@@ -244,8 +244,8 @@ void COpenGLDialogDlg::fillLineTo()
 	pctx->lineto( 80, 240 );
 	
 	pctx->closePath();
-	//pctx->stroke();
-	pctx->fill();
+	pctx->stroke();
+	//pctx->fill();
 	return;
 }
 

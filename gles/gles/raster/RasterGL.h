@@ -172,8 +172,10 @@ public:
 	EgPath *pNext;
 	CMDType cmdType;
 	int count;
+	int pointCount;
 	XStrokeStyle *strokeStyle;
 	XFillStyle   *fillStyle;
+	float mLineWidth;
 
 public:
 	bool mbDirty;
@@ -203,13 +205,14 @@ protected:
     bool            m_bDirty;
 
 public:
-	float mLineWidth;
+	
 	XFillStyle *mpFillStyle;
 	XStrokeStyle *mpStrokeStyle;
 	ccColor4B mbgcolor;
 	int mWidth;
 	int mHeight;
 public:
+	void LineWidth( float width );
 	// p1
 	void fill();
 	void beginPath();
@@ -245,8 +248,9 @@ private:
 	//vector< XGradientLinear *> mVecGradient;
 	//vector< XPattern *>mVecPattern;
 	EgPath *mEgPaths;
-	EgPath *pEndPath;
 	EgPath *pCurPath;
+	EgPath *pEndPath;
+	
 	float mcurx;
 	float mcury;
 
