@@ -15,9 +15,13 @@ const GLchar * shader_vert =
 static ccVertex2F v2fzero = {0.0f,0.0f};
 
 
-// sizeof(ccV2F_C4B_T2F)
 #define GL_POINTS 200
 static ccV2F_C4B_T2F gsGLData[ GL_POINTS ];
+static int gVertexIndex = 0;
+
+#define MAXCOMBINES (100 * 3)
+static GLdouble gCombineVertex[ MAXCOMBINES];
+static int      gCombineIndex = 0;
 
 static inline ccVertex2F v2f(float x, float y)
 {
@@ -306,15 +310,6 @@ void XFillStyle::setFillType( XPattern *pattern )
 	mpPattern = pattern;
 }
 
-
-//void XFillStyle::addColorStop( float index, ccColor4F color )
-//{
-//	if ( mFillType == FILL_GRADIENT )
-//	{
-//		mpGradient->addColorStop( index, color );
-//	}
-//}
-
 void EgPath::GenBuffer()
 {
 	glGenBuffers( 1, &muVbo );
@@ -338,6 +333,40 @@ void EgPath::BufferSubData(GLuint offset,GLsizeiptr size, const GLvoid *data )
 void EgPath::DeleteBuffer()
 {
 	glDeleteBuffers( 1, &muVbo );
+}
+
+void __stdcall vertexCallback(GLdouble *vertex)
+{
+	gsGLData[gVertexIndex].vertices.x = vertex[0];
+	gsGLData[gVertexIndex].vertices.y = vertex[1];
+	gVertexIndex ++;
+}
+
+void __stdcall beginCallback( GLenum which )
+{
+	int i = 0;
+}
+
+void __stdcall endCallback( )
+{
+	int i = 0;
+}
+
+void __stdcall errorCallback( GLenum errorCode )
+{
+	int i = 0;
+}
+
+void __stdcall combineCallback(GLdouble coords[3], 
+							   GLdouble *vertex_data[4],
+							   GLfloat weight[4], GLdouble **dataOut )
+{
+	GLdouble *vertex = gCombineVertex + gCombineIndex;
+	gCombineIndex += 3;
+	vertex[0] = coords[0];
+	vertex[1] = coords[1];
+	vertex[2] = coords[2];
+	*dataOut = vertex;
 }
 
 
@@ -384,13 +413,75 @@ XContext::~XContext()
     m_uVbo = 0;
 }
 
+void XContext::InitPolygon()
+{
+	tobj = gluNewTess();
+	gluTessCallback(tobj, GLU_TESS_VERTEX,	(void (__stdcall *)())vertexCallback);
+	gluTessCallback(tobj, GLU_TESS_BEGIN,	(void (__stdcall *)())beginCallback);
+	gluTessCallback(tobj, GLU_TESS_END,		(void (__stdcall *)())endCallback);
+	gluTessCallback(tobj, GLU_TESS_ERROR,	(void (__stdcall *)())errorCallback);
+	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
+	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
+	gCombineIndex = 0;
+	gVertexIndex = 0;
+	return;
+}
+
+void XContext::UninitPolygon()
+{
+	gluDeleteTess(tobj);
+}
+
 void XContext::LineWidth(  float width )
 {
 	pCurPath->mLineWidth = width;
 }
 
+GLdouble gTmpData[3][3] = 
+{
+	80, 240, 0,
+	140, 240, 0,
+	110, 60, 0
+};
+
 void XContext::fill()
 {
+
+	if( pCurPath )
+	{
+		int ilen = sizeof(ccV2F_C4B_T2F);
+		if ( pCurPath->cmdType == CTX_LINETO )
+		{
+			glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_COLOR );
+			glUniform4fv( (GLint)gUniforms[kCCUniformFillColor], 1, (GLfloat*)&mpFillStyle->mColor );
+			pCurPath->GenBuffer();
+			pCurPath->BindBuffer();
+			EgEdge *p = pCurPath->pEdges;
+			InitPolygon();
+			gluTessBeginPolygon(tobj, NULL);
+			gluTessBeginContour(tobj);
+			GLdouble xyz[3] = { pCurPath->startx, pCurPath->starty, 0 };
+			for ( int i = 0; i < 3; i++ )
+			{
+				gluTessVertex( tobj, gTmpData[i], gTmpData[i] );
+			}
+			//gluTessVertex(tobj, xyz, xyz);
+			//while( p )
+			//{
+			//	xyz[0] = p->endx;
+			//	xyz[1] = p->endy;
+			//	xyz[2] = 0;
+			//	gluTessVertex(tobj, xyz, xyz);
+			//	p = p->pNext;
+			//}	
+			gluTessEndContour(tobj);
+			gluTessEndPolygon(tobj);
+			pCurPath->mbufferLen = gVertexIndex * sizeof(ccV2F_C4B_T2F);
+			pCurPath->BufferData( pCurPath->mbufferLen, gsGLData );
+			pCurPath->pointCount = gVertexIndex;
+			UninitPolygon();
+		}
+	}
 	//EgPath *pTmpPath = mEgPaths;
 	//while( pTmpPath )
 	//{
@@ -1917,100 +2008,6 @@ void XContext::clear()
     m_bDirty = true;
 }
 
-std::vector<CCPoint*> g_pintArray;
-XContext * pthis = NULL;
-void __stdcall vertexCallback(GLdouble *vertex)
-{
-	const GLdouble *pointer;
-	CCPoint *p = new CCPoint();
-	p->x = vertex[0];
-	p->y = vertex[1];
-	g_pintArray.push_back( p );
-
-	//pointer = (GLdouble *) vertex;
-	//glColor3dv(pointer+3);
-	//glVertex3dv((GLdouble*)vertex);
-
-	//g_pintArray
-}
-
-void __stdcall beginCallback( GLenum which )
-{
-
-}
-
-void __stdcall endCallback( )
-{
-	static ccColor4F green ={0,1,0,1};
-	int count = g_pintArray.size();
-	//const int nCount=100;
-	//static CCPoint circle[nCount];
-	//circle[0].x = 50;
-	//circle[0].y = 100;
-	//circle[1].x = 0;
-	//circle[1].y = 0;
-	//circle[2].x = -50;
-	//circle[2].y = 100;
-	//circle[3].x = -100;
-	//circle[3].y = 50;
-	//circle[4].x = -150;
-	//circle[4].y = 100;
-	//drawPolygon( (CCPoint*)(g_pintArray[0]), count,green, 1, green );
-
-	CCPoint * pdata = new CCPoint[count];
-	for ( int i = 0; i < count; i++ )
-	{
-		pdata[i].x = g_pintArray[i]->x;
-		pdata[i].y = g_pintArray[i]->y;
-	}
-
-	//ccDrawSolidPoly( pdata, count, green );
-	delete []pdata;
-	std::vector<CCPoint*>::iterator iter = g_pintArray.begin();
-	std::vector<CCPoint*>::iterator end = g_pintArray.end();
-	for ( ; iter != end; iter++ )
-	{
-		delete *iter;
-	}
-	g_pintArray.clear();
-	
-	
-}
-
-void __stdcall errorCallback( GLenum errorCode )
-{
-	const GLubyte *estring;
-	//estring = gluErrorString( errorCode );
-	//fprintf( stderr, "Tessellation Error: %s\n", estring );
-	exit( 0 );
-}
-
-void __stdcall combineCallback(GLdouble coords[3], 
-		GLdouble *vertex_data[4],
-		GLfloat weight[4], GLdouble **dataOut )
-{
-	GLdouble *vertex;
-	int i;
-
-	vertex = (GLdouble *) malloc(6 * sizeof(GLdouble));
-
-	vertex[0] = coords[0];
-	vertex[1] = coords[1];
-	vertex[2] = coords[2];
-	for (i = 3; i < 6; i++)
-		vertex[i] = weight[0] * vertex_data[0][i] 
-					+ weight[1] * vertex_data[1][i]
-					+ weight[2] * vertex_data[2][i] 
-					+ weight[3] * vertex_data[3][i];
-	*dataOut = vertex;
-
-	CCPoint *p = new CCPoint();
-	p->x = vertex[0];
-	p->y = vertex[1];
-	g_pintArray.push_back( p );
-	
-	
-}
 
 //GLdouble star[5][6] =
 //{
@@ -2041,21 +2038,21 @@ void __stdcall combineCallback(GLdouble coords[3],
 //	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
 //	120.0, 70.0, 0.0, 1.0, 0.0, 1.0
 //};
-
-GLdouble star[10][6] =
-{
-	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
-	//150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
-	//120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
-	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
-	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
-	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
-	120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
-	150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
-	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
-	50.0, 150.0, 0.0, 1.0, 1.0, 0.0
-};
+//
+//GLdouble star[10][6] =
+//{
+//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+//	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
+//	//150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+//	//120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+//	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
+//	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
+//	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
+//	120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
+//	150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
+//	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
+//	50.0, 150.0, 0.0, 1.0, 1.0, 0.0
+//};
 
 //GLdouble star[8][6] =
 //{
@@ -2069,75 +2066,6 @@ GLdouble star[10][6] =
 //	200.0, 50.0, 0.0, 1.0, 0.0, 1.0
 //};
 
-
-
-void XContext::beginPolygon()
-{
-	tobj = gluNewTess();
-	pthis = this;
-	gluTessCallback(tobj, GLU_TESS_VERTEX, (void (__stdcall *)())vertexCallback);
-	gluTessCallback(tobj, GLU_TESS_BEGIN,  (void (__stdcall *)())beginCallback);
-	gluTessCallback(tobj, GLU_TESS_END, (void (__stdcall *)())endCallback);
-	gluTessCallback(tobj, GLU_TESS_ERROR, (void (__stdcall *)())errorCallback);
-	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
-
-	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-	gluTessBeginPolygon(tobj, NULL);
-	gluTessBeginContour(tobj);
-	gluTessVertex(tobj, star[0], star[0]);
-	gluTessVertex(tobj, star[1], star[1]);
-	gluTessVertex(tobj, star[2], star[2]);
-	gluTessVertex(tobj, star[3], star[3]);
-	gluTessVertex(tobj, star[4], star[4]);
-	gluTessVertex(tobj, star[5], star[5]);
-	gluTessVertex(tobj, star[6], star[6]);
-	gluTessVertex(tobj, star[7], star[7]);
-	gluTessVertex(tobj, star[8], star[8]);
-	gluTessVertex(tobj, star[9], star[9]);
-	//gluTessVertex(tobj, star[10], star[10]);
-	//gluTessVertex(tobj, star[11], star[11]);
-	gluTessEndContour(tobj);
-	gluTessEndPolygon(tobj);
-
-	return;
-}
-
-void XContext::endPolygon()
-{
-	 gluDeleteTess(tobj);
-
-	 //static ccColor4F green ={0,1,0,1};
-	 //int count = g_pintArray.size();
-	 ////const int nCount=100;
-	 ////static CCPoint circle[nCount];
-	 ////circle[0].x = 50;
-	 ////circle[0].y = 100;
-	 ////circle[1].x = 0;
-	 ////circle[1].y = 0;
-	 ////circle[2].x = -50;
-	 ////circle[2].y = 100;
-	 ////circle[3].x = -100;
-	 ////circle[3].y = 50;
-	 ////circle[4].x = -150;
-	 ////circle[4].y = 100;
-	 ////drawPolygon( (CCPoint*)(g_pintArray[0]), count,green, 1, green );
-
-	 //CCPoint * pdata = new CCPoint[count];
-	 //for ( int i = 0; i < count; i++ )
-	 //{
-		// pdata[i].x = g_pintArray[i]->x;
-		// pdata[i].y = g_pintArray[i]->y;
-	 //}
-
-	 //ccDrawSolidPoly( pdata, count, green );
-	 //delete []pdata;
-
-}
-
-void XContext::drawAllPolygon()
-{
-
-}
 
 
 ccBlendFunc XContext::getBlendFunc() const

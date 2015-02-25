@@ -289,9 +289,8 @@ public:
 	void loadShaders();
 
 public:
-	void beginPolygon();
-	void endPolygon();
-	void drawAllPolygon();
+	void InitPolygon();
+	void UninitPolygon();
 
 private:
 	GLUtesselator *tobj;
