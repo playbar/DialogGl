@@ -18,6 +18,7 @@ static ccVertex2F v2fzero = {0.0f,0.0f};
 #define GL_POINTS 200
 static ccV2F_C4B_T2F gsGLData[ GL_POINTS ];
 static int gVertexIndex = 0;
+static GLenum gWhichTriangle = 0;
 
 #define MAXCOMBINES (100 * 3)
 static GLdouble gCombineVertex[ MAXCOMBINES];
@@ -337,13 +338,55 @@ void EgPath::DeleteBuffer()
 
 void __stdcall vertexCallback(GLdouble *vertex)
 {
-	gsGLData[gVertexIndex].vertices.x = vertex[0];
-	gsGLData[gVertexIndex].vertices.y = vertex[1];
-	gVertexIndex ++;
+	if ( GL_TRIANGLE_FAN == gWhichTriangle )
+	{
+		if ( gVertexIndex > 2 )
+		{
+			gsGLData[gVertexIndex] = gsGLData[0];
+			gVertexIndex++;
+			gsGLData[gVertexIndex] = gsGLData[ gVertexIndex - 2 ];
+			gVertexIndex++;
+			gsGLData[gVertexIndex].vertices.x = vertex[0];
+			gsGLData[gVertexIndex].vertices.y = vertex[1];
+			gVertexIndex ++;
+		}
+		else
+		{
+			gsGLData[gVertexIndex].vertices.x = vertex[0];
+			gsGLData[gVertexIndex].vertices.y = vertex[1];
+			gVertexIndex ++;
+		}
+	}
+	else if( GL_TRIANGLE_STRIP == gWhichTriangle )
+	{
+		if ( gVertexIndex > 2 )
+		{
+			gsGLData[gVertexIndex] = gsGLData[gVertexIndex - 2 ];
+			gVertexIndex++;
+			gsGLData[gVertexIndex] = gsGLData[ gVertexIndex - 2 ];
+			gVertexIndex++;
+			gsGLData[gVertexIndex].vertices.x = vertex[0];
+			gsGLData[gVertexIndex].vertices.y = vertex[1];
+			gVertexIndex ++;
+		}
+		else
+		{
+			gsGLData[gVertexIndex].vertices.x = vertex[0];
+			gsGLData[gVertexIndex].vertices.y = vertex[1];
+			gVertexIndex ++;
+		}
+	}
+	else
+	{
+		gsGLData[gVertexIndex].vertices.x = vertex[0];
+		gsGLData[gVertexIndex].vertices.y = vertex[1];
+		gVertexIndex ++;
+	}
 }
 
 void __stdcall beginCallback( GLenum which )
 {
+	gWhichTriangle = which;
 	int i = 0;
 }
 
@@ -424,12 +467,15 @@ void XContext::InitPolygon()
 	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 	gCombineIndex = 0;
 	gVertexIndex = 0;
+	gWhichTriangle = 0;
 	return;
 }
 
 void XContext::UninitPolygon()
 {
 	gluDeleteTess(tobj);
+	gCombineIndex = 0;
+	gVertexIndex = 0;
 }
 
 void XContext::LineWidth(  float width )
@@ -1695,7 +1741,7 @@ void XContext::render()
 		glBindBuffer( GL_ARRAY_BUFFER, pCurPath->muVbo );
 		glEnableVertexAttribArray(kCCVertexAttrib_Position);
 		glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
-		glDrawArrays(GL_TRIANGLE_FAN, 0, pCurPath->pointCount );
+		glDrawArrays( GL_TRIANGLES, 0, pCurPath->pointCount );
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDisableVertexAttribArray( kCCVertexAttrib_Position );
 	}
