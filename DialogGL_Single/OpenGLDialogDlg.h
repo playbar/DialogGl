@@ -47,6 +47,8 @@ protected:
 	void fillRectWithColor();
 	void fillRectWithPattern();
 	void fillRectGradientLinear();
+	void fillRectGradientRadial();
+	void fillLineTo();
 	//{{AFX_MSG(COpenGLDialogDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();

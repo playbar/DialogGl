@@ -46,10 +46,14 @@ struct CC_DLL XGradientLinear
 struct CC_DLL XGradientRadial
 {
 	GLuint texId;
-	int mTexLen;
-	GLubyte *pTexData;
+	int miLen;
+	float x;
+	float y;
+	GradientData *pGraData;
+	bool mbDirty;
 
 	void addColorStop( float index, ccColor4F color );
+	void CreateTextrue();
 
 };
 
@@ -158,6 +162,7 @@ struct EgEdge
 
 struct EgPath
 {
+public:	
 	float startx;
 	float starty;
 
@@ -166,10 +171,21 @@ struct EgPath
 
 	EgPath *pNext;
 	CMDType cmdType;
-	ccV2F_C4B_T2F *mBuffer;
 	int count;
 	XStrokeStyle *strokeStyle;
 	XFillStyle   *fillStyle;
+
+public:
+	bool mbDirty;
+	GLuint muVbo;  // 数组空间
+	int mbufferLen;	//数组空间大小
+	int mCurIndex;	//数组当前使用的位置
+
+	void GenBuffer();
+	void BindBuffer();
+	void BufferData(GLsizeiptr size, const GLvoid *data );
+	void BufferSubData(GLuint offset,GLsizeiptr size, const GLvoid *data );
+	void DeleteBuffer();
 };
 
 

@@ -11,6 +11,7 @@ attribute vec2 a_texcoord;											\n\
 attribute vec4 a_color;												\n\														\n\
 varying vec4 v_color;												\n\
 varying vec2 v_texcoord;											\n\
+varying vec2 v_texcoord1; \n\
 #endif																\n\
 																	\n\
 void main()															\n\
@@ -28,6 +29,12 @@ void main()															\n\
 	else if( u_drawType == 2 ) \n\
 	{ \n\
 		gl_Position = CC_MVPMatrix * a_position; \n\
+		v_texcoord = vec2( CC_TEXMatrix * a_position ); \n\
+	} \n\
+	else if( u_drawType == 3 ) \n\
+	{ \n\
+		gl_Position = CC_MVPMatrix * a_position; \n\
+		v_texcoord1 = a_texcoord; \n\
 		v_texcoord = vec2( CC_TEXMatrix * a_position ); \n\
 	} \n\
 	else if( u_drawType == 4 ) \n\

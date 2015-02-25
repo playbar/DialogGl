@@ -79,7 +79,8 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 	//fillRectWithPattern();
 	//fillRectWithColor();
-	fillRectGradientLinear();
+	//fillRectGradientLinear();
+	fillLineTo();
 
 
 	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
@@ -192,7 +193,7 @@ void COpenGLDialogDlg::fillRectWithPattern()
 
 void COpenGLDialogDlg::fillRectGradientLinear()
 {
-	XGradientLinear *pgradient = pctx->CreateLinearGradient( 40, 0, 100, 100 );
+	XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 100, 0 );
 	ccColor4F red = { 1, 0, 0, 1 };
 	ccColor4F green = { 0, 1, 0, 1 };
 	ccColor4F blue = { 0, 0, 1, 1 };
@@ -202,7 +203,49 @@ void COpenGLDialogDlg::fillRectGradientLinear()
 	pgradient->addColorStop( 0.5, blue );
 	pgradient->addColorStop( 0.75, rg );
 	pctx->mpFillStyle->setFillType( pgradient );
-	pctx->fillRect( 0, 0, 100, 100 );
+	pctx->fillRect( 0, 0, 200, 100 );
+	return;
+}
+
+void COpenGLDialogDlg::fillRectGradientRadial()
+{
+	XGradientRadial *pgradient = pctx->CreateRadialGradient( 100, 100, 5, 100, 100, 100 );
+	ccColor4F red = { 1, 0, 0, 1 };
+	ccColor4F green = { 0, 0.5, 0, 1 };
+	ccColor4F blue = { 0, 0, 1, 1 };
+	ccColor4F rg = { 1, 1, 0, 1 };
+	pgradient->addColorStop( 0, red );
+	pgradient->addColorStop( 0.5, blue );
+	pgradient->addColorStop( 1, green );
+	//pgradient->addColorStop( 0.75, rg );
+	pctx->mpFillStyle->setFillType( pgradient );
+	pctx->fillRect( 0, 0, 300, 300 );
+	return;
+}
+
+void COpenGLDialogDlg::fillLineTo()
+{
+	pctx->beginPath();
+	pctx->mLineWidth = 1;
+	//ccColor4F *color1 = new ccColor4F;
+	ccColor4F color = { 1.0, 0.0, 0.0, 1.0 }; // new ccColor4F;
+	//color->a = 1.0;
+	//color->r = 0.0;
+	//color->b = 1.0;
+	//color->g = 1.0;
+	pctx->mpFillStyle->setFillType( color );
+	pctx->moveto( 80, 240 );
+	pctx->lineto( 140, 240 );
+	pctx->lineto( 110, 60 );
+	pctx->lineto( 240, 50 );
+	pctx->lineto( 20, 20 );
+	pctx->lineto( 0, 70 );
+	pctx->lineto( 100, 50 );
+	pctx->lineto( 80, 240 );
+	
+	pctx->closePath();
+	//pctx->stroke();
+	pctx->fill();
 	return;
 }
 

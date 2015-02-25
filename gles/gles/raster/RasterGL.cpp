@@ -142,6 +142,7 @@ void XGradientLinear::CreateTextrue()
 {
 	if ( ! mbDirty )
 	{
+		mbDirty = false;
 		return;
 	}
 	GLubyte *pTexData = new GLubyte[miLen * 4 + 4 ];
@@ -178,6 +179,74 @@ void XGradientLinear::CreateTextrue()
 	delete []pTexData;
 
 	return;
+}
+
+void XGradientRadial::addColorStop( float index, ccColor4F color )
+{
+	mbDirty = true;
+	GradientData *p = pGraData;
+	GradientData *pn = p->pNext;
+	GradientData *cur = new GradientData();
+	cur->color = color;
+	cur->index = index;
+	cur->pNext = NULL;
+	while( p != NULL && pn != NULL )
+	{
+		if ( p->index < index && index < pn->index )
+		{
+			p->pNext = cur;
+			cur->pNext = pn;
+			return;
+		}
+		p = pn;
+		pn = pn->pNext;
+	}
+	p->pNext = cur;
+}
+
+void XGradientRadial::CreateTextrue()
+{
+	if ( ! mbDirty )
+	{
+		mbDirty = false;
+		return;
+	}
+	GLubyte *pTexData = new GLubyte[miLen * 4 ];
+	memset( pTexData, 0, miLen * 4 );
+	ccColor4B *pdata = (ccColor4B*)pTexData;
+	GradientData *pgd = pGraData;
+	GradientData *pn = pgd->pNext;
+	if ( pn == NULL )
+	{
+		return;
+	}
+	pgd->color = pn->color;
+	while( pgd != NULL && pn != NULL )
+	{
+		int index1 = floor(pgd->index * miLen + 0.5);
+		int step = floor( pn->index *miLen + 0.5 ) - index1;
+		//pdata += index1;
+		for ( int i = 0; i < step; i++ )
+		{
+			pdata->a = pgd->color.a * 255 - (pgd->color.a - pn->color.a ) * 255 * i / step;
+			pdata->r = pgd->color.r * 255 - (pgd->color.r - pn->color.r ) * 255 * i / step;
+			pdata->g = pgd->color.g * 255 - (pgd->color.g - pn->color.g ) * 255 * i / step;
+			pdata->b = pgd->color.b * 255 - (pgd->color.b - pn->color.b ) * 255 * i / step;
+			pdata++;
+		}
+		pgd = pn;
+		pn = pn->pNext;
+	}
+
+	glGenTextures( 1, &texId );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, texId );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)miLen, (GLsizei)1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pTexData );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	delete []pTexData;
+
 }
 
 XFillStyle::XFillStyle()
@@ -240,6 +309,31 @@ void XFillStyle::setFillType( XPattern *pattern )
 //		mpGradient->addColorStop( index, color );
 //	}
 //}
+
+void EgPath::GenBuffer()
+{
+	glGenBuffers( 1, &muVbo );
+}
+
+void EgPath::BindBuffer()
+{
+	glBindBuffer( GL_ARRAY_BUFFER, muVbo );
+}
+
+void EgPath::BufferData(GLsizeiptr size, const GLvoid *data )
+{
+	glBufferData( GL_ARRAY_BUFFER, size, data, GL_STREAM_DRAW );
+}
+
+void EgPath::BufferSubData(GLuint offset,GLsizeiptr size, const GLvoid *data )
+{
+	glBufferSubData( GL_ARRAY_BUFFER, offset, size, data );
+}
+
+void EgPath::DeleteBuffer()
+{
+	glDeleteBuffers( 1, &muVbo );
+}
 
 
 XContext::XContext()
@@ -460,6 +554,8 @@ void XContext::stroke()
 	{
 		if ( pTmpPath->cmdType == CTX_LINETO )
 		{
+			glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_COLOR );
+			glUniform4fv( (GLint)gUniforms[kCCUniformFillColor], 1, (GLfloat*)&mpFillStyle->mColor );
 			CCPoint from( pTmpPath->startx, pTmpPath->starty );	
 			EgEdge *p = pTmpPath->pEdges;
 			ccColor4F color = {1.0, 0, 0, 1 };
@@ -879,6 +975,64 @@ void XContext::fillRect( float x, float y, float width, float height )
 		m_bDirty = true;
 
 	}
+	else if ( mpFillStyle->mFillType == FILL_Gradient_radius )
+	{
+		mpFillStyle->mpGradientLinear->CreateTextrue();
+
+		glUniform1i( (GLint)gUniforms[kCCuniformDrawType], FILL_Gradient_radius );
+		kmMat4 texMat = 
+		{
+			mpFillStyle->mpGradientLinear->miLen, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		};
+		kmMat4 texMatIn;
+		kmMat4 rotaMat;
+		kmMat4 tranMat;
+		kmMat4Identity( &rotaMat ); 
+		kmMat4Identity( &texMatIn );
+		kmMat4Inverse( &texMatIn, &texMat );
+		//texMatIn.mat[12] = mpFillStyle->mpGradientLinear->x;
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpGradientRadial->texId );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+		//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
+		glUniformMatrix4fv( gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat );
+		unsigned int vertex_count = 2 * 6;
+		ensureCapacity( vertex_count );
+		ccColor4B col = ccc4BFromccc4F( mpFillStyle->mColor );
+		float rx = mpFillStyle->mpGradientRadial->x;
+		float ry = mpFillStyle->mpGradientRadial->y;
+		float r = mpFillStyle->mpGradientRadial->miLen;
+
+		ccTex2F lt = { (x - rx) / r, (y - ry ) / r };
+		ccTex2F lb = { (x - rx) / r, (y + height -ry ) / r};
+		ccTex2F rt = { (x + width -rx ) / r, ( y - ry ) / r};
+		ccTex2F rb = { (x + width -rx ) / r, ( y + height - ry ) / r };
+		ccV2F_C4B_T2F_Triangle triangle =
+		{
+			{ vertex2( x, y + height), col, lb },
+			{ vertex2( x, y), col, lt },
+			{ vertex2( x + width, y + height ), col, rb  },
+		};
+		ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)( m_pBuffer + m_nBufferCount );
+
+		triangles[0] = triangle;
+		ccV2F_C4B_T2F_Triangle triangle1 =
+		{
+			{ vertex2( x, y), col, lt },
+			{ vertex2( x + width, y + height), col,  rb },
+			{ vertex2( x + width, y ), col, rt }
+		};
+		triangles[1] = triangle1;
+		m_nBufferCount += vertex_count;
+		m_bDirty = true;
+
+	}
 	return;
 }
 
@@ -1009,7 +1163,13 @@ XGradientRadial *XContext::CreateRadialGradient( float xStart, float ySttart, fl
 										  float xEnd, float yEnd, float radiusEnd )
 {
 	XGradientRadial *p = new XGradientRadial();
-	
+	memset( p, 0, sizeof( XGradientRadial ) );
+	p->mbDirty = false;
+	p->pGraData = new GradientData();
+	p->pGraData->index = radiusStart;
+	p->x = xStart;
+	p->y = ySttart;
+	p->miLen = radiusEnd;
 	return p;
 }
 
@@ -1461,6 +1621,20 @@ void XContext::render()
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		glDisableVertexAttribArray( kCCVertexAttrib_Position );
 	}
+	if ( mpFillStyle->mFillType == FILL_Gradient_radius )
+	{
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, mpFillStyle->mpGradientRadial->texId );
+		glEnableVertexAttribArray( kCCVertexAttrib_Position );
+		glVertexAttribPointer( kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof( ccV2F_C4B_T2F),( GLvoid*)offsetof(ccV2F_C4B_T2F, vertices));
+		glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
+		glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+
+		glDrawArrays( GL_TRIANGLES, 0, m_nBufferCount );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glDisableVertexAttribArray( kCCVertexAttrib_Position );
+		glDisableVertexAttribArray( kCCVertexAttrib_TexCoords );
+	}
 
     //ccGLEnableVertexAttribs(kCCVertexAttribFlag_PosColorTex);
     //glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
@@ -1884,7 +2058,7 @@ void XContext::beginPolygon()
 	gluTessCallback(tobj, GLU_TESS_ERROR, (void (__stdcall *)())errorCallback);
 	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
 
-	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 	gluTessBeginPolygon(tobj, NULL);
 	gluTessBeginContour(tobj);
 	gluTessVertex(tobj, star[0], star[0]);

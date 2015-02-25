@@ -6,6 +6,7 @@ varying mediump vec2 v_texcoord;								\n\
 #else															\n\
 varying vec4 v_color;											\n\
 varying vec2 v_texcoord;										\n\
+varying vec2 v_texcoord1; \n\
 #endif															\n\
 																\n\
 void main()														\n\
@@ -20,7 +21,11 @@ void main()														\n\
 	} \n\
 	else if( u_drawType == 2 ) \n\
 	{ \n\
-	gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
+		gl_FragColor = texture2D( CC_Texture0, v_texcoord ); \n\
+	} \n\
+	else if( u_drawType == 3 ) \n\
+	{ \n\
+		gl_FragColor = texture2D( CC_Texture0, vec2(length( v_texcoord1) , 0) ); \n\
 	} \n\
 	else if( u_drawType == 4 ) \n\
 	{ \n\
