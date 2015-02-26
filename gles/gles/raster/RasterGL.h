@@ -169,12 +169,12 @@ public:
 	GLdouble xyz[3];
 
 	EgEdge *pEdges;
-	EgEdge *pEndEdge;
+	EgEdge *pCurEdge;
+	int count; // edge count
+	int pointCount; 
 
 	EgPath *pNext;
 	CMDType cmdType;
-	int count;
-	int pointCount;
 	XStrokeStyle *strokeStyle;
 	XFillStyle   *fillStyle;
 	float mLineWidth;
@@ -251,7 +251,7 @@ private:
 	//vector< XPattern *>mVecPattern;
 	EgPath *mEgPaths;
 	EgPath *pCurPath;
-	EgPath *pEndPath;
+	//EgPath *pEndPath;
 	
 	float mcurx;
 	float mcury;
