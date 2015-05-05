@@ -1,0 +1,15 @@
+cocos2dx_my/
+DialogGL_Single/Debug/
+DialogGL/Debug/
+Debug/
+gles_back/
+cocos2dx/
+OpenGL程序用的库文件/
+*.user
+*.filters
+*.lib
+*.aps
+*.ncb
+*.suo
+*.opensdf
+*.png

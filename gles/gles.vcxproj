@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>gleslib</ProjectName>
+    <ProjectGuid>{98A51BA8-FC3A-415B-AC8F-8C7BD464E93E}</ProjectGuid>
+    <RootNamespace>cocos2d-x.win32</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir>$(Configuration).win32\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./;gles;gles/kazmath;gles/raster;gles/shader;gles/support;glew;glu;gles/libpng;gles/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PNG_NO_INDEX_SUPPORTED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4267;4251;4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command />
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>glew;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries> ;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..;..\platform\win32;..\platform\third_party\win32\iconv;..\platform\third_party\win32\zlib;..\platform\third_party\win32\libpng;..\platform\third_party\win32\libjpeg;..\platform\third_party\win32\libtiff;..\platform\third_party\win32\libxml2;..\platform\third_party\win32\pthread;..\platform\third_party\win32\OGLES;..\include;..\kazmath\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;COCOS2DXWIN32_EXPORTS;GL_GLEXT_PROTOTYPES;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4267;4251;4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+xcopy /Y /Q "$(SolutionDir)cocos2dx\platform\third_party\win32\libraries\*.*" "$(OutDir)"
+</Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;libxml2.lib;libzlib.lib;libpng.lib;libjpeg.lib;libtiff.lib;libiconv.lib;pthreadVCE2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries> ;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="gles\cctypeinfo.h" />
+    <ClInclude Include="gles\cctypes.h" />
+    <ClInclude Include="gles\EGLView.h" />
+    <ClInclude Include="gles\kazmath\aabb.h" />
+    <ClInclude Include="gles\kazmath\GL\mat4stack.h" />
+    <ClInclude Include="gles\kazmath\GL\matrix.h" />
+    <ClInclude Include="gles\kazmath\kazmath.h" />
+    <ClInclude Include="gles\kazmath\mat3.h" />
+    <ClInclude Include="gles\kazmath\mat4.h" />
+    <ClInclude Include="gles\kazmath\neon_matrix_impl.h" />
+    <ClInclude Include="gles\kazmath\plane.h" />
+    <ClInclude Include="gles\kazmath\quaternion.h" />
+    <ClInclude Include="gles\kazmath\ray2.h" />
+    <ClInclude Include="gles\kazmath\utility.h" />
+    <ClInclude Include="gles\kazmath\vec2.h" />
+    <ClInclude Include="gles\kazmath\vec3.h" />
+    <ClInclude Include="gles\kazmath\vec4.h" />
+    <ClInclude Include="gles\libpng\png.h" />
+    <ClInclude Include="gles\raster\CCNode.h" />
+    <ClInclude Include="gles\raster\RasterGL.h" />
+    <ClInclude Include="gles\shader\CCGLProgram.h" />
+    <ClInclude Include="gles\shader\ccGLStateCache.h" />
+    <ClInclude Include="gles\shader\shader_frag.h" />
+    <ClInclude Include="gles\shader\shader_vert.h" />
+    <ClInclude Include="gles\support\CCAffineTransform.h" />
+    <ClInclude Include="gles\support\CCArray.h" />
+    <ClInclude Include="gles\support\ccCArray.h" />
+    <ClInclude Include="gles\support\CCConfiguration.h" />
+    <ClInclude Include="gles\support\CCFileUtils.h" />
+    <ClInclude Include="gles\support\CCGeometry.h" />
+    <ClInclude Include="gles\support\CCInteger.h" />
+    <ClInclude Include="gles\support\cclog.h" />
+    <ClInclude Include="gles\support\ccMacros.h" />
+    <ClInclude Include="gles\support\CCObject.h" />
+    <ClInclude Include="gles\support\CCPointExtension.h" />
+    <ClInclude Include="gles\support\CCString.h" />
+    <ClInclude Include="gles\support\ccUtils.h" />
+    <ClInclude Include="gles\support\stdint.h" />
+    <ClInclude Include="gles\support\TransformUtils.h" />
+    <ClInclude Include="gles\support\uthash.h" />
+    <ClInclude Include="glu\dict-list.h" />
+    <ClInclude Include="glu\dict.h" />
+    <ClInclude Include="glu\geom.h" />
+    <ClInclude Include="glu\gluos.h" />
+    <ClInclude Include="glu\memalloc.h" />
+    <ClInclude Include="glu\mesh.h" />
+    <ClInclude Include="glu\normal.h" />
+    <ClInclude Include="glu\priorityq-heap.h" />
+    <ClInclude Include="glu\priorityq-sort.h" />
+    <ClInclude Include="glu\priorityq.h" />
+    <ClInclude Include="glu\render.h" />
+    <ClInclude Include="glu\sweep.h" />
+    <ClInclude Include="glu\tess.h" />
+    <ClInclude Include="glu\tessmono.h" />
+    <ClInclude Include="platformtype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gles\EGLView.cpp" />
+    <ClCompile Include="gles\kazmath\aabb.c" />
+    <ClCompile Include="gles\kazmath\GL\mat4stack.c" />
+    <ClCompile Include="gles\kazmath\GL\matrix.c" />
+    <ClCompile Include="gles\kazmath\mat3.c" />
+    <ClCompile Include="gles\kazmath\mat4.c" />
+    <ClCompile Include="gles\kazmath\neon_matrix_impl.c" />
+    <ClCompile Include="gles\kazmath\plane.c" />
+    <ClCompile Include="gles\kazmath\quaternion.c" />
+    <ClCompile Include="gles\kazmath\ray2.c" />
+    <ClCompile Include="gles\kazmath\utility.c" />
+    <ClCompile Include="gles\kazmath\vec2.c" />
+    <ClCompile Include="gles\kazmath\vec3.c" />
+    <ClCompile Include="gles\kazmath\vec4.c" />
+    <ClCompile Include="gles\libpng\png.c" />
+    <ClCompile Include="gles\libpng\pngerror.c" />
+    <ClCompile Include="gles\libpng\pnggccrd.c" />
+    <ClCompile Include="gles\libpng\pngget.c" />
+    <ClCompile Include="gles\libpng\pngmem.c" />
+    <ClCompile Include="gles\libpng\pngpread.c" />
+    <ClCompile Include="gles\libpng\pngread.c" />
+    <ClCompile Include="gles\libpng\pngrio.c" />
+    <ClCompile Include="gles\libpng\pngrtran.c" />
+    <ClCompile Include="gles\libpng\pngrutil.c" />
+    <ClCompile Include="gles\libpng\pngset.c" />
+    <ClCompile Include="gles\libpng\pngtrans.c" />
+    <ClCompile Include="gles\libpng\pngvcrd.c" />
+    <ClCompile Include="gles\libpng\pngwio.c" />
+    <ClCompile Include="gles\libpng\pngwrite.c" />
+    <ClCompile Include="gles\libpng\pngwtran.c" />
+    <ClCompile Include="gles\libpng\pngwutil.c" />
+    <ClCompile Include="gles\raster\CCNode.cpp" />
+    <ClCompile Include="gles\raster\RasterGL.cpp" />
+    <ClCompile Include="gles\shader\CCGLProgram.cpp" />
+    <ClCompile Include="gles\shader\ccGLStateCache.cpp" />
+    <ClCompile Include="gles\support\CCAffineTransform.cpp" />
+    <ClCompile Include="gles\support\CCArray.cpp" />
+    <ClCompile Include="gles\support\ccCArray.cpp" />
+    <ClCompile Include="gles\support\CCConfiguration.cpp" />
+    <ClCompile Include="gles\support\CCFileUtils.cpp" />
+    <ClCompile Include="gles\support\CCGeometry.cpp" />
+    <ClCompile Include="gles\support\cclog.cpp" />
+    <ClCompile Include="gles\support\CCObject.cpp" />
+    <ClCompile Include="gles\support\CCPointExtension.cpp" />
+    <ClCompile Include="gles\support\CCString.cpp" />
+    <ClCompile Include="gles\support\ccUtils.cpp" />
+    <ClCompile Include="gles\support\TransformUtils.cpp" />
+    <ClCompile Include="gles\zlib\adler32.c" />
+    <ClCompile Include="gles\zlib\compress.c" />
+    <ClCompile Include="gles\zlib\crc32.c" />
+    <ClCompile Include="gles\zlib\deflate.c" />
+    <ClCompile Include="gles\zlib\gzio.c" />
+    <ClCompile Include="gles\zlib\infback.c" />
+    <ClCompile Include="gles\zlib\inffast.c" />
+    <ClCompile Include="gles\zlib\inflate.c" />
+    <ClCompile Include="gles\zlib\inftrees.c" />
+    <ClCompile Include="gles\zlib\trees.c" />
+    <ClCompile Include="gles\zlib\uncompr.c" />
+    <ClCompile Include="gles\zlib\zutil.c" />
+    <ClCompile Include="glu\dict.c" />
+    <ClCompile Include="glu\geom.c" />
+    <ClCompile Include="glu\memalloc.c" />
+    <ClCompile Include="glu\mesh.c" />
+    <ClCompile Include="glu\normal.c" />
+    <ClCompile Include="glu\priorityq.c" />
+    <ClCompile Include="glu\render.c" />
+    <ClCompile Include="glu\sweep.c" />
+    <ClCompile Include="glu\tess.c" />
+    <ClCompile Include="glu\tessmono.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
