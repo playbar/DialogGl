@@ -35,7 +35,6 @@ protected:
     unsigned int    m_uBufferCapacity;
     GLsizei         m_nBufferCount;
     ccV2F_C4B_T2F   *m_pBuffer;
-    
     ccBlendFunc     m_sBlendFunc;
     
     bool            m_bDirty;
@@ -43,7 +42,6 @@ protected:
 public:
 	
 	XPattern *mpFillStyle;
-	XPattern *mpStrokeStyle;
 	ccColor4B mbgcolor;
 	int mWidth;
 	int mHeight;
@@ -51,6 +49,8 @@ public:
 	void fillRect( float x, float y, float width, float height );
 
 public:
+	EgretFilter();
+	void loadShaders();
     static EgretFilter* create();
     virtual ~EgretFilter();
     
@@ -64,17 +64,6 @@ public:
     
     ccBlendFunc getBlendFunc() const;
     void setBlendFunc(const ccBlendFunc &blendFunc);
-    
-    EgretFilter();
-
-	void loadShaders();
-
-public:
-	void InitPolygon();
-	void UninitPolygon();
-
-private:
-	GLUtesselator *tobj;
     
 private:
     void ensureCapacity(unsigned int count);

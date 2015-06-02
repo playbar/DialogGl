@@ -113,84 +113,6 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 	}
 }
 
-// implementation of CCDrawNode
-void __stdcall vertexCallback(GLdouble *vertex)
-{
-	if ( GL_TRIANGLE_FAN == gWhichTriangle )
-	{
-		if ( gVertexIndex > 2 )
-		{
-			gsGLData[gVertexIndex] = gsGLData[0];
-			gVertexIndex++;
-			gsGLData[gVertexIndex] = gsGLData[ gVertexIndex - 2 ];
-			gVertexIndex++;
-			gsGLData[gVertexIndex].vertices.x = vertex[0];
-			gsGLData[gVertexIndex].vertices.y = vertex[1];
-			gVertexIndex ++;
-		}
-		else
-		{
-			gsGLData[gVertexIndex].vertices.x = vertex[0];
-			gsGLData[gVertexIndex].vertices.y = vertex[1];
-			gVertexIndex ++;
-		}
-	}
-	else if( GL_TRIANGLE_STRIP == gWhichTriangle )
-	{
-		if ( gVertexIndex > 2 )
-		{
-			gsGLData[gVertexIndex] = gsGLData[gVertexIndex - 2 ];
-			gVertexIndex++;
-			gsGLData[gVertexIndex] = gsGLData[ gVertexIndex - 2 ];
-			gVertexIndex++;
-			gsGLData[gVertexIndex].vertices.x = vertex[0];
-			gsGLData[gVertexIndex].vertices.y = vertex[1];
-			gVertexIndex ++;
-		}
-		else
-		{
-			gsGLData[gVertexIndex].vertices.x = vertex[0];
-			gsGLData[gVertexIndex].vertices.y = vertex[1];
-			gVertexIndex ++;
-		}
-	}
-	else
-	{
-		gsGLData[gVertexIndex].vertices.x = vertex[0];
-		gsGLData[gVertexIndex].vertices.y = vertex[1];
-		gVertexIndex ++;
-	}
-}
-
-void __stdcall beginCallback( GLenum which )
-{
-	gWhichTriangle = which;
-	int i = 0;
-}
-
-void __stdcall endCallback( )
-{
-	int i = 0;
-}
-
-void __stdcall errorCallback( GLenum errorCode )
-{
-	int i = 0;
-}
-
-void __stdcall combineCallback(GLdouble coords[3], 
-							   GLdouble *vertex_data[4],
-							   GLfloat weight[4], GLdouble **dataOut )
-{
-	GLdouble *vertex = gCombineVertex + gCombineIndex;
-	gCombineIndex += 3;
-	vertex[0] = coords[0];
-	vertex[1] = coords[1];
-	vertex[2] = coords[2];
-	*dataOut = vertex;
-}
-
-
 EgretFilter::EgretFilter()
 : m_uVbo(0)
 , m_uBufferCapacity(0)
@@ -229,29 +151,6 @@ EgretFilter::~EgretFilter()
     glDeleteBuffers(1, &m_uVbo);
     m_uVbo = 0;
 }
-
-void EgretFilter::InitPolygon()
-{
-	tobj = gluNewTess();
-	gluTessCallback(tobj, GLU_TESS_VERTEX,	(void (__stdcall *)())vertexCallback);
-	gluTessCallback(tobj, GLU_TESS_BEGIN,	(void (__stdcall *)())beginCallback);
-	gluTessCallback(tobj, GLU_TESS_END,		(void (__stdcall *)())endCallback);
-	gluTessCallback(tobj, GLU_TESS_ERROR,	(void (__stdcall *)())errorCallback);
-	gluTessCallback(tobj, GLU_TESS_COMBINE, (void (__stdcall *)())combineCallback);
-	gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-	gCombineIndex = 0;
-	gVertexIndex = 0;
-	gWhichTriangle = 0;
-	return;
-}
-
-void EgretFilter::UninitPolygon()
-{
-	gluDeleteTess(tobj);
-	gCombineIndex = 0;
-	gVertexIndex = 0;
-}
-
 
 //p3
 void EgretFilter::fillRect( float x, float y, float width, float height )
