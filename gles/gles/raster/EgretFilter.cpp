@@ -114,33 +114,6 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 }
 
 // implementation of CCDrawNode
-
-
-void EgPath::GenBuffer()
-{
-	glGenBuffers( 1, &muVbo );
-}
-
-void EgPath::BindBuffer()
-{
-	glBindBuffer( GL_ARRAY_BUFFER, muVbo );
-}
-
-void EgPath::BufferData(GLsizeiptr size, const GLvoid *data )
-{
-	glBufferData( GL_ARRAY_BUFFER, size, data, GL_STREAM_DRAW );
-}
-
-void EgPath::BufferSubData(GLuint offset,GLsizeiptr size, const GLvoid *data )
-{
-	glBufferSubData( GL_ARRAY_BUFFER, offset, size, data );
-}
-
-void EgPath::DeleteBuffer()
-{
-	glDeleteBuffers( 1, &muVbo );
-}
-
 void __stdcall vertexCallback(GLdouble *vertex)
 {
 	if ( GL_TRIANGLE_FAN == gWhichTriangle )
@@ -226,9 +199,6 @@ EgretFilter::EgretFilter()
 , m_bDirty(false)
 , mProgram( 0 )
 {
-	pCurPath = NULL;
-	mEgPaths = NULL;
-	//mLineWidth = 1;
 	mbgcolor.r = 0;
 	mbgcolor.g = 0;
 	mbgcolor.b = 255;

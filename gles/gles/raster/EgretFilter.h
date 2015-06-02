@@ -28,47 +28,6 @@ struct XPattern
 	int height;
 };
 
-
-struct EgEdge
-{
-	float cpx;  //control point 
-	float cpy;
-	//float endx;
-	//float endy;
-	GLdouble endxyz[3];
-	bool isLine;
-	EgEdge *pNext;
-};
-
-struct EgPath
-{
-public:	
-	GLdouble xyz[3];
-
-	EgEdge *pEdges;
-	EgEdge *pCurEdge;
-	int count; // edge count
-	int pointCount; 
-
-	EgPath *pNext;
-	XPattern *strokeStyle;
-	XPattern *fillStyle;
-	float mLineWidth;
-
-public:
-	bool mbDirty;
-	GLuint muVbo;  // 数组空间
-	int mbufferLen;	//数组空间大小
-	int mCurIndex;	//数组当前使用的位置
-
-	void GenBuffer();
-	void BindBuffer();
-	void BufferData(GLsizeiptr size, const GLvoid *data );
-	void BufferSubData(GLuint offset,GLsizeiptr size, const GLvoid *data );
-	void DeleteBuffer();
-};
-
-
 class CC_DLL EgretFilter
 {
 protected:
@@ -91,15 +50,6 @@ public:
 public:
 	void fillRect( float x, float y, float width, float height );
 
-private:
-	
-	EgPath *mEgPaths;
-	EgPath *pCurPath;
-	
-	float mcurx;
-	float mcury;
-
-
 public:
     static EgretFilter* create();
     virtual ~EgretFilter();
@@ -107,9 +57,7 @@ public:
     virtual bool init();
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
-	void testDrawTex();
 	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
-	void testDrawTexWithMatixCoord();
 	void drawFrameBuffer();
     
     void clear();
@@ -131,7 +79,6 @@ private:
 private:
     void ensureCapacity(unsigned int count);
     //void render();
-
 private:
 	CCGLProgram *mProgram;
 };
