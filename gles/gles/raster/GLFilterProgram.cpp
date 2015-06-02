@@ -82,7 +82,8 @@ bool GLFilterProgram::compileShader(GLuint * shader, GLenum type, const GLchar* 
 		glGetShaderiv(*shader, GL_SHADER_SOURCE_LENGTH, &length);
 		GLchar* src = (GLchar *)malloc(sizeof(GLchar) * length);
 		
-		glGetShaderSource(*shader, length, NULL, src);
+		//glGetShaderSource(*shader, length, NULL, src);
+		glGetShaderInfoLog(*shader, length, NULL, src);
 		CCLOG("egret: ERROR: Failed to compile shader:\n%s", src);
         
         if (type == GL_VERTEX_SHADER)
@@ -321,16 +322,5 @@ void GLFilterProgram::setUniformLocationWithMatrix4fv(GLint location, GLfloat* m
     }
 }
 
-void GLFilterProgram::setMatrixValue( kmMat4 *matTrans )
-{
-    kmMat4 matrixP;
-	kmMat4 matrixMV;
-	kmMat4 matrixMVP;
-	kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
-	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
-	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
-	kmMat4Multiply( &matrixMVP, &matrixMVP, matTrans);
-    //setUniformLocationWithMatrix4fv(gUniforms[kEGUniMVPMatrix], matrixMVP.mat, 1);
-}
 
 

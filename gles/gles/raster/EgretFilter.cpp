@@ -1,116 +1,15 @@
 
 #include "EgretFilter.h"
-#include "CCPointExtension.h"
+#include "gl/matrix.h"
 #include "gl/glew.h"
 #include "windows.h"
 #include "png.h"
+#include "shader.cpp"
 
-const GLchar * shader_frag =
-#include "shader_frag.h"
-const GLchar * shader_vert =
-#include "shader_vert.h"
-
-
-static const char vert_canvas[] =
-"attribute vec2 a_position;"
-"uniform vec2 u_resolution;"
-"uniform float u_flipY;"
-"uniform float u_time;"
-"attribute vec2 a_textureCoordinate;"
-"uniform mat3 u_transformMatrix;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	vec2 position = ((u_transformMatrix * vec3(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
-"	position *= vec2(1.0, u_flipY);"
-"	gl_Position = vec4(vec3(position, 1.0), 1.0);"
-"	v_texCoord = a_textureCoordinate;"
-"}";
-
-
-static const char frag_alpha[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec4 u_color;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	// gl_FragColor = u_matrix * texture2D(u_image, v_texCoord) + u_vector;"
-"	gl_FragColor = u_color * texture2D(u_image, v_texCoord).a;"
-"}";
-
-static const char frag_blurh[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec2 u_textureSize;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	const int sampleRadius = 10;"
-"	const int samples = sampleRadius * 2 + 1;"
-"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
-"	vec4 color = vec4(0, 0, 0, 0);"
-"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
-"		color += texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0));"
-"	}"
-"	color /= float(samples);"
-"	gl_FragColor = color;"
-"}";
-
-static const char frag_blurv[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec2 u_textureSize;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	const int sampleRadius = 10;"
-"	const int samples = sampleRadius * 2 + 1;"
-"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
-"	vec4 color = vec4(0, 0, 0, 0);"
-"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
-"		color += texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y));"
-"	}"
-"	color /= float(samples);"
-"	gl_FragColor = color;"
-"}";
-
-static const char frag_color[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform mat4 u_colorMatrix;"
-"uniform vec4 u_vector;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	gl_FragColor = u_colorMatrix * texture2D(u_image, v_texCoord) + u_vector;"
-"}";
-
-static const char frag_identity[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	gl_FragColor = texture2D(u_image, v_texCoord);"
-"}";
-
-static const char frag_mulitply[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec4 u_color;"
-"varying vec2 v_texCoord;"
-"void main() {"
-"	gl_FragColor = texture2D(u_image, v_texCoord) * vec4(1.9, 1.0, 1.0, 1.0);"
-"	gl_FragColor = texture2D(u_image, v_texCoord) * u_color;"
-"}";
-
+ProgramData::ProgramData()
+{
+	memset(mUinform, 0, sizeof(GLuint) * enUni_Count);
+}
 
 
 typedef struct 
@@ -139,8 +38,6 @@ EgretFilter::EgretFilter()
 , m_uBufferCapacity(0)
 , m_nBufferCount(0)
 , m_pBuffer(NULL)
-, m_bDirty(false)
-, mProgram( 0 )
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
@@ -149,13 +46,24 @@ EgretFilter::EgretFilter()
 
 void EgretFilter::loadShaders()
 {
-	mProgram = new CCGLProgram();
-	mProgram->initWithVertexShaderByteArray(shader_vert, shader_frag);
-	mProgram->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-	mProgram->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
-	mProgram->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
-	mProgram->link();
-	mProgram->updateUniforms();
+	for (int i = 0; i < enFilter_COUNT; i++)
+	{
+		mPrograme[i].program.initWithVertexShaderByteArray(vert_canvas, frag_alpha);
+		mPrograme[i].program.BindAttributeLocation(enAtt_position_s, enAtt_position);
+		mPrograme[i].program.BindAttributeLocation(enAtt_textureCoordinate_s, enAtt_textureCoordinate);
+		mPrograme[i].program.link();
+		mPrograme[i].mUinform[enUni_resolution] = mPrograme[i].program.getUniformLocationForName(enUni_resolution_s);
+		mPrograme[i].mUinform[enUni_flipY] = mPrograme[i].program.getUniformLocationForName(enUni_flipY_s);
+		mPrograme[i].mUinform[enUni_time] = mPrograme[i].program.getUniformLocationForName(enUni_time_s);
+		mPrograme[i].mUinform[enUni_transformMatrix] = mPrograme[i].program.getUniformLocationForName(enUni_transformMatrix_s);
+		mPrograme[i].mUinform[enUni_image] = mPrograme[i].program.getUniformLocationForName(enUni_image_s);
+		mPrograme[i].mUinform[enUni_color] = mPrograme[i].program.getUniformLocationForName(enUni_color_s);
+		mPrograme[i].mUinform[enUni_textureSize] = mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
+		mPrograme[i].mUinform[enUni_colorMatrix] = mPrograme[i].program.getUniformLocationForName(enUni_color_s);
+		mPrograme[i].mUinform[enUni_vector] = mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
+		mPrograme[i].program.use();
+		glUniform1i(mPrograme[i].mUinform[enUni_textureSize], 0);
+	}
 }
 
 EgretFilter::~EgretFilter()
@@ -170,51 +78,34 @@ EgretFilter::~EgretFilter()
 //p3
 void EgretFilter::fillRect( float x, float y, float width, float height )
 {
-	glUniform1i((GLint)gUniforms[kCCuniformDrawType], 4);
-	kmMat4 texMat =
-	{
-		mpFillStyle->width, 0, 0, 0,
-		0, mpFillStyle->height, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
-	kmMat4 texMatIn;
-	kmMat4 rotaMat;
-	kmMat4 tranMat;
-	kmMat4Identity(&rotaMat);
-	kmMat4RotationZ(&rotaMat, -60);
-	kmMat4Identity(&texMatIn);
-	kmMat4Inverse(&texMatIn, &texMat);
+	mPrograme[enFilter_IDENTITY].program.use();
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
 			
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
 
-	//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
-	glUniformMatrix4fv(gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat);
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity(vertex_count);
 	ccColor4B col = {0, 0, 0, 0 };
-	ccV2F_C4B_T2F_Triangle triangle =
+	ccV3F_C4B_T2F_Triangle triangle =
 	{
-		{ vertex2(x, y + height), col, { 0, 0 } },
-		{ vertex2(x, y), col, { 0, height / mpFillStyle->height } },
-		{ vertex2(x + width, y + height), col, { width / mpFillStyle->width, 0 } },
+		{ vertex3(x, y + height, 0), col, { 0, 0 } },
+		{ vertex3(x, y, 0), col, { 0, height / mpFillStyle->height } },
+		{ vertex3(x + width, y + height, 0 ), col, { width / mpFillStyle->width, 0 } },
 	};
-	ccV2F_C4B_T2F_Triangle *triangles = (ccV2F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
+	ccV3F_C4B_T2F_Triangle *triangles = (ccV3F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
 
 	triangles[0] = triangle;
-	ccV2F_C4B_T2F_Triangle triangle1 =
+	ccV3F_C4B_T2F_Triangle triangle1 =
 	{
-		{ vertex2(x, y), col, { 0, height / mpFillStyle->height } },
-		{ vertex2(x + width, y + height), col, { width / mpFillStyle->width, 0 } },
-		{ vertex2(x + width, y), col, { width / mpFillStyle->width, height / mpFillStyle->height } }
+		{ vertex3(x, y, 0), col, { 0, height / mpFillStyle->height } },
+		{ vertex3(x + width, y + height, 0 ), col, { width / mpFillStyle->width, 0 } },
+		{ vertex3(x + width, y, 0), col, { width / mpFillStyle->width, height / mpFillStyle->height } }
 	};
 	triangles[1] = triangle1;
 	m_nBufferCount += vertex_count;
-	m_bDirty = true;
 	
 	return;
 
@@ -233,7 +124,7 @@ void EgretFilter::ensureCapacity(unsigned int count)
     if(m_nBufferCount + count > m_uBufferCapacity)
     {
 		m_uBufferCapacity += MAX(m_uBufferCapacity, count);
-		m_pBuffer = (ccV2F_C4B_T2F*)realloc(m_pBuffer, m_uBufferCapacity*sizeof(ccV2F_C4B_T2F));
+		m_pBuffer = (ccV3F_C4B_T2F*)realloc(m_pBuffer, m_uBufferCapacity*sizeof(ccV3F_C4B_T2F));
 	}
 }
 
@@ -253,20 +144,14 @@ bool EgretFilter::init()
     
     glGenBuffers(1, &m_uVbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
     
-    glEnableVertexAttribArray(kCCVertexAttrib_Position);
-    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, vertices));
-    
-    glEnableVertexAttribArray(kCCVertexAttrib_Color);
-    glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, colors));
-    
-    glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid *)offsetof(ccV2F_C4B_T2F, texCoords));
+	glEnableVertexAttribArray(enAtt_position);
+	glVertexAttribPointer(enAtt_position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, vertices));
+	glEnableVertexAttribArray(enAtt_textureCoordinate);
+	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, texCoords));
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    m_bDirty = true;
     
     return true;
 }
@@ -422,22 +307,29 @@ GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 
 void EgretFilter::drawFrameBuffer()
 {
-	ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
+	glBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
 
-	mProgram->use();
-	mProgram->setMatrixValue();
+	kmMat4 matrixP;
+	kmMat4 matrixMV;
+	kmMat4 matrixMVP;
+	kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
+	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
+	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
+	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat );
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
-	m_bDirty = false;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
-	glEnableVertexAttribArray(kCCVertexAttrib_Position);
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV2F_C4B_T2F), (GLvoid*)offsetof(ccV2F_C4B_T2F, vertices));
+	glEnableVertexAttribArray(enAtt_position);
+	glVertexAttribPointer(enAtt_position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, vertices));
+	glEnableVertexAttribArray(enAtt_textureCoordinate);
+	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, texCoords));
 	glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisableVertexAttribArray(kCCVertexAttrib_Position);
+	glDisableVertexAttribArray(enAtt_position);
+	glDisableVertexAttribArray(enAtt_textureCoordinate);
 
 	return;
 }
@@ -445,7 +337,6 @@ void EgretFilter::drawFrameBuffer()
 void EgretFilter::clear()
 {
     m_nBufferCount = 0;
-    m_bDirty = true;
 }
 
 

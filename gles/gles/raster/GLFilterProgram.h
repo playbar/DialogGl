@@ -67,9 +67,6 @@ public:
     /** calls glUniformMatrix4fv only if the values are different than the previous call for this same shader program. */
     void setUniformLocationWithMatrix4fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
     
-    /** will update the builtin uniforms if they are different than the previous call for this same shader program. */
-    void setMatrixValue( kmMat4 *matTrans );
-    
     inline const GLuint getProgram() { return m_uProgram; }
 
 private:

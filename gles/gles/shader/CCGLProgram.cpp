@@ -434,7 +434,6 @@ void CCGLProgram::setMatrixValue()
 	
 	kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
 	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
-	
 	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
     
     setUniformLocationWithMatrix4fv(gUniforms[kCCUniformPMatrix], matrixP.mat, 1);

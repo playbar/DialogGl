@@ -2,11 +2,9 @@
 #ifndef __EGRETFILTER_H__
 #define __EGRETFILTER_H__
 
-#include "CCNode.h"
 #include "ccTypes.h"
 #include "platformtype.h"
-#include "vector"
-using namespace std;
+#include "GLFilterProgram.h"
 
 enum PROGRAMRTYPE
 {
@@ -60,24 +58,21 @@ struct XPattern
 	int height;
 };
 
+class ProgramData
+{
+public:
+	ProgramData();
+	GLFilterProgram program;
+	GLuint mUinform[enUni_Count];
+};
+
 class CC_DLL EgretFilter
 {
-protected:
-    GLuint      m_uVbo;
-    unsigned int    m_uBufferCapacity;
-    GLsizei         m_nBufferCount;
-    ccV2F_C4B_T2F   *m_pBuffer;
-    ccBlendFunc     m_sBlendFunc;
-    
-    bool            m_bDirty;
-
 public:
 	
 	XPattern *mpFillStyle;
 public:
 	void fillRect( float x, float y, float width, float height );
-
-public:
 	EgretFilter();
 	void loadShaders();
     static EgretFilter* create();
@@ -93,12 +88,16 @@ public:
     
     ccBlendFunc getBlendFunc() const;
     void setBlendFunc(const ccBlendFunc &blendFunc);
-    
-private:
     void ensureCapacity(unsigned int count);
     //void render();
+protected:
+	GLuint      m_uVbo;
+	unsigned int    m_uBufferCapacity;
+	GLsizei         m_nBufferCount;
+	ccV3F_C4B_T2F   *m_pBuffer;
+	ccBlendFunc     m_sBlendFunc;
 private:
-	CCGLProgram *mProgram;
+	ProgramData mPrograme[enFilter_COUNT];
 };
 
 #endif // __CCDRAWNODES_CCDRAW_NODE_H__

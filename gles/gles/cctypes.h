@@ -233,16 +233,9 @@ typedef struct _ccV2F_C4F_T2F
 //! a Point with a vertex point, a tex coord point and a color 4B
 typedef struct _ccV3F_C4B_T2F
 {
-    //! vertices (3F)
-    ccVertex3F        vertices;            // 12 bytes
-//    char __padding__[4];
-
-    //! colors (4B)
+    ccVertex3F       vertices;            // 12 bytes
     ccColor4B        colors;                // 4 bytes
-//    char __padding2__[4];
-
-    // tex coords (2F)
-    ccTex2F            texCoords;            // 8 bytes
+    ccTex2F          texCoords;            // 8 bytes
 } ccV3F_C4B_T2F;
 
 //! A Triangle of ccV2F_C4B_T2F
@@ -255,6 +248,14 @@ typedef struct _ccV2F_C4B_T2F_Triangle
 	//! Point B
 	ccV2F_C4B_T2F c;
 } ccV2F_C4B_T2F_Triangle;
+
+//! A Triangle of ccV2F_C4B_T2F
+typedef struct _ccV3F_C4B_T2F_Triangle
+{
+	ccV3F_C4B_T2F a;
+	ccV3F_C4B_T2F b;
+	ccV3F_C4B_T2F c;
+} ccV3F_C4B_T2F_Triangle;
 
 //! A Quad of ccV2F_C4B_T2F
 typedef struct _ccV2F_C4B_T2F_Quad

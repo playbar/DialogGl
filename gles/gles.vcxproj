@@ -211,6 +211,7 @@ xcopy /Y /Q "$(SolutionDir)cocos2dx\platform\third_party\win32\libraries\*.*" "$
     <ClCompile Include="gles\raster\CCNode.cpp" />
     <ClCompile Include="gles\raster\EgretFilter.cpp" />
     <ClCompile Include="gles\raster\GLFilterProgram.cpp" />
+    <ClCompile Include="gles\raster\shader.cpp" />
     <ClCompile Include="gles\shader\CCGLProgram.cpp" />
     <ClCompile Include="gles\shader\ccGLStateCache.cpp" />
     <ClCompile Include="gles\support\CCAffineTransform.cpp" />
