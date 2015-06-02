@@ -82,7 +82,6 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//fillRectGradientLinear();
 	fillLineTo();
 
-
 	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
 	//ccColor4F color = {255, 0, 0, 255};
 	//pgradient->addColorStop( 0, color );

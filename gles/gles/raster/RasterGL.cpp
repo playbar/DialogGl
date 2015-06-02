@@ -1647,12 +1647,12 @@ void XContext::testDrawTexWithMatixCoord()
 
 void XContext::render()
 {
-    //if (m_bDirty)
-    //{
-    //    glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-    //    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
-    //    m_bDirty = false;
-    //}
+	if (m_bDirty)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(ccV2F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
+		m_bDirty = false;
+	}
 
 	if ( mpFillStyle->mFillType == FILL_COLOR )
 	{
