@@ -3,6 +3,7 @@
 #include "limits.h"
 #include "assert.h"
 #include "memory.h"
+#include "EgretFilter.h"
 
 #define LOG_TAG "EgFrameBuffer"
 
@@ -106,7 +107,7 @@ void EgFrameBuffer::clear()
 
 }
 
-void EgFrameBuffer::show(int x, int y, int w, int h)
+void EgFrameBuffer::show(ProgramData *proData, int x, int y, int w, int h)
 {
 	if (mOldFrameId != 0)
 	{
@@ -121,7 +122,7 @@ void EgFrameBuffer::show(int x, int y, int w, int h)
 	//glUniformMatrix4fv(shader->gvViewTransMattixHandle, 1, false, MatrixManager::getScreenBufferViewMatrix());
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	//glVertexAttribPointer(shader->gvPositionHandle, 3, GL_FLOAT, false, 0, 0);
+	//glVertexAttribPointer(proData->, 3, GL_FLOAT, false, 0, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _uvBuffer);
 	//glVertexAttribPointer(shader->gvTextureCoordHandle, 2, GL_FLOAT, false, 0, 0);

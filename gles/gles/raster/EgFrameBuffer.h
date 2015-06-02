@@ -14,7 +14,7 @@ public:
 	void bind();
 	void unbind();
 	void clear();
-	void show(int x, int y, int w, int h);
+	void show(ProgramData *proData, int x, int y, int w, int h);
 
 protected:
 

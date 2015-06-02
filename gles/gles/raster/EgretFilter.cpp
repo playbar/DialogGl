@@ -112,14 +112,6 @@ static const char frag_multiply[] =
 
 ///////////////////////////////////
 
-
-
-ProgramData::ProgramData()
-{
-	mFraBuffer = NULL;
-	memset(mUinform, 0, sizeof(GLuint) * enUni_Count);
-}
-
 typedef struct 
 {
 	unsigned char* data;
@@ -447,10 +439,10 @@ void EgretFilter::drawFrameBuffer()
 
 void EgretFilter::dropShadowFilter()
 {
-	//frameBufferA.bind();
+	frameBufferA.bind();
 	drawFrameBuffer();
 
-	//frameBufferA.show(0, 0, 256, 256);
+	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256);
 	return;
 }
 
