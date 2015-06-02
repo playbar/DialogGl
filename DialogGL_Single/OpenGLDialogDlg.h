@@ -12,8 +12,7 @@
 
 
 #include "EGLView.h"
-#include "RasterGL.h"
-//#include "CCDrawNode.h"
+#include "EgretFilter.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -41,7 +40,7 @@ protected:
 	HICON m_hIcon;
 
 	EGLView* eglView;
-	XContext *pctx;
+	EgretFilter *pctx;
 
 	// test graphics funs
 	void fillRectWithColor();

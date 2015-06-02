@@ -1,5 +1,5 @@
 
-#include "RasterGL.h"
+#include "EgretFilter.h"
 #include "CCPointExtension.h"
 #include "gl/glew.h"
 #include "windows.h"
@@ -413,7 +413,7 @@ void __stdcall combineCallback(GLdouble coords[3],
 }
 
 
-XContext::XContext()
+EgretFilter::EgretFilter()
 : m_uVbo(0)
 , m_uBufferCapacity(0)
 , m_nBufferCount(0)
@@ -435,7 +435,7 @@ XContext::XContext()
 	loadShaders();
 }
 
-void XContext::loadShaders()
+void EgretFilter::loadShaders()
 {
 	mProgram = new CCGLProgram();
 	mProgram->initWithVertexShaderByteArray(shader_vert, shader_frag);
@@ -446,7 +446,7 @@ void XContext::loadShaders()
 	mProgram->updateUniforms();
 }
 
-XContext::~XContext()
+EgretFilter::~EgretFilter()
 {
     free(m_pBuffer);
     m_pBuffer = NULL;
@@ -455,7 +455,7 @@ XContext::~XContext()
     m_uVbo = 0;
 }
 
-void XContext::InitPolygon()
+void EgretFilter::InitPolygon()
 {
 	tobj = gluNewTess();
 	gluTessCallback(tobj, GLU_TESS_VERTEX,	(void (__stdcall *)())vertexCallback);
@@ -470,19 +470,19 @@ void XContext::InitPolygon()
 	return;
 }
 
-void XContext::UninitPolygon()
+void EgretFilter::UninitPolygon()
 {
 	gluDeleteTess(tobj);
 	gCombineIndex = 0;
 	gVertexIndex = 0;
 }
 
-void XContext::LineWidth(  float width )
+void EgretFilter::LineWidth(  float width )
 {
 	pCurPath->mLineWidth = width;
 }
 
-void XContext::fill()
+void EgretFilter::fill()
 {
 
 	if( pCurPath )
@@ -545,7 +545,7 @@ void XContext::fill()
 	return;
 }
 
-void XContext::beginPath()
+void EgretFilter::beginPath()
 {
 	EgPath *pTmpPath = mEgPaths;
 	while( pTmpPath != NULL )
@@ -569,7 +569,7 @@ void XContext::beginPath()
 	pCurPath->pEdges = NULL;
 }
 
-void XContext::closePath()
+void EgretFilter::closePath()
 {
 	EgEdge *p = new EgEdge();
 	pCurPath->pCurEdge->pNext = p;
@@ -582,7 +582,7 @@ void XContext::closePath()
 
 }
 
-void XContext::stroke()
+void EgretFilter::stroke()
 {
 	if( pCurPath )
 	{
@@ -728,7 +728,7 @@ void XContext::stroke()
 	return;
 }
 
-void XContext::moveto( float x, float y )
+void EgretFilter::moveto( float x, float y )
 {
 	pCurPath->xyz[0] = x;
 	pCurPath->xyz[1] = y;
@@ -737,7 +737,7 @@ void XContext::moveto( float x, float y )
 
 }
 
-void XContext::lineto( float x, float y )
+void EgretFilter::lineto( float x, float y )
 {
 	pCurPath->cmdType = CTX_LINETO;
 	if ( pCurPath->pEdges == NULL )
@@ -767,7 +767,7 @@ void XContext::lineto( float x, float y )
 	return;
 }
 
-void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise )
+void EgretFilter::arc( float x, float y, float radius, float sAngle, float eAngle, bool counterclockwise )
 {
 	pCurPath->cmdType = CTX_ARC;
 	pCurPath->xyz[0] = x;
@@ -817,7 +817,7 @@ void XContext::arc( float x, float y, float radius, float sAngle, float eAngle, 
 	return;
 }
 
-void XContext::rect( float x, float y, float width, float height )
+void EgretFilter::rect( float x, float y, float width, float height )
 {
 	//if ( mEgPaths == NULL )
 	//{
@@ -852,18 +852,18 @@ void XContext::rect( float x, float y, float width, float height )
 
 }
 
-void XContext::save()
+void EgretFilter::save()
 {
 	//暂时不实现
 }
 
-void XContext::restore()
+void EgretFilter::restore()
 {
 	//暂时不实现
 }
 
 // p2
-void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
+void EgretFilter::quadraticCurveTo( float cpx, float cpy, float x, float y )
 {
 	pCurPath->cmdType = CTX_QUADRATICCURVETO;
 	if ( pCurPath->pEdges == NULL )
@@ -893,7 +893,7 @@ void XContext::quadraticCurveTo( float cpx, float cpy, float x, float y )
 }
 
 //p3
-void XContext::fillRect( float x, float y, float width, float height )
+void EgretFilter::fillRect( float x, float y, float width, float height )
 {
 	if ( mpFillStyle->mFillType == FILL_COLOR )
 	{
@@ -1098,7 +1098,7 @@ void XContext::fillRect( float x, float y, float width, float height )
 	return;
 }
 
-void XContext::strokeRect( float x, float y, float width, float height )
+void EgretFilter::strokeRect( float x, float y, float width, float height )
 {
 	CCPoint tl( x, y );
 	CCPoint tr( x + width, y );
@@ -1111,7 +1111,7 @@ void XContext::strokeRect( float x, float y, float width, float height )
 	return;
 }
 
-void XContext::clearRect( float x, float y, float width, float height )
+void EgretFilter::clearRect( float x, float y, float width, float height )
 {
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity( vertex_count );
@@ -1135,7 +1135,7 @@ void XContext::clearRect( float x, float y, float width, float height )
 	m_bDirty = true;
 }
 
-void XContext::clip()
+void EgretFilter::clip()
 {
 	//暂时不实现
 	//glEnable( GL_SCISSOR_TEST );
@@ -1143,7 +1143,7 @@ void XContext::clip()
 	//	pCurPath->pEndEdge->endx - pCurPath->startx, pCurPath->pEndEdge->endy - pCurPath->starty);
 }
 
-void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, float x, float y )
+void EgretFilter::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, float x, float y )
 {
 	pCurPath->cmdType = CTX_BEZIERCURVETO;
 	if ( pCurPath->pEdges == NULL )
@@ -1192,18 +1192,18 @@ void XContext::bezierCurveTo( float cp1x, float cp1y, float cp2x, float cp2y, fl
 	return;
 }
 
-void XContext::arcTo( float x1, float y1, float x2, float y2, float r )
+void EgretFilter::arcTo( float x1, float y1, float x2, float y2, float r )
 {
 	// 暂不实现
 }
 
-bool XContext::isPointInPath( float x, float y )
+bool EgretFilter::isPointInPath( float x, float y )
 {
 	//暂不实现
 	return false;
 }
 
-XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, float y2 )
+XGradientLinear *EgretFilter::CreateLinearGradient( float x1, float y1, float x2, float y2 )
 {
 	XGradientLinear *p = new XGradientLinear();
 	memset( p, 0, sizeof( XGradientLinear ) );
@@ -1214,14 +1214,14 @@ XGradientLinear *XContext::CreateLinearGradient( float x1, float y1, float x2, f
 	return p;
 }
 
-XPattern *XContext::CreatePattern( GLuint texId, REPEAT_PAT repat)
+XPattern *EgretFilter::CreatePattern( GLuint texId, REPEAT_PAT repat)
 {
 	XPattern *p = new XPattern();
 	p->texId = texId;
 	p->mRepeatePat = en_REPEAT;
 	return p;
 }
-XGradientRadial *XContext::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
+XGradientRadial *EgretFilter::CreateRadialGradient( float xStart, float ySttart, float radiusStart, 
 										  float xEnd, float yEnd, float radiusEnd )
 {
 	XGradientRadial *p = new XGradientRadial();
@@ -1235,7 +1235,7 @@ XGradientRadial *XContext::CreateRadialGradient( float xStart, float ySttart, fl
 	return p;
 }
 
-void XContext::DrawCommand()
+void EgretFilter::DrawCommand()
 {
 	EgPath *pTmpPath = mEgPaths;
 	while( pTmpPath )
@@ -1366,15 +1366,15 @@ void XContext::DrawCommand()
 	return;
 }
 
-XContext* XContext::create()
+EgretFilter* EgretFilter::create()
 {
-    XContext* pRet = new XContext();
+    EgretFilter* pRet = new EgretFilter();
     pRet->init();
 	pRet->initTest();
     return pRet;
 }
 
-void XContext::ensureCapacity(unsigned int count)
+void EgretFilter::ensureCapacity(unsigned int count)
 {
     if(m_nBufferCount + count > m_uBufferCapacity)
     {
@@ -1385,7 +1385,7 @@ void XContext::ensureCapacity(unsigned int count)
 
 
 
-bool XContext::init()
+bool EgretFilter::init()
 {
 
     m_sBlendFunc.src = CC_BLEND_SRC;
@@ -1418,7 +1418,7 @@ bool XContext::init()
 }
 
 
-void XContext::initTest()
+void EgretFilter::initTest()
 {
 	FILE *pFile = fopen( "c:/test.png", "rb" );
 	fseek( pFile, 0, SEEK_END );
@@ -1446,7 +1446,7 @@ void XContext::initTest()
 }
 
 
-unsigned char* XContext::DecodePngData(unsigned char* fData, long fSize, int& width, int& height)
+unsigned char* EgretFilter::DecodePngData(unsigned char* fData, long fSize, int& width, int& height)
 {
 	unsigned char* image_data = NULL;
 #ifdef _WIN32
@@ -1551,7 +1551,7 @@ unsigned char* XContext::DecodePngData(unsigned char* fData, long fSize, int& wi
 
 }
 
-GLuint XContext::initTexData( const void *pData, int width, int height )
+GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 {
 	GLuint texId = 0;
 	glGenTextures( 1, &texId );
@@ -1567,7 +1567,7 @@ GLuint XContext::initTexData( const void *pData, int width, int height )
 
 }
 
-void XContext::testDrawTex()
+void EgretFilter::testDrawTex()
 {
 	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 1 );
 	GLfloat verts[4][9] = 
@@ -1595,7 +1595,7 @@ void XContext::testDrawTex()
 	return;
 }
 
-void XContext::testDrawTexWithMatixCoord()
+void EgretFilter::testDrawTexWithMatixCoord()
 {
 	glUniform1i( (GLint)gUniforms[kCCuniformDrawType], 4 );
 
@@ -1645,7 +1645,7 @@ void XContext::testDrawTexWithMatixCoord()
 	return;
 }
 
-void XContext::render()
+void EgretFilter::render()
 {
 	if (m_bDirty)
 	{
@@ -1716,7 +1716,7 @@ void XContext::render()
     //CC_INCREMENT_GL_DRAWS(1);
 }
 
-void XContext::draw()
+void EgretFilter::draw()
 {
     ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
     
@@ -1731,7 +1731,7 @@ void XContext::draw()
     render();
 }
 
-void XContext::drawFrameBuffer()
+void EgretFilter::drawFrameBuffer()
 {
 	ccGLBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
 
@@ -1754,7 +1754,7 @@ void XContext::drawFrameBuffer()
 	return;
 }
 
-void XContext::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
+void EgretFilter::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 2*3;
     ensureCapacity(vertex_count);
@@ -1775,7 +1775,7 @@ void XContext::drawDot(const CCPoint &pos, float radius, const ccColor4F &color)
 	m_bDirty = true;
 }
 
-void XContext::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
+void EgretFilter::drawSegment(const CCPoint &from, const CCPoint &to, float radius, const ccColor4F &color)
 {
     unsigned int vertex_count = 10*3;
     ensureCapacity(vertex_count);
@@ -1851,7 +1851,7 @@ void XContext::drawSegment(const CCPoint &from, const CCPoint &to, float radius,
 
  struct ExtrudeVerts {ccVertex2F offset, n;};
 
-void XContext::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
+void EgretFilter::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &fillColor, float borderWidth, const ccColor4F &borderColor)
 {
 	struct ExtrudeVerts* extrude = (struct ExtrudeVerts*)malloc(sizeof(struct ExtrudeVerts)*count);
 	memset(extrude, 0, sizeof(struct ExtrudeVerts)*count);
@@ -1956,7 +1956,7 @@ void XContext::drawPolygon(CCPoint *verts, unsigned int count, const ccColor4F &
     free(extrude);
 }
 
-void XContext::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
+void EgretFilter::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint &p3, const ccColor4F &color )
 {
 	unsigned int vertex_count = 2 * 3;
 	ensureCapacity( vertex_count );
@@ -1975,7 +1975,7 @@ void XContext::drawTriangle( const CCPoint &p1, const CCPoint &p2, const CCPoint
 	return;
 }
 
-void XContext::clear()
+void EgretFilter::clear()
 {
     m_nBufferCount = 0;
     m_bDirty = true;
@@ -2041,12 +2041,12 @@ void XContext::clear()
 
 
 
-ccBlendFunc XContext::getBlendFunc() const
+ccBlendFunc EgretFilter::getBlendFunc() const
 {
     return m_sBlendFunc;
 }
 
-void XContext::setBlendFunc(const ccBlendFunc &blendFunc)
+void EgretFilter::setBlendFunc(const ccBlendFunc &blendFunc)
 {
     m_sBlendFunc = blendFunc;
 }

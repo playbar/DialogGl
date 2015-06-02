@@ -73,14 +73,14 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	//eglView->setFrameSize( 800, 600 );
 	eglView->CreateView( m_hWnd, 0, 0, rect.Width(), rect.Height() );
 	eglView->setGLDefaultValues();
-	pctx = XContext::create();
+	pctx = EgretFilter::create();
 	pctx->mWidth = rect.Width();
 	pctx->mHeight = rect.Height();
 
-	//fillRectWithPattern();
+	fillRectWithPattern();
 	//fillRectWithColor();
 	//fillRectGradientLinear();
-	fillLineTo();
+	//fillLineTo();
 
 	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
 	//ccColor4F color = {255, 0, 0, 255};
@@ -261,7 +261,7 @@ void COpenGLDialogDlg::OnPaint()
 	//glClearColor(1.0f, 0.0f, 0.0f, 0.0f); 
 	//glScissor( 50, 200, 100, 500 );
 	//glClear(GL_COLOR_BUFFER_BIT);  
-	pctx->draw();
+	pctx->drawFrameBuffer();
 	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
 

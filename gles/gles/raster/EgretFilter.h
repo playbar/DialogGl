@@ -1,6 +1,6 @@
 
-#ifndef __RASTERGL_H__
-#define __RASTERGL_H__
+#ifndef __EGRETFILTER_H__
+#define __EGRETFILTER_H__
 
 #include "CCNode.h"
 #include "ccTypes.h"
@@ -8,7 +8,6 @@
 #include "map"
 #include "vector"
 using namespace std;
-
 #include "tess.h"
 
 // 着色器填充方式
@@ -193,7 +192,7 @@ public:
 };
 
 
-class CC_DLL XContext
+class CC_DLL EgretFilter
 {
 protected:
     GLuint      m_uVbo;
@@ -258,8 +257,8 @@ private:
 
 
 public:
-    static XContext* create();
-    virtual ~XContext();
+    static EgretFilter* create();
+    virtual ~EgretFilter();
     
     virtual bool init();
 	void initTest();
@@ -287,7 +286,7 @@ public:
     ccBlendFunc getBlendFunc() const;
     void setBlendFunc(const ccBlendFunc &blendFunc);
     
-    XContext();
+    EgretFilter();
 
 	void loadShaders();
 

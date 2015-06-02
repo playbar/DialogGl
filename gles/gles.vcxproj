@@ -138,7 +138,7 @@ xcopy /Y /Q "$(SolutionDir)cocos2dx\platform\third_party\win32\libraries\*.*" "$
     <ClInclude Include="gles\kazmath\vec4.h" />
     <ClInclude Include="gles\libpng\png.h" />
     <ClInclude Include="gles\raster\CCNode.h" />
-    <ClInclude Include="gles\raster\RasterGL.h" />
+    <ClInclude Include="gles\raster\EgretFilter.h" />
     <ClInclude Include="gles\shader\CCGLProgram.h" />
     <ClInclude Include="gles\shader\ccGLStateCache.h" />
     <ClInclude Include="gles\shader\shader_frag.h" />
@@ -208,7 +208,7 @@ xcopy /Y /Q "$(SolutionDir)cocos2dx\platform\third_party\win32\libraries\*.*" "$
     <ClCompile Include="gles\libpng\pngwtran.c" />
     <ClCompile Include="gles\libpng\pngwutil.c" />
     <ClCompile Include="gles\raster\CCNode.cpp" />
-    <ClCompile Include="gles\raster\RasterGL.cpp" />
+    <ClCompile Include="gles\raster\EgretFilter.cpp" />
     <ClCompile Include="gles\shader\CCGLProgram.cpp" />
     <ClCompile Include="gles\shader\ccGLStateCache.cpp" />
     <ClCompile Include="gles\support\CCAffineTransform.cpp" />
