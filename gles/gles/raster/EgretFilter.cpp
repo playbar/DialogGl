@@ -11,7 +11,6 @@ ProgramData::ProgramData()
 	memset(mUinform, 0, sizeof(GLuint) * enUni_Count);
 }
 
-
 typedef struct 
 {
 	unsigned char* data;
@@ -52,17 +51,17 @@ void EgretFilter::loadShaders()
 		mPrograme[i].program.BindAttributeLocation(enAtt_position_s, enAtt_position);
 		mPrograme[i].program.BindAttributeLocation(enAtt_textureCoordinate_s, enAtt_textureCoordinate);
 		mPrograme[i].program.link();
-		mPrograme[i].mUinform[enUni_resolution] = mPrograme[i].program.getUniformLocationForName(enUni_resolution_s);
-		mPrograme[i].mUinform[enUni_flipY] = mPrograme[i].program.getUniformLocationForName(enUni_flipY_s);
-		mPrograme[i].mUinform[enUni_time] = mPrograme[i].program.getUniformLocationForName(enUni_time_s);
+		mPrograme[i].mUinform[enUni_resolution] =	mPrograme[i].program.getUniformLocationForName(enUni_resolution_s);
+		mPrograme[i].mUinform[enUni_flipY] =		mPrograme[i].program.getUniformLocationForName(enUni_flipY_s);
+		mPrograme[i].mUinform[enUni_time] =			mPrograme[i].program.getUniformLocationForName(enUni_time_s);
 		mPrograme[i].mUinform[enUni_transformMatrix] = mPrograme[i].program.getUniformLocationForName(enUni_transformMatrix_s);
-		mPrograme[i].mUinform[enUni_image] = mPrograme[i].program.getUniformLocationForName(enUni_image_s);
-		mPrograme[i].mUinform[enUni_color] = mPrograme[i].program.getUniformLocationForName(enUni_color_s);
-		mPrograme[i].mUinform[enUni_textureSize] = mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
-		mPrograme[i].mUinform[enUni_colorMatrix] = mPrograme[i].program.getUniformLocationForName(enUni_color_s);
-		mPrograme[i].mUinform[enUni_vector] = mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
+		mPrograme[i].mUinform[enUni_image] =		mPrograme[i].program.getUniformLocationForName(enUni_image_s);
+		mPrograme[i].mUinform[enUni_color] =		mPrograme[i].program.getUniformLocationForName(enUni_color_s);
+		mPrograme[i].mUinform[enUni_textureSize] =	mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
+		mPrograme[i].mUinform[enUni_colorMatrix] =	mPrograme[i].program.getUniformLocationForName(enUni_color_s);
+		mPrograme[i].mUinform[enUni_vector] =		mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
 		mPrograme[i].program.use();
-		glUniform1i(mPrograme[i].mUinform[enUni_textureSize], 0);
+		glUniform1i(mPrograme[i].mUinform[enUni_image], 0);
 	}
 }
 
