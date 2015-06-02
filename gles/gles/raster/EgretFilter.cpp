@@ -115,151 +115,6 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 
 // implementation of CCDrawNode
 
-void XGradientLinear::addColorStop( float index, ccColor4F color )
-{
-	mbDirty = true;
-	if ( this->pGraData == NULL )
-	{
-		pGraData = new GradientData();
-		pGraData->index = index;
-		pGraData->color = color;
-	}
-	else
-	{
-		GradientData *p = pGraData;
-		GradientData *pn = p->pNext;
-		GradientData *cur = new GradientData();
-		cur->color = color;
-		cur->index = index;
-		cur->pNext = NULL;
-		while( p != NULL && pn != NULL )
-		{
-			if ( p->index < index && index < pn->index )
-			{
-				p->pNext = cur;
-				cur->pNext = pn;
-				return;
-			}
-			p = pn;
-			pn = pn->pNext;
-		}
-		p->pNext = cur;
-
-	}
-}
-
-void XGradientLinear::CreateTextrue()
-{
-	if ( ! mbDirty )
-	{
-		mbDirty = false;
-		return;
-	}
-	GLubyte *pTexData = new GLubyte[miLen * 4 + 4 ];
-	memset( pTexData, 0, miLen * 4 );
-	ccColor4B *pdata = (ccColor4B*)pTexData;
-	GradientData *pgd = pGraData;
-	GradientData *pn = pgd->pNext;
-	int icout = 0;
-	while( pgd != NULL && pn != NULL )
-	{
-		int index1 = floor(pgd->index * miLen + 0.5);
-		int step = floor( pn->index *miLen + 0.5 ) - index1;
-		//pdata += index1;
-		for ( int i = 0; i < step; i++ )
-		{
-			icout++;
-			pdata->a = pgd->color.a * 255 - (pgd->color.a - pn->color.a ) * 255 * i / step;
-			pdata->r = pgd->color.r * 255 - (pgd->color.r - pn->color.r ) * 255 * i / step;
-			pdata->g = pgd->color.g * 255 - (pgd->color.g - pn->color.g ) * 255 * i / step;
-			pdata->b = pgd->color.b * 255 - (pgd->color.b - pn->color.b ) * 255 * i / step;
-			pdata++;
-		}
-		pgd = pn;
-		pn = pn->pNext;
-	}
-
-	glGenTextures( 1, &texId );
-	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_2D, texId );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)miLen, (GLsizei)1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pTexData );
-	glBindTexture( GL_TEXTURE_2D, 0 );
-	delete []pTexData;
-
-	return;
-}
-
-void XGradientRadial::addColorStop( float index, ccColor4F color )
-{
-	mbDirty = true;
-	GradientData *p = pGraData;
-	GradientData *pn = p->pNext;
-	GradientData *cur = new GradientData();
-	cur->color = color;
-	cur->index = index;
-	cur->pNext = NULL;
-	while( p != NULL && pn != NULL )
-	{
-		if ( p->index < index && index < pn->index )
-		{
-			p->pNext = cur;
-			cur->pNext = pn;
-			return;
-		}
-		p = pn;
-		pn = pn->pNext;
-	}
-	p->pNext = cur;
-}
-
-void XGradientRadial::CreateTextrue()
-{
-	if ( ! mbDirty )
-	{
-		mbDirty = false;
-		return;
-	}
-	GLubyte *pTexData = new GLubyte[miLen * 4 ];
-	memset( pTexData, 0, miLen * 4 );
-	ccColor4B *pdata = (ccColor4B*)pTexData;
-	GradientData *pgd = pGraData;
-	GradientData *pn = pgd->pNext;
-	if ( pn == NULL )
-	{
-		return;
-	}
-	pgd->color = pn->color;
-	while( pgd != NULL && pn != NULL )
-	{
-		int index1 = floor(pgd->index * miLen + 0.5);
-		int step = floor( pn->index *miLen + 0.5 ) - index1;
-		//pdata += index1;
-		for ( int i = 0; i < step; i++ )
-		{
-			pdata->a = pgd->color.a * 255 - (pgd->color.a - pn->color.a ) * 255 * i / step;
-			pdata->r = pgd->color.r * 255 - (pgd->color.r - pn->color.r ) * 255 * i / step;
-			pdata->g = pgd->color.g * 255 - (pgd->color.g - pn->color.g ) * 255 * i / step;
-			pdata->b = pgd->color.b * 255 - (pgd->color.b - pn->color.b ) * 255 * i / step;
-			pdata++;
-		}
-		pgd = pn;
-		pn = pn->pNext;
-	}
-
-	glGenTextures( 1, &texId );
-	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_2D, texId );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)miLen, (GLsizei)1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pTexData );
-	glBindTexture( GL_TEXTURE_2D, 0 );
-	delete []pTexData;
-
-}
-
-
 
 void EgPath::GenBuffer()
 {
@@ -448,26 +303,10 @@ void EgretFilter::fillRect( float x, float y, float width, float height )
 	kmMat4Inverse(&texMatIn, &texMat);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
-	if (mpFillStyle->mRepeatePat == en_REPEAT)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-	else if (mpFillStyle->mRepeatePat == en_REPEAT_X)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	}
-	else if (mpFillStyle->mRepeatePat == en_REPEAT_Y)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-	else if (mpFillStyle->mRepeatePat == en_NO_REPEAT)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	}
+			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	
 
 	//kmMat4Multiply( &texMatIn, &texMatIn, &rotaMat );
 	glUniformMatrix4fv(gUniforms[kCCUniformTexMatrix], (GLsizei)1, GL_FALSE, texMatIn.mat);
@@ -571,7 +410,6 @@ void EgretFilter::initTest()
 	pattern->texId = texid;
 	pattern->width = width;
 	pattern->height = height;
-	pattern->mRepeatePat = en_REPEAT;
 	mpFillStyle =  pattern;
 
 }

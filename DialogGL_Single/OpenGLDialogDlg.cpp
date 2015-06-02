@@ -101,7 +101,6 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	pat->texId = pctx->initTexData( pImgData, width, height );
 	pat->width = width;
 	pat->height = height;
-	pat->mRepeatePat = en_REPEAT_X;
 
 	delete []pData;
 	//free( pImgData );

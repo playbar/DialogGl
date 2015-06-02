@@ -21,52 +21,8 @@ enum CTX_FILLTYPE
 	FILL_TEST = 5,
 };
 
-struct GradientData
-{
-	float index;
-	ccColor4F color;
-	GradientData *pNext;
-};
-
-struct CC_DLL XGradientLinear
-{
-	GLuint texId;
-	int miLen;
-	float x;
-	float angle;
-	GradientData *pGraData;
-	bool mbDirty;
-
-	void addColorStop( float index, ccColor4F color );
-	void CreateTextrue();
-
-};
-
-struct CC_DLL XGradientRadial
-{
-	GLuint texId;
-	int miLen;
-	float x;
-	float y;
-	GradientData *pGraData;
-	bool mbDirty;
-
-	void addColorStop( float index, ccColor4F color );
-	void CreateTextrue();
-
-};
-
-enum REPEAT_PAT
-{
-	en_REPEAT = 0,
-	en_REPEAT_X,
-	en_REPEAT_Y,
-	en_NO_REPEAT
-};
-
 struct XPattern
 {
-	REPEAT_PAT mRepeatePat;
 	GLuint texId;
 	int width;
 	int height;
