@@ -103,7 +103,7 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	//free( pImgData );
 
 	pctx->mpFillStyle = pat ;
-	pctx->fillRect( 20, 20, 256, 256 );
+	pctx->DrawTexture( 20, 20, 256, 256 );
 
 }
 
@@ -114,7 +114,7 @@ void COpenGLDialogDlg::OnPaint()
 	//glClearColor(1.0f, 0.0f, 0.0f, 0.0f); 
 	//glScissor( 50, 200, 100, 500 );
 	//glClear(GL_COLOR_BUFFER_BIT);  
-	pctx->drawFrameBuffer();
+	pctx->dropShadowFilter();
 	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
 

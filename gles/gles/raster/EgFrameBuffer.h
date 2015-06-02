@@ -3,21 +3,21 @@
 
 #include "gl/glew.h"
 
+class ProgramData;
 
 class EgFrameBuffer
 {
 public:
 	EgFrameBuffer();
 	virtual ~EgFrameBuffer();
-	void initInstance(int width, int height);
-	void bindFrameBuffer();
-	void showCurrentScreenBuffer(int x, int y, int w, int h);
-	void clearAllScreenBuffer();
-	void show();
+	void init(int width, int height);
+	void bind();
+	void unbind();
+	void clear();
+	void show(int x, int y, int w, int h);
 
 protected:
 
-	bool init(int width, int height);
 	bool mapBuffer();
 	void resize(GLuint width, GLuint height);
 

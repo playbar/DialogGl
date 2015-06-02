@@ -5,6 +5,7 @@
 #include "ccTypes.h"
 #include "platformtype.h"
 #include "GLFilterProgram.h"
+#include "EgFrameBuffer.h"
 
 enum PROGRAMRTYPE
 {
@@ -73,7 +74,7 @@ public:
 	
 	XPattern *mpFillStyle;
 public:
-	void fillRect( float x, float y, float width, float height );
+	void DrawTexture( float x, float y, float width, float height );
 	EgretFilter();
 	void loadShaders();
     static EgretFilter* create( int width, int height );
@@ -84,11 +85,9 @@ public:
 	GLuint initTexData( const void *pData, int width, int height );
 	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
 	void drawFrameBuffer();
-    
+	void dropShadowFilter();
     void clear();
     
-    ccBlendFunc getBlendFunc() const;
-    void setBlendFunc(const ccBlendFunc &blendFunc);
     void ensureCapacity(unsigned int count);
     //void render();
 protected:
@@ -96,11 +95,12 @@ protected:
 	unsigned int    m_uBufferCapacity;
 	GLsizei         m_nBufferCount;
 	ccV3F_C4B_T2F   *m_pBuffer;
-	ccBlendFunc     m_sBlendFunc;
 	float mWidth;
 	float mHeight;
 private:
 	ProgramData mPrograme[enFilter_COUNT];
+	EgFrameBuffer frameBufferA;
+	EgFrameBuffer frameBufferB;
 };
 
 #endif // __CCDRAWNODES_CCDRAW_NODE_H__

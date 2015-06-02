@@ -147,9 +147,7 @@ EgretFilter::EgretFilter()
 , m_nBufferCount(0)
 , m_pBuffer(NULL)
 {
-    m_sBlendFunc.src = CC_BLEND_SRC;
-    m_sBlendFunc.dst = CC_BLEND_DST;
-	mPrograme[enFilter_BLURH].mFraBuffer = frag_blurh;
+   	mPrograme[enFilter_BLURH].mFraBuffer = frag_blurh;
 	mPrograme[enFilter_BLURV].mFraBuffer = frag_blurv;
 	mPrograme[enFilter_COLOR].mFraBuffer = frag_color;
 	mPrograme[enFilter_ALPHA].mFraBuffer = frag_alpha;
@@ -191,8 +189,7 @@ EgretFilter::~EgretFilter()
     m_uVbo = 0;
 }
 
-//p3
-void EgretFilter::fillRect( float x, float y, float width, float height )
+void EgretFilter::DrawTexture( float x, float y, float width, float height )
 {
 	mPrograme[enFilter_IDENTITY].program.use();
 
@@ -251,10 +248,7 @@ bool EgretFilter::init(int width, int height)
 {
 	mWidth = width;
 	mHeight = height;
-    m_sBlendFunc.src = CC_BLEND_SRC;
-    m_sBlendFunc.dst = CC_BLEND_DST;
-
-	mpFillStyle = new XPattern();
+  	mpFillStyle = new XPattern();
 
     //setShaderProgram( mProgram );
     
@@ -270,6 +264,9 @@ bool EgretFilter::init(int width, int height)
 	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, texCoords));
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	frameBufferB.init(width, height);
+	frameBufferA.init(width, height);
     
     return true;
 }
@@ -426,7 +423,6 @@ GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 void EgretFilter::drawFrameBuffer()
 {
 	mPrograme[enFilter_IDENTITY].program.use();
-	glBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
 
 	kmMat4 matrixP;
 	kmMat4 matrixMV;
@@ -454,77 +450,12 @@ void EgretFilter::drawFrameBuffer()
 	return;
 }
 
-void EgretFilter::clear()
+void EgretFilter::dropShadowFilter()
 {
-    m_nBufferCount = 0;
+	//frameBufferA.bind();
+	drawFrameBuffer();
+
+	//frameBufferA.show(0, 0, 256, 256);
+	return;
 }
 
-
-//GLdouble star[5][6] =
-//{
-//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
-//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
-//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
-//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
-//};
-
-//GLdouble star[5][6] =
-//{
-//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-//	125.0, 200.0, 0.0, 1.0, 1.0, 0.0,
-//	200.0, 50.0, 0.0, 0.0, 1.0, 1.0,
-//	50.0, 150.0, 0.0, 1.0, 0.0, 0.0,
-//	200.0, 150.0, 0.0, 0.0, 1.0, 0.0
-//};
-
-//GLdouble star[8][6] =
-//{
-//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-//	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
-//	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
-//	50.0, 150.0, 0.0, 1.0, 1.0, 0.0,
-//	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
-//	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
-//	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
-//	120.0, 70.0, 0.0, 1.0, 0.0, 1.0
-//};
-//
-//GLdouble star[10][6] =
-//{
-//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-//	150.0, 50.0, 0.0, 1.0, 0.0, 0.0,
-//	//150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
-//	//120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
-//	70.0, 70.0, 0.0, 1.0, 0.0, 0.0,
-//	70.0, 120.0, 0.0, 0.0, 1.0, 1.0,
-//	120.0, 120.0, 0.0, 1.0, 1.0, 0.0,
-//	120.0, 70.0, 0.0, 1.0, 0.0, 1.0,
-//	150.0, 70.0, 0.0, 0.0, 1.0, 1.0,
-//	150.0, 150.0, 0.0, 0.0, 1.0, 1.0,
-//	50.0, 150.0, 0.0, 1.0, 1.0, 0.0
-//};
-
-//GLdouble star[8][6] =
-//{
-//	50.0, 50.0, 0.0, 1.0, 0.0, 1.0,
-//	50.0, 200.0, 0.0, 1.0, 0.0, 0.0,
-//	100.0, 200.0, 0.0, 0.0, 1.0, 1.0,
-//	100.0, 100.0, 0.0, 1.0, 1.0, 0.0,
-//	150.0, 100.0, 0.0, 1.0, 0.0, 0.0,
-//	150.0, 200.0, 0.0, 0.0, 1.0, 1.0,
-//	200.0, 200.0, 0.0, 1.0, 1.0, 0.0,
-//	200.0, 50.0, 0.0, 1.0, 0.0, 1.0
-//};
-
-
-
-ccBlendFunc EgretFilter::getBlendFunc() const
-{
-    return m_sBlendFunc;
-}
-
-void EgretFilter::setBlendFunc(const ccBlendFunc &blendFunc)
-{
-    m_sBlendFunc = blendFunc;
-}

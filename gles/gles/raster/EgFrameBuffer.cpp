@@ -15,21 +15,46 @@ EgFrameBuffer::EgFrameBuffer()
 
 EgFrameBuffer::~EgFrameBuffer()
 {
-	clearAllScreenBuffer();
+	clear();
 }
 
-void EgFrameBuffer::initInstance(int width, int height)
+void EgFrameBuffer::init(int width, int height)
 {
 	if (width <= 0 || height <= 0)
 	{
 		return;
 	}
+	mWidth = width;
+	mHeight = height;
+	glGenTextures(1, &mTextrueId);
+	glBindTexture(GL_TEXTURE_2D, mTextrueId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	
+	glGenRenderbuffers(1, &mRenderBufferID);
+	glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferID);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mWidth, mHeight);
+	glGenFramebuffers(1, &mFrameBufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextrueId, 0);
+	//bind depth render buffer 
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferID);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		return;
+	}
 	if (!mapBuffer())
 		return;
-	init(width, height);
+	glBindFramebuffer(GL_FRAMEBUFFER,  mOldFrameId );
 }
 
-void EgFrameBuffer::bindFrameBuffer()
+void EgFrameBuffer::bind()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
 	glViewport(0, 0, mWidth, mHeight);
@@ -37,22 +62,13 @@ void EgFrameBuffer::bindFrameBuffer()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void EgFrameBuffer::showCurrentScreenBuffer(int x, int y, int w, int h)
+void EgFrameBuffer::unbind()
 {
-	if (mOldFrameId != 0)
-	{
-		CCLOG("m_screenbuff is not 0 ");
-	}
 	glBindFramebuffer(GL_FRAMEBUFFER, mOldFrameId);
-	assert(false);
-	//GLView::getInstance()->resetGLViewport();
-	glViewport( x,  y, w, h);
-	//show();
-	//glClearColor(0, 0, 0, 1);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 
-void EgFrameBuffer::clearAllScreenBuffer()
+void EgFrameBuffer::clear()
 {
 	if (mFrameBufferID > 0)
 	{
@@ -90,8 +106,15 @@ void EgFrameBuffer::clearAllScreenBuffer()
 
 }
 
-void EgFrameBuffer::show()
+void EgFrameBuffer::show(int x, int y, int w, int h)
 {
+	if (mOldFrameId != 0)
+	{
+		CCLOG("m_screenbuff is not 0 ");
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, mOldFrameId);
+	glViewport(x, y, w, h);
+
 	glBindTexture(GL_TEXTURE_2D, mTextrueId);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -109,40 +132,6 @@ void EgFrameBuffer::show()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-bool EgFrameBuffer::init(int width, int height)
-{
-	glGenTextures(1, &this->mTextrueId);
-	glBindTexture(GL_TEXTURE_2D, this->mTextrueId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);  
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);  
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenRenderbuffers(1, &this->mRenderBufferID);
-
-	resize(width, height);
-	//Create frame buffer 
-	//	glEnable( GL_FRAMEBUFFER );
-
-	glGenFramebuffers(1, &mFrameBufferID);
-	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->mTextrueId, 0);
-	//bind depth render buffer 
-
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->mRenderBufferID);
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status != GL_FRAMEBUFFER_COMPLETE)
-	{
-		return false;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	return true;
 }
 
 bool EgFrameBuffer::mapBuffer()
@@ -200,8 +189,8 @@ void EgFrameBuffer::resize(GLuint width, GLuint height)
 		return;
 	}
 
-	this->mWidth = width;
-	this->mHeight = height;
+	mWidth = width;
+	mHeight = height;
 	//set texture buffer size
 	glBindTexture(GL_TEXTURE_2D, this->mTextrueId);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->mWidth, this->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -211,6 +200,7 @@ void EgFrameBuffer::resize(GLuint width, GLuint height)
 	glBindRenderbuffer(GL_RENDERBUFFER, this->mRenderBufferID);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, this->mWidth, this->mHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	return;
 
 }
 
