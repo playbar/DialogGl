@@ -146,7 +146,7 @@ bool EgretFilter::init()
     glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
     
 	glEnableVertexAttribArray(enAtt_position);
-	glVertexAttribPointer(enAtt_position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, vertices));
+	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, vertices));
 	glEnableVertexAttribArray(enAtt_textureCoordinate);
 	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, texCoords));
     
@@ -306,6 +306,7 @@ GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 
 void EgretFilter::drawFrameBuffer()
 {
+	mPrograme[enFilter_IDENTITY].program.use();
 	glBlendFunc(m_sBlendFunc.src, m_sBlendFunc.dst);
 
 	kmMat4 matrixP;
@@ -322,7 +323,7 @@ void EgretFilter::drawFrameBuffer()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
 	glEnableVertexAttribArray(enAtt_position);
-	glVertexAttribPointer(enAtt_position, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, vertices));
+	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, vertices));
 	glEnableVertexAttribArray(enAtt_textureCoordinate);
 	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, texCoords));
 	glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
