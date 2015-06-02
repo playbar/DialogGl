@@ -72,13 +72,14 @@ class CC_DLL EgretFilter
 {
 public:
 	
-	XPattern *mpFillStyle;
+	XPattern mPattern;
 public:
-	void DrawTexture( float x, float y, float width, float height );
+	
 	EgretFilter();
-	void loadShaders();
-    static EgretFilter* create( int width, int height );
-    virtual ~EgretFilter();
+	static EgretFilter* create(int width, int height);
+	virtual ~EgretFilter();
+	void loadShaders(); 
+	void DrawTexture(float x, float y, float width, float height);
     
 	virtual bool init(int width, int height);
 	void initTest();

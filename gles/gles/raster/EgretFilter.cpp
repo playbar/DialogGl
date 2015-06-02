@@ -194,7 +194,7 @@ void EgretFilter::DrawTexture( float x, float y, float width, float height )
 	mPrograme[enFilter_IDENTITY].program.use();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
+	glBindTexture(GL_TEXTURE_2D, mPattern.texId);
 			
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
@@ -205,17 +205,17 @@ void EgretFilter::DrawTexture( float x, float y, float width, float height )
 	ccV3F_C4B_T2F_Triangle triangle =
 	{
 		{ vertex3(x, y + height, 0), col, { 0, 0 } },
-		{ vertex3(x, y, 0), col, { 0, height / mpFillStyle->height } },
-		{ vertex3(x + width, y + height, 0 ), col, { width / mpFillStyle->width, 0 } },
+		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
+		{ vertex3(x + width, y + height, 0 ), col, { width / mPattern.width, 0 } },
 	};
 	ccV3F_C4B_T2F_Triangle *triangles = (ccV3F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
 
 	triangles[0] = triangle;
 	ccV3F_C4B_T2F_Triangle triangle1 =
 	{
-		{ vertex3(x, y, 0), col, { 0, height / mpFillStyle->height } },
-		{ vertex3(x + width, y + height, 0 ), col, { width / mpFillStyle->width, 0 } },
-		{ vertex3(x + width, y, 0), col, { width / mpFillStyle->width, height / mpFillStyle->height } }
+		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
+		{ vertex3(x + width, y + height, 0 ), col, { width / mPattern.width, 0 } },
+		{ vertex3(x + width, y, 0), col, { width / mPattern.width, height / mPattern.height } }
 	};
 	triangles[1] = triangle1;
 	m_nBufferCount += vertex_count;
@@ -248,8 +248,6 @@ bool EgretFilter::init(int width, int height)
 {
 	mWidth = width;
 	mHeight = height;
-  	mpFillStyle = new XPattern();
-
     //setShaderProgram( mProgram );
     
     ensureCapacity(512);
@@ -289,12 +287,9 @@ void EgretFilter::initTest()
 	GLuint texid = initTexData( pImgData, width, height );
 	//makeCheckImages();
 	//GLuint texid = initTexData( checkImage, checkImageWidth, checkImageHeight );
-
-	XPattern *pattern = new XPattern();
-	pattern->texId = texid;
-	pattern->width = width;
-	pattern->height = height;
-	mpFillStyle =  pattern;
+	mPattern.texId = texid;
+	mPattern.width = width;
+	mPattern.height = height;
 
 }
 
@@ -437,7 +432,7 @@ void EgretFilter::drawFrameBuffer()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mpFillStyle->texId);
+	glBindTexture(GL_TEXTURE_2D, mPattern.texId);
 	glEnableVertexAttribArray(enAtt_position);
 	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, vertices));
 	glEnableVertexAttribArray(enAtt_textureCoordinate);
@@ -459,3 +454,7 @@ void EgretFilter::dropShadowFilter()
 	return;
 }
 
+void EgretFilter::clear()
+{
+	m_nBufferCount = 0;
+}

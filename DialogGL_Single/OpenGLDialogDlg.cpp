@@ -82,7 +82,6 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 void COpenGLDialogDlg::fillRectWithPattern()
 {
-	XPattern *pat = new XPattern();
 	FILE *pFile = fopen( "c:/test.png", "rb" );
 	fseek( pFile, 0, SEEK_END );
 	int ilen = ftell( pFile );
@@ -95,16 +94,13 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	int height = 0;
 
 	unsigned char *pImgData = pctx->DecodePngData( pData, ilen, width, height );
-	pat->texId = pctx->initTexData( pImgData, width, height );
-	pat->width = width;
-	pat->height = height;
+	pctx->mPattern.texId = pctx->initTexData(pImgData, width, height);
+	pctx->mPattern.width = width;
+	pctx->mPattern.height = height;
 
 	delete []pData;
 	//free( pImgData );
-
-	pctx->mpFillStyle = pat ;
-	pctx->DrawTexture( 20, 20, 256, 256 );
-
+	
 }
 
 
@@ -114,6 +110,9 @@ void COpenGLDialogDlg::OnPaint()
 	//glClearColor(1.0f, 0.0f, 0.0f, 0.0f); 
 	//glScissor( 50, 200, 100, 500 );
 	//glClear(GL_COLOR_BUFFER_BIT);  
+	pctx->clear();
+	pctx->DrawTexture(20, 20, 256, 256);
+
 	pctx->dropShadowFilter();
 	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
