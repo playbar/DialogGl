@@ -8,9 +8,10 @@ static const char vert_canvas[] =
 "uniform mat4 u_transformMatrix;"
 "varying vec2 v_texCoord;"
 "void main() {"
-"	vec2 position = ((u_transformMatrix * vec4(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
-"	position *= vec2(1.0, u_flipY);"
-"	gl_Position = vec4(vec3(position, 1.0), 1.0);"
+//"	vec2 position = ((u_transformMatrix * vec4(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
+//"	position *= vec2(1.0, u_flipY);"
+//"	gl_Position = vec4(vec3(position, 1.0), 1.0);"
+"	gl_Position = u_transformMatrix * vec4(a_position, 1.0);"
 "	v_texCoord = a_textureCoordinate;"
 "}";
 
@@ -84,9 +85,10 @@ static const char frag_identity[] =
 "varying vec2 v_texCoord;"
 "void main() {"
 "	gl_FragColor = texture2D(u_image, v_texCoord);"
+//"	gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0 );"
 "}";
 
-static const char frag_mulitply[] =
+static const char frag_multiply[] =
 #ifndef WIN32
 "precision mediump float;"
 #endif

@@ -9,7 +9,7 @@
 enum PROGRAMRTYPE
 {
 	enFilter_BLURH = 0,
-	enFilter_BLURR,
+	enFilter_BLURV,
 	enFilter_COLOR,
 	enFilter_ALPHA,
 	enFilter_MULTIPLY,
@@ -64,6 +64,7 @@ public:
 	ProgramData();
 	GLFilterProgram program;
 	GLuint mUinform[enUni_Count];
+	const char *mFraBuffer;
 };
 
 class CC_DLL EgretFilter

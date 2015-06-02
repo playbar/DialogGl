@@ -8,6 +8,7 @@
 
 ProgramData::ProgramData()
 {
+	mFraBuffer = NULL;
 	memset(mUinform, 0, sizeof(GLuint) * enUni_Count);
 }
 
@@ -40,6 +41,13 @@ EgretFilter::EgretFilter()
 {
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
+	mPrograme[enFilter_BLURH].mFraBuffer = frag_blurh;
+	mPrograme[enFilter_BLURV].mFraBuffer = frag_blurv;
+	mPrograme[enFilter_COLOR].mFraBuffer = frag_color;
+	mPrograme[enFilter_ALPHA].mFraBuffer = frag_alpha;
+	mPrograme[enFilter_MULTIPLY].mFraBuffer = frag_multiply;
+	mPrograme[enFilter_IDENTITY].mFraBuffer = frag_identity;
+
 	loadShaders();
 }
 
@@ -47,7 +55,7 @@ void EgretFilter::loadShaders()
 {
 	for (int i = 0; i < enFilter_COUNT; i++)
 	{
-		mPrograme[i].program.initWithVertexShaderByteArray(vert_canvas, frag_alpha);
+		mPrograme[i].program.initWithVertexShaderByteArray(vert_canvas, mPrograme[i].mFraBuffer);
 		mPrograme[i].program.BindAttributeLocation(enAtt_position_s, enAtt_position);
 		mPrograme[i].program.BindAttributeLocation(enAtt_textureCoordinate_s, enAtt_textureCoordinate);
 		mPrograme[i].program.link();
