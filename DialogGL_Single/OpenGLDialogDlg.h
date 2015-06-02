@@ -43,13 +43,8 @@ protected:
 	EgretFilter *pctx;
 
 	// test graphics funs
-	void fillRectWithColor();
 	void fillRectWithPattern();
-	void fillRectGradientLinear();
-	void fillRectGradientRadial();
-	void fillLineTo();
-	void rectDrawTest();
-	//{{AFX_MSG(COpenGLDialogDlg)
+
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();

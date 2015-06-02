@@ -78,89 +78,10 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	pctx->mHeight = rect.Height();
 
 	fillRectWithPattern();
-	//fillRectWithColor();
-	//fillRectGradientLinear();
-	//fillLineTo();
 
-	//XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 50, 0 );
-	//ccColor4F color = {255, 0, 0, 255};
-	//pgradient->addColorStop( 0, color );
-	//ccColor4F blue = { 0, 255, 0, 255 };
-	//pgradient->addColorStop( 1, blue );
-
-	//pctx->mpFillStyle->setFillType( pgradient );
-	//pctx->fillRect( 20, 20, 150, 100 );
-
-	//ccColor4F *color = new ccColor4F;
-	//color->r = 0.0;
-	//color->b = 0;
-	//color->g = 1.0;
-	//color->a = 1.0;
-	//pctx->mpFillStyle->mpColor = color;
-	//pctx->rect(50,20,200,120);
-	//pctx->stroke();
-	//pctx->clip();
-	//
-	//pctx->fillRect(0,0,200,120);
-
-	//pctx->strokeRect( 200, 200, 100, 100 );
-	//pctx->clearRect( 210, 210, 20, 20 );
-	//pctx->beginPath();
-	//pctx->moveto( 20, 20 );
-	//pctx->quadraticCurveTo( 20, 200, 200, 20 );
-	//pctx->bezierCurveTo( 20, 100, 100, 100, 100, 20 );
-	//pctx->stroke();
-	//pctx->arc( 300, 300, 150, 0, 1.65, true );
-	//pctx->stroke();
-	//pctx->rect( 120, 120, 150, 100 );
-	//pctx->fill();
-	//pctx->fillRect( 120, 120, 100, 100 );
-
-	// »æÖÆÖ±Ïß
-	//pctx->beginPath();
-	//pctx->mLineWidth = 10;
-	//ccColor4F *color = new ccColor4F;
-	//color->a = 1.0;
-	//color->r = 1.0;
-	//color->b = 0;
-	//color->g = 1.0;
-	//pctx->mpFileStyle.mpColor = color;
-	//pctx->moveto( 50, 50 );
-	//pctx->lineto( 300, 150 );
-	//pctx->stroke();
-
-	//pctx->beginPath();
-	//pctx->mLineWidth = 2;
-	//////ccColor4F *color1 = new ccColor4F;
-	////color->a = 1.0;
-	////color->r = 0.0;
-	////color->b = 1.0;
-	////color->g = 1.0;
-	////pctx->mpFileStyle.mpColor = color;
-	//pctx->moveto( 80, 240 );
-	//pctx->lineto( 140, 240 );
-	//pctx->lineto( 110, 60 );
-	//pctx->lineto( 240, 50 );
-	//pctx->lineto( 20, 20 );
-	//pctx->lineto( 0, 70 );
-	//pctx->lineto( 100, 50 );
-	//pctx->lineto( 80, 240 );
-	//
-	////pctx->closePath();
-	//pctx->stroke();
-	////pctx->fill();
-	
-	
-	
 	return TRUE;  
 } 
 
-void COpenGLDialogDlg::fillRectWithColor()
-{
-	ccColor4F color = { 1, 0.9, 0, 1 };
-	pctx->mpFillStyle->setFillType( color );
-	pctx->fillRect( 20, 20, 100, 100 );
-}
 
 void COpenGLDialogDlg::fillRectWithPattern()
 {
@@ -185,75 +106,11 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	delete []pData;
 	//free( pImgData );
 
-	pctx->mpFillStyle->setFillType( pat );
-	pctx->fillRect( 20, 20, 300, 300 );
+	pctx->mpFillStyle = pat ;
+	pctx->fillRect( 20, 20, 256, 256 );
 
 }
 
-void COpenGLDialogDlg::fillRectGradientLinear()
-{
-	XGradientLinear *pgradient = pctx->CreateLinearGradient( 0, 0, 100, 0 );
-	ccColor4F red = { 1, 0, 0, 1 };
-	ccColor4F green = { 0, 1, 0, 1 };
-	ccColor4F blue = { 0, 0, 1, 1 };
-	ccColor4F rg = { 1, 1, 0, 1 };
-	pgradient->addColorStop( 0, red );
-	pgradient->addColorStop( 1, green );
-	pgradient->addColorStop( 0.5, blue );
-	pgradient->addColorStop( 0.75, rg );
-	pctx->mpFillStyle->setFillType( pgradient );
-	pctx->fillRect( 0, 0, 200, 100 );
-	return;
-}
-
-void COpenGLDialogDlg::fillRectGradientRadial()
-{
-	XGradientRadial *pgradient = pctx->CreateRadialGradient( 100, 100, 5, 100, 100, 100 );
-	ccColor4F red = { 1, 0, 0, 1 };
-	ccColor4F green = { 0, 0.5, 0, 1 };
-	ccColor4F blue = { 0, 0, 1, 1 };
-	ccColor4F rg = { 1, 1, 0, 1 };
-	pgradient->addColorStop( 0, red );
-	pgradient->addColorStop( 0.5, blue );
-	pgradient->addColorStop( 1, green );
-	//pgradient->addColorStop( 0.75, rg );
-	pctx->mpFillStyle->setFillType( pgradient );
-	pctx->fillRect( 0, 0, 300, 300 );
-	return;
-}
-
-void COpenGLDialogDlg::fillLineTo()
-{
-	pctx->beginPath();
-	pctx->LineWidth( 1 );
-	//ccColor4F *color1 = new ccColor4F;
-	ccColor4F color = { 1.0, 0.0, 1.0, 1.0 }; // new ccColor4F;
-	pctx->mpFillStyle->setFillType( color );
-	pctx->moveto( 80, 240 );
-	pctx->lineto( 140, 240 );
-	pctx->lineto( 110, 60 );
-	pctx->lineto( 240, 50 );
-	pctx->lineto( 20, 20 );
-	pctx->lineto( 0, 70 );
-	pctx->lineto( 100, 50 );
-	pctx->lineto( 80, 240 );
-	
-	//pctx->closePath();
-	//pctx->stroke();
-	pctx->fill();
-	return;
-}
-
-void COpenGLDialogDlg::rectDrawTest()
-{
-	pctx->beginPath();
-	pctx->LineWidth( 2 );
-	ccColor4F color = { 1.0, 0.0, 1.0, 1.0 }; // new ccColor4F;
-	pctx->mpFillStyle->setFillType( color );
-	pctx->rect( 50, 50, 100, 100 );
-	//pctx->stroke();
-	pctx->fill();
-}
 
 void COpenGLDialogDlg::OnPaint() 
 {
