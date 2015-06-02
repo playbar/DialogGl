@@ -76,10 +76,10 @@ public:
 	void fillRect( float x, float y, float width, float height );
 	EgretFilter();
 	void loadShaders();
-    static EgretFilter* create();
+    static EgretFilter* create( int width, int height );
     virtual ~EgretFilter();
     
-    virtual bool init();
+	virtual bool init(int width, int height);
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
 	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
@@ -97,6 +97,8 @@ protected:
 	GLsizei         m_nBufferCount;
 	ccV3F_C4B_T2F   *m_pBuffer;
 	ccBlendFunc     m_sBlendFunc;
+	float mWidth;
+	float mHeight;
 private:
 	ProgramData mPrograme[enFilter_COUNT];
 };

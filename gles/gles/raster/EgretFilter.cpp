@@ -4,7 +4,115 @@
 #include "gl/glew.h"
 #include "windows.h"
 #include "png.h"
-#include "shader.cpp"
+//////////////////////////////////////////////////////////////////////////
+
+static const char vert_canvas[] =
+"attribute vec3 a_position;"
+"attribute vec2 a_textureCoordinate;"
+"uniform vec2 u_resolution;"
+"uniform float u_flipY;"
+"uniform float u_time;"
+"uniform mat4 u_transformMatrix;"
+"varying vec2 v_texCoord;"
+"void main() {"
+//"	vec2 position = ((u_transformMatrix * vec4(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
+//"	position *= vec2(1.0, u_flipY);"
+//"	gl_Position = vec4(vec3(position, 1.0), 1.0);"
+//"	vec2 position = ( vec4(a_position, 1.0).xy / u_resolution) * 2.0 - 1.0;"
+//"	position *=vec2(1.0, -u_flipY);"
+//"	gl_Position = vec4(position.xy, 0.0, 1.0);"
+"	gl_Position = u_transformMatrix * vec4(a_position, 1.0);"
+"	v_texCoord = a_textureCoordinate;"
+"}";
+
+
+static const char frag_alpha[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec4 u_color;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = u_color * texture2D(u_image, v_texCoord).a;"
+"}";
+
+static const char frag_blurh[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec2 u_textureSize;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	const int sampleRadius = 10;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
+"	vec4 color = vec4(0, 0, 0, 0);"
+"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
+"		color += texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0));"
+"	}"
+"	color /= float(samples);"
+"	gl_FragColor = color;"
+"}";
+
+static const char frag_blurv[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec2 u_textureSize;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	const int sampleRadius = 10;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
+"	vec4 color = vec4(0, 0, 0, 0);"
+"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
+"		color += texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y));"
+"	}"
+"	color /= float(samples);"
+"	gl_FragColor = color;"
+"}";
+
+static const char frag_color[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform mat4 u_colorMatrix;"
+"uniform vec4 u_vector;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = u_colorMatrix * texture2D(u_image, v_texCoord) + u_vector;"
+"}";
+
+static const char frag_identity[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = texture2D(u_image, v_texCoord);"
+//"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );"
+"}";
+
+static const char frag_multiply[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec4 u_color;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = texture2D(u_image, v_texCoord) * vec4(1.9, 1.0, 1.0, 1.0);"
+"	gl_FragColor = texture2D(u_image, v_texCoord) * u_color;"
+"}";
+
+///////////////////////////////////
+
+
 
 ProgramData::ProgramData()
 {
@@ -47,8 +155,6 @@ EgretFilter::EgretFilter()
 	mPrograme[enFilter_ALPHA].mFraBuffer = frag_alpha;
 	mPrograme[enFilter_MULTIPLY].mFraBuffer = frag_multiply;
 	mPrograme[enFilter_IDENTITY].mFraBuffer = frag_identity;
-
-	loadShaders();
 }
 
 void EgretFilter::loadShaders()
@@ -70,6 +176,9 @@ void EgretFilter::loadShaders()
 		mPrograme[i].mUinform[enUni_vector] =		mPrograme[i].program.getUniformLocationForName(enUni_textureSize_s);
 		mPrograme[i].program.use();
 		glUniform1i(mPrograme[i].mUinform[enUni_image], 0);
+		glUniform2f(mPrograme[i].mUinform[enUni_resolution], mWidth, mHeight);
+		glUniform1f(mPrograme[i].mUinform[enUni_flipY], 1.0);
+
 	}
 }
 
@@ -118,11 +227,12 @@ void EgretFilter::fillRect( float x, float y, float width, float height )
 
 }
 
-EgretFilter* EgretFilter::create()
+EgretFilter* EgretFilter::create(int width, int height )
 {
     EgretFilter* pRet = new EgretFilter();
-    pRet->init();
+    pRet->init( width, height );
 	pRet->initTest();
+	pRet->loadShaders();
     return pRet;
 }
 
@@ -137,9 +247,10 @@ void EgretFilter::ensureCapacity(unsigned int count)
 
 
 
-bool EgretFilter::init()
+bool EgretFilter::init(int width, int height)
 {
-
+	mWidth = width;
+	mHeight = height;
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 
@@ -323,6 +434,7 @@ void EgretFilter::drawFrameBuffer()
 	kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
 	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
 	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
+	//kmMat4Identity(&matrixMVP);
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat );
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
