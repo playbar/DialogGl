@@ -10,86 +10,107 @@ const GLchar * shader_frag =
 const GLchar * shader_vert =
 #include "shader_vert.h"
 
-// ccVertex2F == CGPoint in 32-bits, but not in 64-bits (OS X)
-// that's why the "v2f" functions are needed
-static ccVertex2F v2fzero = {0.0f,0.0f};
+
+static const char vert_canvas[] =
+"attribute vec2 a_position;"
+"uniform vec2 u_resolution;"
+"uniform float u_flipY;"
+"uniform float u_time;"
+"attribute vec2 a_textureCoordinate;"
+"uniform mat3 u_transformMatrix;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	vec2 position = ((u_transformMatrix * vec3(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
+"	position *= vec2(1.0, u_flipY);"
+"	gl_Position = vec4(vec3(position, 1.0), 1.0);"
+"	v_texCoord = a_textureCoordinate;"
+"}";
 
 
-#define GL_POINTS 200
-static ccV2F_C4B_T2F gsGLData[ GL_POINTS ];
-static int gVertexIndex = 0;
-static GLenum gWhichTriangle = 0;
+static const char frag_alpha[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec4 u_color;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	// gl_FragColor = u_matrix * texture2D(u_image, v_texCoord) + u_vector;"
+"	gl_FragColor = u_color * texture2D(u_image, v_texCoord).a;"
+"}";
 
-#define MAXCOMBINES (100 * 3)
-static GLdouble gCombineVertex[ MAXCOMBINES];
-static int      gCombineIndex = 0;
+static const char frag_blurh[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec2 u_textureSize;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	const int sampleRadius = 10;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
+"	vec4 color = vec4(0, 0, 0, 0);"
+"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
+"		color += texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0));"
+"	}"
+"	color /= float(samples);"
+"	gl_FragColor = color;"
+"}";
 
-static inline ccVertex2F v2f(float x, float y)
-{
-    ccVertex2F ret = {x, y};
-	return ret;
-}
+static const char frag_blurv[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec2 u_textureSize;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	const int sampleRadius = 10;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
+"	vec4 color = vec4(0, 0, 0, 0);"
+"	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
+"		color += texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y));"
+"	}"
+"	color /= float(samples);"
+"	gl_FragColor = color;"
+"}";
 
-static inline ccVertex2F v2fadd(const ccVertex2F &v0, const ccVertex2F &v1)
-{
-	return v2f(v0.x+v1.x, v0.y+v1.y);
-}
+static const char frag_color[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform mat4 u_colorMatrix;"
+"uniform vec4 u_vector;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = u_colorMatrix * texture2D(u_image, v_texCoord) + u_vector;"
+"}";
 
-static inline ccVertex2F v2fsub(const ccVertex2F &v0, const ccVertex2F &v1)
-{
-	return v2f(v0.x-v1.x, v0.y-v1.y);
-}
+static const char frag_identity[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = texture2D(u_image, v_texCoord);"
+"}";
 
-static inline ccVertex2F v2fmult(const ccVertex2F &v, float s)
-{
-	return v2f(v.x * s, v.y * s);
-}
+static const char frag_mulitply[] =
+#ifndef WIN32
+"precision mediump float;"
+#endif
+"uniform sampler2D u_image;"
+"uniform vec4 u_color;"
+"varying vec2 v_texCoord;"
+"void main() {"
+"	gl_FragColor = texture2D(u_image, v_texCoord) * vec4(1.9, 1.0, 1.0, 1.0);"
+"	gl_FragColor = texture2D(u_image, v_texCoord) * u_color;"
+"}";
 
-static inline ccVertex2F v2fperp(const ccVertex2F &p0)
-{
-	return v2f(-p0.y, p0.x);
-}
-
-static inline ccVertex2F v2fneg(const ccVertex2F &p0)
-{
-	return v2f(-p0.x, - p0.y);
-}
-
-static inline float v2fdot(const ccVertex2F &p0, const ccVertex2F &p1)
-{
-	return  p0.x * p1.x + p0.y * p1.y;
-}
-
-static inline ccVertex2F v2fforangle(float _a_)
-{
-	return v2f(cosf(_a_), sinf(_a_));
-}
-
-static inline ccVertex2F v2fnormalize(const ccVertex2F &p)
-{
-	CCPoint r = ccpNormalize(ccp(p.x, p.y));
-	return v2f(r.x, r.y);
-}
-
-static inline ccVertex2F __v2f(const CCPoint &v)
-{
-//#ifdef __LP64__
-	return v2f(v.x, v.y);
-// #else
-// 	return * ((ccVertex2F*) &v);
-// #endif
-}
-
-static inline ccTex2F __t(const ccVertex2F &v)
-{
-	return *(ccTex2F*)&v;
-}
-
-static inline ccTex2F __t( float u, float v )
-{
-	ccTex2F tf = { u, v };
-	return tf;
-}
 
 
 typedef struct 
@@ -121,12 +142,6 @@ EgretFilter::EgretFilter()
 , m_bDirty(false)
 , mProgram( 0 )
 {
-	mbgcolor.r = 0;
-	mbgcolor.g = 0;
-	mbgcolor.b = 255;
-	mbgcolor.a = 255;
-	mWidth = 0;
-	mHeight = 0;
     m_sBlendFunc.src = CC_BLEND_SRC;
     m_sBlendFunc.dst = CC_BLEND_DST;
 	loadShaders();

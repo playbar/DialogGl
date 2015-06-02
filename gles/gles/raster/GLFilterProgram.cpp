@@ -70,23 +70,8 @@ bool GLFilterProgram::compileShader(GLuint * shader, GLenum type, const GLchar* 
         return false;
     }
     
-    const GLchar *sources[] = 
-	{
-#ifndef _WIN32
-        //type == GL_VERTEX_SHADER ? "precision highp float;\n" : "precision mediump float;\n",
-		"precision mediump float;precision mediump int;precision lowp sampler2D;\n"
-#endif
-        "uniform mat4 EG_MVPMatrix;\n"
-		"uniform mat4 EG_TEXMatrix; \n"
-        "uniform sampler2D EG_Texture0;	\n"
-		"uniform float EG_drawType; \n"
-		"uniform vec4 EG_FillColor; \n"
-        "//CC INCLUDES END\n\n",
-        source,
-    };
-
     *shader = glCreateShader(type);
-    glShaderSource(*shader, sizeof(sources)/sizeof(*sources), sources, NULL);
+    glShaderSource(*shader, 1, &source, NULL);
     glCompileShader(*shader);
 
     glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);

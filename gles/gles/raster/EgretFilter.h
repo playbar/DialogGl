@@ -5,21 +5,53 @@
 #include "CCNode.h"
 #include "ccTypes.h"
 #include "platformtype.h"
-#include "map"
 #include "vector"
 using namespace std;
-#include "tess.h"
 
-// 着色器填充方式
-enum CTX_FILLTYPE
+enum PROGRAMRTYPE
 {
-	FILL_NONE = 0,
-	FILL_COLOR = 1,
-	FILL_Gradient_Line = 2,
-	FILL_Gradient_radius = 3,
-	FILL_PATTERN = 4,	
-	FILL_TEST = 5,
+	enFilter_BLURH = 0,
+	enFilter_BLURR,
+	enFilter_COLOR,
+	enFilter_ALPHA,
+	enFilter_MULTIPLY,
+	enFilter_IDENTITY,
+	enFilter_COUNT
 };
+
+enum
+{
+	enUni_resolution = 0,
+	enUni_flipY,
+	enUni_time,
+	enUni_transformMatrix,
+	enUni_image,
+	enUni_color,
+	enUni_textureSize,
+	enUni_colorMatrix,
+	enUni_vector,
+	enUni_Count,
+};
+
+#define	enUni_resolution_s		"u_resolution"
+#define enUni_flipY_s			"u_flipY" 
+#define enUni_time_s			"u_time"
+#define enUni_transformMatrix_s	"u_transformMatrix"
+#define enUni_image_s			"u_image"
+#define enUni_color_s			"u_color"
+#define enUni_textureSize_s		"u_textureSize"
+#define enUni_colorMatrix_s		"u_colorMatrix"
+#define enUni_vector_s			"u_vector"
+
+enum
+{
+	enAtt_position,
+	enAtt_textureCoordinate,
+	enAtt_Count,
+};
+
+#define enAtt_position_s			"a_position"
+#define enAtt_textureCoordinate_s	"a_textureCoordinate"
 
 struct XPattern
 {
@@ -42,9 +74,6 @@ protected:
 public:
 	
 	XPattern *mpFillStyle;
-	ccColor4B mbgcolor;
-	int mWidth;
-	int mHeight;
 public:
 	void fillRect( float x, float y, float width, float height );
 

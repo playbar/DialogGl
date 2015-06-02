@@ -74,9 +74,6 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 	eglView->CreateView( m_hWnd, 0, 0, rect.Width(), rect.Height() );
 	eglView->setGLDefaultValues();
 	pctx = EgretFilter::create();
-	pctx->mWidth = rect.Width();
-	pctx->mHeight = rect.Height();
-
 	fillRectWithPattern();
 
 	return TRUE;  
