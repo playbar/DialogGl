@@ -183,13 +183,13 @@ EgretFilter::~EgretFilter()
 
 void EgretFilter::DrawTexture( float x, float y, float width, float height )
 {
-	mPrograme[enFilter_IDENTITY].program.use();
+	//mPrograme[enFilter_IDENTITY].program.use();
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mPattern.texId);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, mPattern.texId);
 			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
 
 	unsigned int vertex_count = 2 * 6;
 	ensureCapacity(vertex_count);
@@ -409,7 +409,7 @@ GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 
 void EgretFilter::drawFrameBuffer()
 {
-	mPrograme[enFilter_IDENTITY].program.use();
+	//mPrograme[enFilter_IDENTITY].program.use();
 
 	//kmMat4 matrixP;
 	//kmMat4 matrixMV;
@@ -444,17 +444,40 @@ void EgretFilter::drawFrameBuffer()
 
 void EgretFilter::dropShadowFilter()
 {
-	frameBufferA.bind();
+	//frameBufferA.bind();
 
+	mPrograme[enFilter_IDENTITY].program.use();
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
-	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
 	
 	drawFrameBuffer();
+	//showTexture(mPattern.texId, 100, 100, 256, 256);
 
 
-	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
+	//frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
+	return;
+}
+
+void EgretFilter::showTexture(GLuint texId, float x, float y, float w, float h)
+{
+	GLfloat verts[] =
+	{
+		x, y, 0.0f,			0.0f, 1.0f,
+		x + w, y, 0.0f,		1.0f, 1.0f,
+		x, y + h, 0.0f,		0.0f, 0.0f,
+		x + w, y + h, 0.0f, 1.0f, 0.0f
+	};
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texId);
+	glEnableVertexAttribArray(enAtt_position);
+	glEnableVertexAttribArray(enAtt_textureCoordinate);
+	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[0]);
+	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[3]);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	return;
 }
 
