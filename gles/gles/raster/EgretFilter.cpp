@@ -255,8 +255,8 @@ bool EgretFilter::init(int width, int height)
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	frameBufferB.init(width, height);
-	frameBufferA.init(width, height);
+	//frameBufferB.init(width, height);
+	frameBufferA.init( 256,  256);
     
     return true;
 }
@@ -411,14 +411,19 @@ void EgretFilter::drawFrameBuffer()
 {
 	mPrograme[enFilter_IDENTITY].program.use();
 
-	kmMat4 matrixP;
-	kmMat4 matrixMV;
-	kmMat4 matrixMVP;
-	kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
-	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
-	kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
-	//kmMat4Identity(&matrixMVP);
-	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat );
+	//kmMat4 matrixP;
+	//kmMat4 matrixMV;
+	//kmMat4 matrixMVP;
+	//kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
+	//kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
+	//kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
+	////kmMat4Identity(&matrixMVP);
+	////glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat );
+	//kmMat4 orthoMatrix;
+	//kmMat4Identity(&orthoMatrix);
+	//kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	//glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
@@ -431,8 +436,8 @@ void EgretFilter::drawFrameBuffer()
 	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, texCoords));
 	glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisableVertexAttribArray(enAtt_position);
-	glDisableVertexAttribArray(enAtt_textureCoordinate);
+	//glDisableVertexAttribArray(enAtt_position);
+	//glDisableVertexAttribArray(enAtt_textureCoordinate);
 
 	return;
 }
@@ -440,9 +445,16 @@ void EgretFilter::drawFrameBuffer()
 void EgretFilter::dropShadowFilter()
 {
 	frameBufferA.bind();
+
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	
 	drawFrameBuffer();
 
-	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256);
+
+	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
 	return;
 }
 

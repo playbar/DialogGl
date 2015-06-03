@@ -48,7 +48,7 @@ protected:
 private:
 	ProgramData mPrograme[enFilter_COUNT];
 	EgFrameBuffer frameBufferA;
-	EgFrameBuffer frameBufferB;
+	//EgFrameBuffer frameBufferB;
 };
 
 #endif // __CCDRAWNODES_CCDRAW_NODE_H__

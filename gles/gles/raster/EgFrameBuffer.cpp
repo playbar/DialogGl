@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "memory.h"
 #include "EgretFilter.h"
+#include "gl/matrix.h"
 
 #define LOG_TAG "EgFrameBuffer"
 
@@ -58,8 +59,8 @@ void EgFrameBuffer::init(int width, int height)
 void EgFrameBuffer::bind()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
-	glViewport(0, 0, mWidth, mHeight);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0F);
+	glViewport(0, 0, mWidth, mWidth);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -114,18 +115,33 @@ void EgFrameBuffer::show(ProgramData *proData, int x, int y, int w, int h)
 		CCLOG("m_screenbuff is not 0 ");
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, mOldFrameId);
+	proData->program.use();
+
 	glViewport(x, y, w, h);
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, 0, mHeight, -1024, 1024);
+	glUniformMatrix4fv(proData->mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+
+	//kmMat4 matrixP;
+	//kmMat4 matrixMV;
+	//kmMat4 matrixMVP;
+	//kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
+	//kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
+	//kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
+	////kmMat4Identity(&matrixMVP);
+	//glUniformMatrix4fv(proData->mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat);	
 
 	glBindTexture(GL_TEXTURE_2D, mTextrueId);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	//glUniformMatrix4fv(shader->gvViewTransMattixHandle, 1, false, MatrixManager::getScreenBufferViewMatrix());
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	//glVertexAttribPointer(proData->, 3, GL_FLOAT, false, 0, 0);
+	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, false, 0, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _uvBuffer);
-	//glVertexAttribPointer(shader->gvTextureCoordHandle, 2, GL_FLOAT, false, 0, 0);
+	glVertexAttribPointer( enAtt_textureCoordinate, 2, GL_FLOAT, false, 0, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
