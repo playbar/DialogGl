@@ -12,6 +12,7 @@ enum PROGRAMRTYPE
 	enFilter_ALPHA,
 	enFilter_MULTIPLY,
 	enFilter_IDENTITY,
+	enFilter_DROPSHADOW,
 	enFilter_COUNT
 };
 

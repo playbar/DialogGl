@@ -75,6 +75,26 @@ static const char frag_multiply[] =
 "	gl_FragColor = texture2D(u_image, v_texCoord);"
 "}";
 
+
+static const char frag_dropShadow[] =
+"varying vec2 v_texCoord;"
+"void main() {"
+"	vec4 color = texture2D( u_image, v_texCoord);"
+"	vec4 acolor = vec4( 1.0, 0.0, 0.0, 1.0);"
+"	const int sampleRadius = 15;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2( 1.0, 1.0) / 256;"
+"	vec4 colort = vec4(0, 0, 0, 0 );"
+"	for( int i = -sampleRadius; i<= sampleRadius; i++ ) {"
+"		colort += acolor * texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0)).a;"
+"		colort += acolor * texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y)).a;"
+"	}"
+"	colort /= float( 2 * samples);"
+"	vec4 finalcolor = color + colort*( 1 - color.a);"
+"	gl_FragColor = finalcolor;"
+//"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );"
+"}";
+
 ///////////////////////////////////
 
 typedef struct 
@@ -110,6 +130,7 @@ EgretFilter::EgretFilter()
 	mPrograme[enFilter_ALPHA].mFraBuffer = frag_alpha;
 	mPrograme[enFilter_MULTIPLY].mFraBuffer = frag_multiply;
 	mPrograme[enFilter_IDENTITY].mFraBuffer = frag_identity;
+	mPrograme[enFilter_DROPSHADOW].mFraBuffer = frag_dropShadow;
 }
 
 void EgretFilter::loadShaders()
@@ -417,6 +438,23 @@ void EgretFilter::dropShadowFilter()
 	endPaint();
 
 	return;
+}
+
+void EgretFilter::dropShadowFilterTest()
+{
+	glViewport(0, 0, mWidth, mHeight);
+	mPrograme[enFilter_DROPSHADOW].program.use();
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
+	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	
+	DrawTexture(mPattern.texId, 100, 100, 256, 256);
+
+	return;
+
 }
 
 void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
