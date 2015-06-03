@@ -220,7 +220,7 @@ bool EgretFilter::init(int width, int height)
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//frameBufferB.init(width, height);
+	frameBufferB.init( 256, 256);
 	frameBufferA.init( 256,  256);
     
     return true;
@@ -413,9 +413,9 @@ void EgretFilter::dropShadowFilter()
 	DrawFrameTexture( 0, 0, 256, 256);
 	frameBufferA.endPatin();
 	beginPaint();
-	DrawTexture( frameBufferA.getTexId(), 0, 0, 256, 256);
+	DrawTexture( frameBufferA.getTexId(), 100, 100, 256, 256);
 	endPaint();
-	//frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
+
 	return;
 }
 
