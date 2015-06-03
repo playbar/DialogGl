@@ -81,16 +81,17 @@ static const char frag_dropShadow[] =
 "void main() {"
 "	vec4 color = texture2D( u_image, v_texCoord);"
 "	vec4 acolor = vec4( 1.0, 0.0, 0.0, 1.0);"
-"	const int sampleRadius = 15;"
+"	const int sampleRadius = 10;"
 "	const int samples = sampleRadius * 2 + 1;"
 "	vec2 one = vec2( 1.0, 1.0) / 256;"
+"	v_texCoord += one;"
 "	vec4 colort = vec4(0, 0, 0, 0 );"
 "	for( int i = -sampleRadius; i<= sampleRadius; i++ ) {"
 "		colort += acolor * texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0)).a;"
 "		colort += acolor * texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y)).a;"
 "	}"
 "	colort /= float( 2 * samples);"
-"	vec4 finalcolor = color + colort*( 1 - color.a);"
+"	vec4 finalcolor = color * color.a + colort*( 1 - color.a);"
 "	gl_FragColor = finalcolor;"
 //"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );"
 "}";
@@ -444,7 +445,7 @@ void EgretFilter::dropShadowFilterTest()
 {
 	glViewport(0, 0, mWidth, mHeight);
 	mPrograme[enFilter_DROPSHADOW].program.use();
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
