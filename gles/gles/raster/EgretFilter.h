@@ -43,7 +43,6 @@ public:
     void ensureCapacity(unsigned int count);
     //void render();
 protected:
-	GLuint      m_uVbo;
 	unsigned int    m_uBufferCapacity;
 	GLsizei         m_nBufferCount;
 	ccV3F_C4B_T2F   *m_pBuffer;

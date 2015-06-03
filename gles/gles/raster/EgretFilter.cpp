@@ -80,11 +80,10 @@ static const char frag_dropShadow[] =
 "varying vec2 v_texCoord;"
 "void main() {"
 "	vec4 color = texture2D( u_image, v_texCoord);"
-"	vec4 acolor = vec4( 1.0, 0.0, 0.0, 1.0);"
+"	vec4 acolor = vec4( 1.0, 0.0, 1.0, 1.0);"
 "	const int sampleRadius = 10;"
 "	const int samples = sampleRadius * 2 + 1;"
 "	vec2 one = vec2( 1.0, 1.0) / 256;"
-"	v_texCoord += one;"
 "	vec4 colort = vec4(0, 0, 0, 0 );"
 "	for( int i = -sampleRadius; i<= sampleRadius; i++ ) {"
 "		colort += acolor * texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0)).a;"
@@ -120,8 +119,7 @@ static void memReadFuncPng(png_structp png_ptr, png_bytep data, png_size_t lengt
 }
 
 EgretFilter::EgretFilter()
-: m_uVbo(0)
-, m_uBufferCapacity(0)
+: m_uBufferCapacity(0)
 , m_nBufferCount(0)
 , m_pBuffer(NULL)
 {
@@ -166,9 +164,7 @@ EgretFilter::~EgretFilter()
 {
     free(m_pBuffer);
     m_pBuffer = NULL;
-    
-    glDeleteBuffers(1, &m_uVbo);
-    m_uVbo = 0;
+   
 }
 
 EgretFilter* EgretFilter::create(int width, int height )
@@ -199,17 +195,6 @@ bool EgretFilter::init(int width, int height)
     
     ensureCapacity(512);
     
-    glGenBuffers(1, &m_uVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)* m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
-    
-	glEnableVertexAttribArray(enAtt_position);
-	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, vertices));
-	glEnableVertexAttribArray(enAtt_textureCoordinate);
-	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid *)offsetof(ccV3F_C4B_T2F, texCoords));
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	frameBufferB.init( 256, 256);
 	frameBufferA.init( 256,  256);
     
@@ -380,24 +365,6 @@ void EgretFilter::endPaint()
 
 }
 
-void EgretFilter::drawFrameBuffer()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mPattern.texId);
-	glEnableVertexAttribArray(enAtt_position);
-	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, vertices));
-	glEnableVertexAttribArray(enAtt_textureCoordinate);
-	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(ccV3F_C4B_T2F), (GLvoid*)offsetof(ccV3F_C4B_T2F, texCoords));
-	glDrawArrays(GL_TRIANGLES, 0, m_nBufferCount);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glDisableVertexAttribArray(enAtt_position);
-	//glDisableVertexAttribArray(enAtt_textureCoordinate);
-
-	return;
-}
 
 void EgretFilter::dropShadowFilter()
 {
@@ -451,9 +418,7 @@ void EgretFilter::dropShadowFilterTest()
 	kmMat4Identity(&orthoMatrix);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-	
 	DrawTexture(mPattern.texId, 100, 100, 256, 256);
-
 	return;
 
 }
