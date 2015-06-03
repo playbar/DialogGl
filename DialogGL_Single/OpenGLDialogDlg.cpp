@@ -111,7 +111,7 @@ void COpenGLDialogDlg::OnPaint()
 	//glScissor( 50, 200, 100, 500 );
 	//glClear(GL_COLOR_BUFFER_BIT);  
 	pctx->clear();
-	pctx->DrawTexture(20, 20, 256, 256);
+	//pctx->DrawTexture(0, 0, 256, 256);
 
 	pctx->dropShadowFilter();
 	//glDisable( GL_SCISSOR_TEST );

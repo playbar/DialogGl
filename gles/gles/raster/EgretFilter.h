@@ -34,7 +34,7 @@ public:
 	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
 	void drawFrameBuffer();
 	void dropShadowFilter();
-	void showTexture(GLuint texId, float x, float y, float w, float h);
+	void DrawTexture(GLuint texId, float x, float y, float w, float h);
     void clear();
     
     void ensureCapacity(unsigned int count);

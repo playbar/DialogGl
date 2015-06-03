@@ -181,41 +181,6 @@ EgretFilter::~EgretFilter()
     m_uVbo = 0;
 }
 
-void EgretFilter::DrawTexture( float x, float y, float width, float height )
-{
-	//mPrograme[enFilter_IDENTITY].program.use();
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, mPattern.texId);
-			
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
-
-	unsigned int vertex_count = 2 * 6;
-	ensureCapacity(vertex_count);
-	ccColor4B col = {0, 0, 0, 0 };
-	ccV3F_C4B_T2F_Triangle triangle =
-	{
-		{ vertex3(x, y + height, 0), col, { 0, 0 } },
-		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
-		{ vertex3(x + width, y + height, 0 ), col, { width / mPattern.width, 0 } },
-	};
-	ccV3F_C4B_T2F_Triangle *triangles = (ccV3F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
-
-	triangles[0] = triangle;
-	ccV3F_C4B_T2F_Triangle triangle1 =
-	{
-		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
-		{ vertex3(x + width, y + height, 0 ), col, { width / mPattern.width, 0 } },
-		{ vertex3(x + width, y, 0), col, { width / mPattern.width, height / mPattern.height } }
-	};
-	triangles[1] = triangle1;
-	m_nBufferCount += vertex_count;
-	
-	return;
-
-}
-
 EgretFilter* EgretFilter::create(int width, int height )
 {
     EgretFilter* pRet = new EgretFilter();
@@ -444,23 +409,25 @@ void EgretFilter::drawFrameBuffer()
 
 void EgretFilter::dropShadowFilter()
 {
-	//frameBufferA.bind();
-
+	//DrawTexture(0, 0, 256, 256);
+	frameBufferA.bind();
 	mPrograme[enFilter_IDENTITY].program.use();
+	
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-	
-	drawFrameBuffer();
+	//drawFrameBuffer();
+	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+
 	//showTexture(mPattern.texId, 100, 100, 256, 256);
 
 
-	//frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
+	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
 	return;
 }
 
-void EgretFilter::showTexture(GLuint texId, float x, float y, float w, float h)
+void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
 {
 	GLfloat verts[] =
 	{
@@ -480,6 +447,35 @@ void EgretFilter::showTexture(GLuint texId, float x, float y, float w, float h)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	return;
 }
+
+
+void EgretFilter::DrawTexture(float x, float y, float width, float height)
+{
+	unsigned int vertex_count = 2 * 6;
+	ensureCapacity(vertex_count);
+	ccColor4B col = { 0, 0, 0, 0 };
+	ccV3F_C4B_T2F_Triangle triangle =
+	{
+		{ vertex3(x, y + height, 0), col, { 0, 0 } },
+		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
+		{ vertex3(x + width, y + height, 0), col, { width / mPattern.width, 0 } },
+	};
+	ccV3F_C4B_T2F_Triangle *triangles = (ccV3F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
+
+	triangles[0] = triangle;
+	ccV3F_C4B_T2F_Triangle triangle1 =
+	{
+		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
+		{ vertex3(x + width, y + height, 0), col, { width / mPattern.width, 0 } },
+		{ vertex3(x + width, y, 0), col, { width / mPattern.width, height / mPattern.height } }
+	};
+	triangles[1] = triangle1;
+	m_nBufferCount += vertex_count;
+
+	return;
+
+}
+
 
 void EgretFilter::clear()
 {
