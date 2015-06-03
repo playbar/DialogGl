@@ -11,8 +11,9 @@ public:
 	EgFrameBuffer();
 	virtual ~EgFrameBuffer();
 	void init(int width, int height);
-	void bind();
-	void unbind();
+	void beginPaint(ProgramData *proData );
+	void endPatin();
+	GLuint getTexId() { return mTextrueId; }
 	void clear();
 	void show(ProgramData *proData, int x, int y, int w, int h);
 

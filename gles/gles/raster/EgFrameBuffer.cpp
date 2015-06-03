@@ -56,15 +56,22 @@ void EgFrameBuffer::init(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER,  mOldFrameId );
 }
 
-void EgFrameBuffer::bind()
+void EgFrameBuffer::beginPaint(ProgramData *proData )
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);	
 	glViewport(0, 0, mWidth, mWidth);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	proData->program.use();
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
+	glUniformMatrix4fv(proData->mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	return;
+
 }
 
-void EgFrameBuffer::unbind()
+void EgFrameBuffer::endPatin()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mOldFrameId);
 

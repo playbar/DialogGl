@@ -409,18 +409,10 @@ void EgretFilter::drawFrameBuffer()
 
 void EgretFilter::dropShadowFilter()
 {
-	//DrawTexture(0, 0, 256, 256);
-	frameBufferA.bind();
-	mPrograme[enFilter_IDENTITY].program.use();
-	
-	kmMat4 orthoMatrix;
-	kmMat4Identity(&orthoMatrix);
-	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
-	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-	//drawFrameBuffer();
+	frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	DrawTexture(mPattern.texId, 0, 0, 256, 256);
-
-	//showTexture(mPattern.texId, 100, 100, 256, 256);
+	frameBufferA.endPatin();
+	//DrawTexture( frameBufferA.getTexId(), 0, 0, 256, 256);
 
 
 	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
@@ -429,6 +421,13 @@ void EgretFilter::dropShadowFilter()
 
 void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
 {
+	//glViewport(0, 0, mWidth, mHeight);
+	mPrograme[enFilter_IDENTITY].program.use();
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
+	//glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+
 	GLfloat verts[] =
 	{
 		x, y, 0.0f,			0.0f, 1.0f,
