@@ -372,24 +372,24 @@ GLuint EgretFilter::initTexData( const void *pData, int width, int height )
 
 }
 
+void EgretFilter::beginPaint()
+{
+	glViewport(0, 0, mWidth, mHeight);
+	mPrograme[enFilter_IDENTITY].program.use();
+	kmMat4 orthoMatrix;
+	kmMat4Identity(&orthoMatrix);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
+	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+
+}
+
+void EgretFilter::endPaint()
+{
+
+}
+
 void EgretFilter::drawFrameBuffer()
 {
-	//mPrograme[enFilter_IDENTITY].program.use();
-
-	//kmMat4 matrixP;
-	//kmMat4 matrixMV;
-	//kmMat4 matrixMVP;
-	//kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
-	//kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
-	//kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
-	////kmMat4Identity(&matrixMVP);
-	////glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat );
-	//kmMat4 orthoMatrix;
-	//kmMat4Identity(&orthoMatrix);
-	//kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
-	//glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-
-
 	glBindBuffer(GL_ARRAY_BUFFER, m_uVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(ccV3F_C4B_T2F)*m_uBufferCapacity, m_pBuffer, GL_STREAM_DRAW);
 
@@ -412,21 +412,15 @@ void EgretFilter::dropShadowFilter()
 	frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	DrawFrameTexture( 0, 0, 256, 256);
 	frameBufferA.endPatin();
+	beginPaint();
 	DrawTexture( frameBufferA.getTexId(), 0, 0, 256, 256);
-
+	endPaint();
 	//frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
 	return;
 }
 
 void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
 {
-	glViewport(0, 0, mWidth, mHeight);
-	mPrograme[enFilter_IDENTITY].program.use();
-	kmMat4 orthoMatrix;
-	kmMat4Identity(&orthoMatrix);
-	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
-	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-
 	GLfloat verts[] =
 	{
 		x, y, 0.0f,			0.0f, 1.0f,

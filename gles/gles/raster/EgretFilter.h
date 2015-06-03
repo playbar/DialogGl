@@ -31,6 +31,8 @@ public:
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
 	unsigned char* DecodePngData(unsigned char* fData, long fSize, int& width, int& height);
+	void beginPaint();
+	void endPaint();
 	void drawFrameBuffer();
 	void dropShadowFilter();
 	void DrawTexture(GLuint texId, float x, float y, float w, float h);
