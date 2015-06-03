@@ -26,8 +26,7 @@ public:
 	static EgretFilter* create(int width, int height);
 	virtual ~EgretFilter();
 	void loadShaders(); 
-	void DrawTexture(float x, float y, float width, float height);
-    
+
 	virtual bool init(int width, int height);
 	void initTest();
 	GLuint initTexData( const void *pData, int width, int height );
@@ -35,6 +34,7 @@ public:
 	void drawFrameBuffer();
 	void dropShadowFilter();
 	void DrawTexture(GLuint texId, float x, float y, float w, float h);
+	void DrawFrameTexture(float x, float y, float width, float height);
     void clear();
     
     void ensureCapacity(unsigned int count);

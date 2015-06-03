@@ -130,15 +130,6 @@ void EgFrameBuffer::show(ProgramData *proData, int x, int y, int w, int h)
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, 0, mHeight, -1024, 1024);
 	glUniformMatrix4fv(proData->mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
 
-	//kmMat4 matrixP;
-	//kmMat4 matrixMV;
-	//kmMat4 matrixMVP;
-	//kmGLGetMatrix(KM_GL_PROJECTION, &matrixP);
-	//kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
-	//kmMat4Multiply(&matrixMVP, &matrixP, &matrixMV);
-	////kmMat4Identity(&matrixMVP);
-	//glUniformMatrix4fv(proData->mUinform[enUni_transformMatrix], 1, GL_FALSE, matrixMVP.mat);	
-
 	glBindTexture(GL_TEXTURE_2D, mTextrueId);
 	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 

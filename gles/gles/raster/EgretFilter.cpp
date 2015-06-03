@@ -410,23 +410,22 @@ void EgretFilter::drawFrameBuffer()
 void EgretFilter::dropShadowFilter()
 {
 	frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
-	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	DrawFrameTexture( 0, 0, 256, 256);
 	frameBufferA.endPatin();
-	//DrawTexture( frameBufferA.getTexId(), 0, 0, 256, 256);
+	DrawTexture( frameBufferA.getTexId(), 0, 0, 256, 256);
 
-
-	frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
+	//frameBufferA.show(&mPrograme[enFilter_IDENTITY], 0, 0, 256, 256 );
 	return;
 }
 
 void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
 {
-	//glViewport(0, 0, mWidth, mHeight);
+	glViewport(0, 0, mWidth, mHeight);
 	mPrograme[enFilter_IDENTITY].program.use();
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
-	//glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
 
 	GLfloat verts[] =
 	{
@@ -448,28 +447,25 @@ void EgretFilter::DrawTexture(GLuint texId, float x, float y, float w, float h)
 }
 
 
-void EgretFilter::DrawTexture(float x, float y, float width, float height)
+void EgretFilter::DrawFrameTexture(float x, float y, float w, float h)
 {
-	unsigned int vertex_count = 2 * 6;
-	ensureCapacity(vertex_count);
-	ccColor4B col = { 0, 0, 0, 0 };
-	ccV3F_C4B_T2F_Triangle triangle =
+	GLfloat verts[] =
 	{
-		{ vertex3(x, y + height, 0), col, { 0, 0 } },
-		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
-		{ vertex3(x + width, y + height, 0), col, { width / mPattern.width, 0 } },
+		x, y, 0.0f, 0.0f, 1.0f,
+		x + w, y, 0.0f, 1.0f, 1.0f,
+		x, y + h, 0.0f, 0.0f, 0.0f,
+		x + w, y + h, 0.0f, 1.0f, 0.0f
 	};
-	ccV3F_C4B_T2F_Triangle *triangles = (ccV3F_C4B_T2F_Triangle*)(m_pBuffer + m_nBufferCount);
 
-	triangles[0] = triangle;
-	ccV3F_C4B_T2F_Triangle triangle1 =
-	{
-		{ vertex3(x, y, 0), col, { 0, height / mPattern.height } },
-		{ vertex3(x + width, y + height, 0), col, { width / mPattern.width, 0 } },
-		{ vertex3(x + width, y, 0), col, { width / mPattern.width, height / mPattern.height } }
-	};
-	triangles[1] = triangle1;
-	m_nBufferCount += vertex_count;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mPattern.texId );
+	glEnableVertexAttribArray(enAtt_position);
+	glEnableVertexAttribArray(enAtt_textureCoordinate);
+	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[0]);
+	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[3]);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	return;
 
 	return;
 
