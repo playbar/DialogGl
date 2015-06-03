@@ -9,10 +9,6 @@
 static const char vert_canvas[] =
 "attribute vec3 a_position;"
 "attribute vec2 a_textureCoordinate;"
-"uniform vec2 u_resolution;"
-"uniform float u_flipY;"
-"uniform float u_time;"
-"uniform mat4 u_transformMatrix;"
 "varying vec2 v_texCoord;"
 "void main() {"
 //"	vec2 position = ((u_transformMatrix * vec4(a_position, 1.0)).xy / u_resolution) * 2.0 - 1.0;"
@@ -27,22 +23,12 @@ static const char vert_canvas[] =
 
 
 static const char frag_alpha[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec4 u_color;"
 "varying vec2 v_texCoord;"
 "void main() {"
-"	gl_FragColor = u_color * texture2D(u_image, v_texCoord).a;"
+"	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0 ) * texture2D(u_image, v_texCoord).a;"
 "}";
 
 static const char frag_blurh[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec2 u_textureSize;"
 "varying vec2 v_texCoord;"
 "void main() {"
 "	const int sampleRadius = 10;"
@@ -57,11 +43,6 @@ static const char frag_blurh[] =
 "}";
 
 static const char frag_blurv[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec2 u_textureSize;"
 "varying vec2 v_texCoord;"
 "void main() {"
 "	const int sampleRadius = 10;"
@@ -76,22 +57,12 @@ static const char frag_blurv[] =
 "}";
 
 static const char frag_color[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform mat4 u_colorMatrix;"
-"uniform vec4 u_vector;"
 "varying vec2 v_texCoord;"
 "void main() {"
 "	gl_FragColor = u_colorMatrix * texture2D(u_image, v_texCoord) + u_vector;"
 "}";
 
 static const char frag_identity[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
 "varying vec2 v_texCoord;"
 "void main() {"
 "	gl_FragColor = texture2D(u_image, v_texCoord);"
@@ -99,15 +70,9 @@ static const char frag_identity[] =
 "}";
 
 static const char frag_multiply[] =
-#ifndef WIN32
-"precision mediump float;"
-#endif
-"uniform sampler2D u_image;"
-"uniform vec4 u_color;"
 "varying vec2 v_texCoord;"
 "void main() {"
-"	gl_FragColor = texture2D(u_image, v_texCoord) * vec4(1.9, 1.0, 1.0, 1.0);"
-"	gl_FragColor = texture2D(u_image, v_texCoord) * u_color;"
+"	gl_FragColor = texture2D(u_image, v_texCoord);"
 "}";
 
 ///////////////////////////////////
@@ -167,6 +132,9 @@ void EgretFilter::loadShaders()
 		mPrograme[i].program.use();
 		glUniform1i(mPrograme[i].mUinform[enUni_image], 0);
 		glUniform2f(mPrograme[i].mUinform[enUni_resolution], mWidth, mHeight);
+		glUniform2f(mPrograme[i].mUinform[enUni_textureSize], 256, 256);
+		float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		glUniform4fv(mPrograme[i].mUinform[enUni_color], 4, color );
 		glUniform1f(mPrograme[i].mUinform[enUni_flipY], 1.0);
 
 	}
@@ -376,6 +344,8 @@ void EgretFilter::beginPaint()
 {
 	glViewport(0, 0, mWidth, mHeight);
 	mPrograme[enFilter_IDENTITY].program.use();
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
@@ -409,11 +379,41 @@ void EgretFilter::drawFrameBuffer()
 
 void EgretFilter::dropShadowFilter()
 {
-	frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
-	DrawFrameTexture( 0, 0, 256, 256);
+	//frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
+	frameBufferA.beginPaint(&mPrograme[enFilter_ALPHA ]);
+	DrawTexture(mPattern.texId, 0, 0, 256, 256);
 	frameBufferA.endPatin();
+
+	frameBufferB.beginPaint(&mPrograme[enFilter_BLURH]);
+	DrawTexture(frameBufferA.getTexId(), 0, 0, 256, 256);
+	frameBufferB.endPatin();
+
+	frameBufferA.beginPaint(&mPrograme[enFilter_BLURV]);
+	DrawTexture(frameBufferB.getTexId(), 0, 0, 256, 256);
+	frameBufferA.endPatin();
+
+	frameBufferB.beginPaint(&mPrograme[enFilter_MULTIPLY]);
+	kmMat4 orthoMatrix;
+	kmMat4 tranMat;
+	kmMat4Identity(&tranMat);
+	kmMat4Identity(&orthoMatrix);
+	kmMat4Translation(&tranMat, 0, 0, 0);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
+	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	DrawTexture(frameBufferA.getTexId(), 0, 0, 256, 256);
+	frameBufferB.endPatin();
+
+	frameBufferB.beginPaint(&mPrograme[enFilter_IDENTITY]);
+	glEnable(GL_BLEND);
+	//glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	glDisable(GL_BLEND);
+	frameBufferB.endPatin();
+
 	beginPaint();
-	DrawTexture( frameBufferA.getTexId(), 100, 100, 256, 256);
+	DrawTexture( frameBufferB.getTexId(), 100, 100, 256, 256);
 	endPaint();
 
 	return;
@@ -460,9 +460,6 @@ void EgretFilter::DrawFrameTexture(float x, float y, float w, float h)
 	glVertexAttribPointer(enAtt_textureCoordinate, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[3]);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	return;
-
-	return;
-
 }
 
 

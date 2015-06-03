@@ -9,9 +9,6 @@
 #include "kazmath/GL/matrix.h"
 #include "kazmath/kazmath.h"
 
-//GLint gUniforms[kEGUni_MAX];
-
-
 GLFilterProgram::GLFilterProgram()
 : m_uProgram(0)
 , m_uVertShader(0)
@@ -69,9 +66,24 @@ bool GLFilterProgram::compileShader(GLuint * shader, GLenum type, const GLchar* 
     {
         return false;
     }
-    
+	const GLchar *sources[]
+	{
+#ifndef WIN32
+		"precision mediump float;",
+#endif
+		"uniform vec2 u_resolution;",
+		"uniform vec2 u_textureSize;",
+		"uniform float u_flipY;",
+		"uniform float u_time;",
+		"uniform mat4 u_transformMatrix;",
+		"uniform mat4 u_colorMatrix;",
+		"uniform sampler2D u_image;",
+		"uniform vec4 u_color;",	
+		"uniform vec4 u_vector;",
+		source,
+	};
     *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
+    glShaderSource(*shader, sizeof( sources) / sizeof(*sources), sources, NULL);
     glCompileShader(*shader);
 
     glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
