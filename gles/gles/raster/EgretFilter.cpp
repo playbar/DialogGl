@@ -25,7 +25,7 @@ static const char vert_canvas[] =
 static const char frag_alpha[] =
 "varying vec2 v_texCoord;"
 "void main() {"
-"	gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0 ) * texture2D(u_image, v_texCoord).a;"
+"	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0 ) * texture2D(u_image, v_texCoord).a;"
 "}";
 
 static const char frag_blurh[] =
@@ -386,7 +386,7 @@ void EgretFilter::dropShadowFilter()
 	kmMat4 tranMat;
 	kmMat4Identity(&tranMat);
 	kmMat4Identity(&orthoMatrix);
-	kmMat4Translation(&tranMat, 5, 0, 0);
+	//kmMat4Translation(&tranMat, 10, 10, 0);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
 	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
 	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
@@ -395,8 +395,8 @@ void EgretFilter::dropShadowFilter()
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	glEnable(GL_BLEND);
-	//glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	DrawTexture(mPattern.texId, 0, 0, 256, 256);
 	glDisable(GL_BLEND);
 	frameBufferB.endPatin();

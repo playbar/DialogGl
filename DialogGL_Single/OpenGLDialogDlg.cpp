@@ -113,7 +113,7 @@ void COpenGLDialogDlg::OnPaint()
 	pctx->clear();
 	//pctx->DrawTexture(0, 0, 256, 256);
 
-	pctx->dropShadowFilterTest();
+	pctx->dropShadowFilter();
 	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
 
