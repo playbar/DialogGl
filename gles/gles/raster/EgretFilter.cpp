@@ -406,7 +406,7 @@ void EgretFilter::dropShadowFilter()
 	kmMat4 tranMat;
 	kmMat4Identity(&tranMat);
 	kmMat4Identity(&orthoMatrix);
-	kmMat4Translation(&tranMat, 30, 30, 0);
+	kmMat4Translation(&tranMat, -10, 30, 0);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, 512, 512, 0, -1024, 1024);
 	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
 	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
