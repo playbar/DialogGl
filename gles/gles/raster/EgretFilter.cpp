@@ -215,8 +215,8 @@ bool EgretFilter::init(int width, int height)
     
     ensureCapacity(512);
     
-	frameBufferB.init( 256, 256);
-	frameBufferA.init( 256,  256);
+	frameBufferB.init( 512, 512);
+	frameBufferA.init( 512, 512);
     
     return true;
 }
@@ -390,15 +390,15 @@ void EgretFilter::dropShadowFilter()
 {
 	//frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	frameBufferA.beginPaint(&mPrograme[enFilter_ALPHA ]);
-	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	DrawTexture(mPattern.texId, 128, 128, 128, 128 );
 	frameBufferA.endPatin();
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_BLURH]);
-	DrawTexture(frameBufferA.getTexId(), 0, 0, 256, 256);
+	DrawTexture(frameBufferA.getTexId(), 0, 0, 512, 512);
 	frameBufferB.endPatin();
 
 	frameBufferA.beginPaint(&mPrograme[enFilter_BLURV]);
-	DrawTexture(frameBufferB.getTexId(), 0, 0, 256, 256);
+	DrawTexture(frameBufferB.getTexId(), 0, 0, 512, 512);
 	frameBufferA.endPatin();
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_MULTIPLY]);
@@ -406,23 +406,23 @@ void EgretFilter::dropShadowFilter()
 	kmMat4 tranMat;
 	kmMat4Identity(&tranMat);
 	kmMat4Identity(&orthoMatrix);
-	//kmMat4Translation(&tranMat, 10, 10, 0);
-	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	kmMat4Translation(&tranMat, 30, 30, 0);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, 512, 512, 0, -1024, 1024);
 	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
 	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-	DrawTexture(frameBufferA.getTexId(), 0, 0, 256, 256);
+	DrawTexture(frameBufferA.getTexId(), 0, 0, 512, 512);
 	frameBufferB.endPatin();
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	DrawTexture(mPattern.texId, 128, 128, 128, 128);
 	glDisable(GL_BLEND);
 	frameBufferB.endPatin();
-	
+	//
 	beginPaint();
-	DrawTexture( frameBufferB.getTexId(), 100, 100, 256, 256);
+	DrawTexture( frameBufferB.getTexId(), 10, 10, 512, 512);
 	endPaint();
 
 	return;
