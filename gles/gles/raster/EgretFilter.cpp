@@ -95,6 +95,25 @@ static const char frag_dropShadow[] =
 //"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );"
 "}";
 
+
+static const char frag_glow[] =
+"varying vec2 v_texCoord;"
+"void main() {"
+"	vec4 color = texture2D( u_image, v_texCoord);"
+"	vec4 acolor = vec4( 1.0, 0.0, 1.0, 1.0);"
+"	const int sampleRadius = 10;"
+"	const int samples = sampleRadius * 2 + 1;"
+"	vec2 one = vec2( 1.0, 1.0) / 256;"
+"	vec4 colort = vec4(0, 0, 0, 0 );"
+"	for( int i = -sampleRadius; i<= sampleRadius; i++ ) {"
+"		colort += acolor * texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0)).a;"
+"		colort += acolor * texture2D(u_image, v_texCoord + vec2(0, float(i) * one.y)).a;"
+"	}"
+"	colort /= float( 2 * samples);"
+"	gl_FragColor = colort;"
+//"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );"
+"}";
+
 ///////////////////////////////////
 
 typedef struct 
@@ -130,6 +149,7 @@ EgretFilter::EgretFilter()
 	mPrograme[enFilter_MULTIPLY].mFraBuffer = frag_multiply;
 	mPrograme[enFilter_IDENTITY].mFraBuffer = frag_identity;
 	mPrograme[enFilter_DROPSHADOW].mFraBuffer = frag_dropShadow;
+	mPrograme[enFilter_GLOW].mFraBuffer = frag_glow;
 }
 
 void EgretFilter::loadShaders()
@@ -400,7 +420,7 @@ void EgretFilter::dropShadowFilter()
 	DrawTexture(mPattern.texId, 0, 0, 256, 256);
 	glDisable(GL_BLEND);
 	frameBufferB.endPatin();
-
+	
 	beginPaint();
 	DrawTexture( frameBufferB.getTexId(), 100, 100, 256, 256);
 	endPaint();
@@ -420,6 +440,38 @@ void EgretFilter::dropShadowFilterTest()
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
 	DrawTexture(mPattern.texId, 100, 100, 256, 256);
 	return;
+}
+
+void EgretFilter::dropGlowFilter()
+{
+	//frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
+	frameBufferA.beginPaint(&mPrograme[enFilter_GLOW]);
+	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	frameBufferA.endPatin();
+
+	frameBufferB.beginPaint(&mPrograme[enFilter_MULTIPLY]);
+	kmMat4 orthoMatrix;
+	kmMat4 tranMat;
+	kmMat4Identity(&tranMat);
+	kmMat4Identity(&orthoMatrix);
+	//kmMat4Translation(&tranMat, 10, 10, 0);
+	kmMat4OrthographicProjection(&orthoMatrix, 0, 256, 256, 0, -1024, 1024);
+	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
+	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
+	DrawTexture(frameBufferA.getTexId(), 0, 0, 256, 256);
+	frameBufferB.endPatin();
+
+	frameBufferB.beginPaint(&mPrograme[enFilter_IDENTITY]);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	glDisable(GL_BLEND);
+	frameBufferB.endPatin();
+
+	beginPaint();
+	DrawTexture(frameBufferB.getTexId(), 100, 100, 256, 256);
+	endPaint();
 
 }
 

@@ -36,6 +36,7 @@ public:
 	void drawFrameBuffer();
 	void dropShadowFilter();
 	void dropShadowFilterTest();
+	void dropGlowFilter();
 	void DrawTexture(GLuint texId, float x, float y, float w, float h);
 	void DrawFrameTexture(float x, float y, float width, float height);
     void clear();
