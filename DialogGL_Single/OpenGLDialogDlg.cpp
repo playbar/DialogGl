@@ -94,9 +94,9 @@ void COpenGLDialogDlg::fillRectWithPattern()
 	int height = 0;
 
 	unsigned char *pImgData = pctx->DecodePngData( pData, ilen, width, height );
-	pctx->mPattern.texId = pctx->initTexData(pImgData, width, height);
-	pctx->mPattern.width = width;
-	pctx->mPattern.height = height;
+	pctx->mTexInfo.texId = pctx->initTexData(pImgData, width, height);
+	pctx->mTexInfo.width = width;
+	pctx->mTexInfo.height = height;
 
 	delete []pData;
 	//free( pImgData );

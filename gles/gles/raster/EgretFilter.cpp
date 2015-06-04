@@ -239,9 +239,9 @@ void EgretFilter::initTest()
 	GLuint texid = initTexData( pImgData, width, height );
 	//makeCheckImages();
 	//GLuint texid = initTexData( checkImage, checkImageWidth, checkImageHeight );
-	mPattern.texId = texid;
-	mPattern.width = width;
-	mPattern.height = height;
+	mTexInfo.texId = texid;
+	mTexInfo.width = width;
+	mTexInfo.height = height;
 
 }
 
@@ -390,7 +390,7 @@ void EgretFilter::dropShadowFilter()
 {
 	//frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	frameBufferA.beginPaint(&mPrograme[enFilter_ALPHA ]);
-	DrawTexture(mPattern.texId, 128, 128, 128, 128 );
+	DrawTexture(mTexInfo.texId, 128, 128, 128, 128 );
 	frameBufferA.endPatin();
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_BLURH]);
@@ -417,7 +417,7 @@ void EgretFilter::dropShadowFilter()
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	DrawTexture(mPattern.texId, 128, 128, 128, 128);
+	DrawTexture(mTexInfo.texId, 128, 128, 128, 128);
 	glDisable(GL_BLEND);
 	frameBufferB.endPatin();
 	//
@@ -438,7 +438,7 @@ void EgretFilter::dropShadowFilterTest()
 	kmMat4Identity(&orthoMatrix);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, mWidth, mHeight, 0, -1024, 1024);
 	glUniformMatrix4fv(mPrograme[enFilter_IDENTITY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);
-	DrawTexture(mPattern.texId, 100, 100, 256, 256);
+	DrawTexture(mTexInfo.texId, 100, 100, 256, 256);
 	return;
 }
 
@@ -446,7 +446,7 @@ void EgretFilter::dropGlowFilter()
 {
 	//frameBufferA.beginPaint(&mPrograme[enFilter_IDENTITY]);
 	frameBufferA.beginPaint(&mPrograme[enFilter_GLOW]);
-	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	DrawTexture(mTexInfo.texId, 0, 0, 256, 256);
 	frameBufferA.endPatin();
 
 	frameBufferB.beginPaint(&mPrograme[enFilter_MULTIPLY]);
@@ -465,7 +465,7 @@ void EgretFilter::dropGlowFilter()
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	DrawTexture(mPattern.texId, 0, 0, 256, 256);
+	DrawTexture(mTexInfo.texId, 0, 0, 256, 256);
 	glDisable(GL_BLEND);
 	frameBufferB.endPatin();
 
@@ -509,7 +509,7 @@ void EgretFilter::DrawFrameTexture(float x, float y, float w, float h)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mPattern.texId );
+	glBindTexture(GL_TEXTURE_2D, mTexInfo.texId );
 	glEnableVertexAttribArray(enAtt_position);
 	glEnableVertexAttribArray(enAtt_textureCoordinate);
 	glVertexAttribPointer(enAtt_position, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, &verts[0]);

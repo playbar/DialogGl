@@ -19,7 +19,7 @@ class CC_DLL EgretFilter
 {
 public:
 	
-	TextureInfo mPattern;
+	TextureInfo mTexInfo;
 public:
 	
 	EgretFilter();
