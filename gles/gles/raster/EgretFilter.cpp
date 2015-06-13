@@ -31,21 +31,21 @@ static const char frag_alpha[] =
 static const char frag_blurh[] =
 "varying vec2 v_texCoord;"
 "void main() {"
-"	const int sampleRadius = 10;"
+"	const int sampleRadius = 5;"
 "	const int samples = sampleRadius * 2 + 1;"
 "	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
 "	vec4 color = vec4(0, 0, 0, 0);"
 "	for (int i = -sampleRadius; i <= sampleRadius; i++) {"
 "		color += texture2D(u_image, v_texCoord + vec2(float(i) * one.x, 0));"
 "	}"
-"	color /= float(samples);"
+"	color /= float(samples / 2);"
 "	gl_FragColor = color;"
 "}";
 
 static const char frag_blurv[] =
 "varying vec2 v_texCoord;"
 "void main() {"
-"	const int sampleRadius = 10;"
+"	const int sampleRadius = 5;"
 "	const int samples = sampleRadius * 2 + 1;"
 "	vec2 one = vec2(1.0, 1.0) / u_textureSize;"
 "	vec4 color = vec4(0, 0, 0, 0);"
@@ -371,7 +371,7 @@ void EgretFilter::beginPaint()
 {
 	glViewport(0, 0, mWidth, mHeight);
 	mPrograme[enFilter_IDENTITY].program.use();
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	kmMat4 orthoMatrix;
 	kmMat4Identity(&orthoMatrix);
@@ -406,7 +406,7 @@ void EgretFilter::dropShadowFilter()
 	kmMat4 tranMat;
 	kmMat4Identity(&tranMat);
 	kmMat4Identity(&orthoMatrix);
-	kmMat4Translation(&tranMat, -10, 30, 0);
+	//kmMat4Translation(&tranMat, -10, 30, 0);
 	kmMat4OrthographicProjection(&orthoMatrix, 0, 512, 512, 0, -1024, 1024);
 	kmMat4Multiply(&orthoMatrix, &orthoMatrix, &tranMat);
 	glUniformMatrix4fv(mPrograme[enFilter_MULTIPLY].mUinform[enUni_transformMatrix], 1, GL_FALSE, orthoMatrix.mat);

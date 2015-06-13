@@ -53,7 +53,7 @@ void EgFrameBuffer::init(int width, int height)
 	}
 	if (!mapBuffer())
 		return;
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER,  mOldFrameId );
 }
@@ -62,7 +62,7 @@ void EgFrameBuffer::beginPaint(ProgramData *proData )
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);	
 	glViewport(0, 0, mWidth, mWidth);
-	//glClearColor(1.0f, 1.0f, 1.0f, 1.0F);
+	//glClearColor(0.0f, 0.0f, 0.0f, 0.0F);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	proData->program.use();
 	kmMat4 orthoMatrix;
