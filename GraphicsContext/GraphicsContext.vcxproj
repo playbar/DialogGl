@@ -10,39 +10,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="fonts\Font.cpp" />
-    <ClCompile Include="graphics\GraphicsContext.cpp" />
-    <ClCompile Include="wtf\Assertions.cpp" />
-    <ClCompile Include="wtf\FastMalloc.cpp" />
-    <ClCompile Include="wtf\NullPtr.cpp" />
-    <ClCompile Include="wtf\PageAllocator.cpp" />
-    <ClCompile Include="wtf\PartitionAlloc.cpp" />
-    <ClCompile Include="wtf\TypeTraits.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="fonts\Font.h" />
-    <ClInclude Include="graphics\GraphicsContext.h" />
-    <ClInclude Include="PlatformExport.h" />
-    <ClInclude Include="TraceEvent.h" />
-    <ClInclude Include="wtf\Assertions.h" />
-    <ClInclude Include="wtf\Atomics.h" />
-    <ClInclude Include="wtf\BitwiseOperations.h" />
-    <ClInclude Include="wtf\ByteSwap.h" />
-    <ClInclude Include="wtf\Compiler.h" />
-    <ClInclude Include="wtf\CPU.h" />
-    <ClInclude Include="wtf\FastMalloc.h" />
-    <ClInclude Include="wtf\Noncopyable.h" />
-    <ClInclude Include="wtf\NullPtr.h" />
-    <ClInclude Include="wtf\OwnPtr.h" />
-    <ClInclude Include="wtf\OwnPtrCommon.h" />
-    <ClInclude Include="wtf\PageAllocator.h" />
-    <ClInclude Include="wtf\PartitionAlloc.h" />
-    <ClInclude Include="wtf\PassOwnPtr.h" />
-    <ClInclude Include="wtf\SpinLock.h" />
-    <ClInclude Include="wtf\TypeTraits.h" />
-    <ClInclude Include="wtf\WTFExport.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>GraphicsContext</ProjectName>
     <ProjectGuid>{93826306-57BD-45DB-95C1-2503D882488E}</ProjectGuid>

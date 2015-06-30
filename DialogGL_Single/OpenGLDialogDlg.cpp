@@ -82,7 +82,7 @@ BOOL COpenGLDialogDlg::OnInitDialog()
 
 void COpenGLDialogDlg::fillRectWithPattern()
 {
-	FILE *pFile = fopen( "c:/test.png", "rb" );
+	FILE *pFile = fopen( "c:/test_ba.png", "rb" );
 	fseek( pFile, 0, SEEK_END );
 	int ilen = ftell( pFile );
 	fseek( pFile, 0, SEEK_SET );
@@ -111,9 +111,11 @@ void COpenGLDialogDlg::OnPaint()
 	//glScissor( 50, 200, 100, 500 );
 	//glClear(GL_COLOR_BUFFER_BIT);  
 	pctx->clear();
-	//pctx->DrawTexture(0, 0, 256, 256);
+	pctx->beginPaint();
+	pctx->DrawTexture(pctx->mTexInfo.texId, 0, 0, 256, 256);
+	pctx->endPaint();
 
-	pctx->dropShadowFilter();
+	//pctx->dropShadowFilter();
 	//glDisable( GL_SCISSOR_TEST );
 	eglView->swapBuffers();
 
