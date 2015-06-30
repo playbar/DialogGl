@@ -46,7 +46,7 @@ int SkCLZ_portable(uint32_t);
 
         static inline int SkCLZ(uint32_t mask) {
             if (mask) {
-                DWORD index;
+                unsigned long index;
                 _BitScanReverse(&index, mask);
                 return index ^ 0x1F;
             } else {

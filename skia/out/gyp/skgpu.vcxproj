@@ -252,7 +252,6 @@
     <ClInclude Include="..\..\include\gpu\gl\SkANGLEGLContext.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\ChromeUtils\SkBorder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\gpu\glew.c" />
@@ -334,7 +333,6 @@
     <ClCompile Include="..\..\src\gpu\effects\GrSingleTextureEffect.cpp" />
     <ClCompile Include="..\..\src\gpu\effects\GrTextureDomain.cpp" />
     <ClCompile Include="..\..\src\gpu\effects\GrTextureStripAtlas.cpp" />
-    <ClCompile Include="..\..\experimental\ChromeUtils\SkBorder.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

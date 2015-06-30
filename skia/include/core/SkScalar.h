@@ -11,6 +11,7 @@
 #include "SkFixed.h"
 #include "SkFloatingPoint.h"
 
+typedef float   SkScalar;
 /** SK_Scalar1 is defined to be 1.0 represented as an SkScalar
 */
 #define SK_Scalar1              (1.0f)

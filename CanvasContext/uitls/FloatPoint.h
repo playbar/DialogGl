@@ -1,0 +1,188 @@
+
+#ifndef FloatPoint_h
+#define FloatPoint_h
+
+#include "FloatSize.h"
+#include <algorithm>
+
+struct SkPoint;
+
+class IntPoint;
+class IntSize;
+
+class FloatPoint
+{
+public:
+    FloatPoint() : m_x(0), m_y(0) { }
+    FloatPoint(float x, float y) : m_x(x), m_y(y) { }
+    FloatPoint(const IntPoint&);
+    explicit FloatPoint(const FloatSize& size) : m_x(size.width()), m_y(size.height()) { }
+
+    static FloatPoint zero() { return FloatPoint(); }
+
+    static FloatPoint narrowPrecision(double x, double y);
+
+    float x() const { return m_x; }
+    float y() const { return m_y; }
+
+    void setX(float x) { m_x = x; }
+    void setY(float y) { m_y = y; }
+    void set(float x, float y)
+    {
+        m_x = x;
+        m_y = y;
+    }
+    void move(float dx, float dy)
+    {
+        m_x += dx;
+        m_y += dy;
+    }
+    void move(const IntSize& a)
+    {
+        m_x += a.width();
+        m_y += a.height();
+    }
+    void move(const FloatSize& a)
+    {
+        m_x += a.width();
+        m_y += a.height();
+    }
+    void moveBy(const IntPoint& a)
+    {
+        m_x += a.x();
+        m_y += a.y();
+    }
+    void moveBy(const FloatPoint& a)
+    {
+        m_x += a.x();
+        m_y += a.y();
+    }
+    void scale(float sx, float sy)
+    {
+        m_x *= sx;
+        m_y *= sy;
+    }
+
+    void normalize();
+
+    float dot(const FloatPoint& a) const
+    {
+        return m_x * a.x() + m_y * a.y();
+    }
+
+    float slopeAngleRadians() const;
+    float length() const;
+    float lengthSquared() const
+    {
+        return m_x * m_x + m_y * m_y;
+    }
+
+    FloatPoint expandedTo(const FloatPoint& other) const
+    {
+        return FloatPoint(std::max(m_x, other.m_x), std::max(m_y, other.m_y));
+    }
+
+    FloatPoint transposedPoint() const
+    {
+        return FloatPoint(m_y, m_x);
+    }
+
+    operator SkPoint() const;
+
+private:
+    float m_x, m_y;
+};
+
+
+inline FloatPoint& operator+=(FloatPoint& a, const FloatSize& b)
+{
+    a.move(b.width(), b.height());
+    return a;
+}
+
+inline FloatPoint& operator+=(FloatPoint& a, const FloatPoint& b)
+{
+    a.move(b.x(), b.y());
+    return a;
+}
+
+inline FloatPoint& operator-=(FloatPoint& a, const FloatSize& b)
+{
+    a.move(-b.width(), -b.height());
+    return a;
+}
+
+inline FloatPoint operator+(const FloatPoint& a, const FloatSize& b)
+{
+    return FloatPoint(a.x() + b.width(), a.y() + b.height());
+}
+
+inline FloatPoint operator+(const FloatPoint& a, const FloatPoint& b)
+{
+    return FloatPoint(a.x() + b.x(), a.y() + b.y());
+}
+
+inline FloatSize operator-(const FloatPoint& a, const FloatPoint& b)
+{
+    return FloatSize(a.x() - b.x(), a.y() - b.y());
+}
+
+inline FloatPoint operator-(const FloatPoint& a, const FloatSize& b)
+{
+    return FloatPoint(a.x() - b.width(), a.y() - b.height());
+}
+
+inline FloatPoint operator-(const FloatPoint& a)
+{
+    return FloatPoint(-a.x(), -a.y());
+}
+
+inline bool operator==(const FloatPoint& a, const FloatPoint& b)
+{
+    return a.x() == b.x() && a.y() == b.y();
+}
+
+inline bool operator!=(const FloatPoint& a, const FloatPoint& b)
+{
+    return a.x() != b.x() || a.y() != b.y();
+}
+
+inline float operator*(const FloatPoint& a, const FloatPoint& b)
+{
+    // dot product
+    return a.dot(b);
+}
+
+inline IntPoint roundedIntPoint(const FloatPoint& p)
+{
+    return IntPoint(clampToInteger(roundf(p.x())), clampToInteger(roundf(p.y())));
+}
+
+inline IntPoint flooredIntPoint(const FloatPoint& p)
+{
+    return IntPoint(clampToInteger(floorf(p.x())), clampToInteger(floorf(p.y())));
+}
+
+inline IntPoint ceiledIntPoint(const FloatPoint& p)
+{
+    return IntPoint(clampToInteger(ceilf(p.x())), clampToInteger(ceilf(p.y())));
+}
+
+inline IntSize flooredIntSize(const FloatPoint& p)
+{
+    return IntSize(clampToInteger(floorf(p.x())), clampToInteger(floorf(p.y())));
+}
+
+inline FloatSize toFloatSize(const FloatPoint& a)
+{
+    return FloatSize(a.x(), a.y());
+}
+
+float findSlope(const FloatPoint& p1, const FloatPoint& p2, float& c);
+
+// Find point where lines through the two pairs of points intersect. Returns false if the lines don't intersect.
+bool findIntersection(const FloatPoint& p1, const FloatPoint& p2, const FloatPoint& d1, const FloatPoint& d2, FloatPoint& intersection);
+
+
+
+#endif
