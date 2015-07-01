@@ -15,11 +15,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="uitls\CString.cpp" />
+    <ClCompile Include="uitls\FastMalloc.cpp" />
     <ClCompile Include="uitls\FloatPoint.cpp" />
     <ClCompile Include="uitls\FloatSize.cpp" />
+    <ClCompile Include="uitls\WTFString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="uitls\Alignment.h" />
+    <ClInclude Include="uitls\CString.h" />
+    <ClInclude Include="uitls\FastMalloc.h" />
     <ClInclude Include="uitls\FloatPoint.h" />
     <ClInclude Include="uitls\FloatSize.h" />
     <ClInclude Include="uitls\Globaldef.h" />
@@ -30,10 +35,12 @@
     <ClInclude Include="uitls\PassOwnPtr.h" />
     <ClInclude Include="uitls\PassRefPtr.h" />
     <ClInclude Include="uitls\RawPtr.h" />
+    <ClInclude Include="uitls\RefCounted.h" />
     <ClInclude Include="uitls\RefPtr.h" />
     <ClInclude Include="uitls\TypeTraits.h" />
     <ClInclude Include="uitls\Vector.h" />
     <ClInclude Include="uitls\VectorTraits.h" />
+    <ClInclude Include="uitls\WTFString.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1E319386-4E4F-7BF0-A26E-00FE401F6002}</ProjectGuid>
