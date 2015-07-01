@@ -15,7 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="canvas\Canvas2DContextAttributes.cpp" />
     <ClCompile Include="canvas\CanvasPathMethods.cpp" />
+    <ClCompile Include="canvas\CanvasStyle.cpp" />
+    <ClCompile Include="CSSPropertyNames.cpp" />
     <ClCompile Include="FontFamilyNames.cpp" />
     <ClCompile Include="platform\graphics\Path.cpp" />
     <ClCompile Include="wtf\FastMalloc.cpp" />
@@ -23,7 +26,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="canvas\CanvasPathMethods.h" />
+    <ClInclude Include="canvas\CanvasStyle.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="CSSPropertyNames.h" />
     <ClInclude Include="FontFamilyNames.h" />
     <ClInclude Include="platform\graphics\Path.h" />
     <ClInclude Include="wtf\text\WTFString.h" />
@@ -60,7 +65,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;../v8/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP /we4189 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>
