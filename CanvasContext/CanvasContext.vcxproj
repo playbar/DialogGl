@@ -15,23 +15,45 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="blink\CSSPropertyNames.cpp" />
+    <ClCompile Include="blink\CSSValueKeywords.cpp" />
+    <ClCompile Include="blink\EventNames.cpp" />
+    <ClCompile Include="blink\EventTargetNames.cpp" />
+    <ClCompile Include="blink\EventTypeNames.cpp" />
+    <ClCompile Include="blink\FontFamilyNames.cpp" />
+    <ClCompile Include="blink\HTMLNames.cpp" />
+    <ClCompile Include="blink\MediaFeatureNames.cpp" />
+    <ClCompile Include="blink\RuntimeEnabledFeatures.cpp" />
     <ClCompile Include="canvas\Canvas2DContextAttributes.cpp" />
     <ClCompile Include="canvas\CanvasPathMethods.cpp" />
+    <ClCompile Include="canvas\CanvasRenderingContext2D.cpp" />
     <ClCompile Include="canvas\CanvasStyle.cpp" />
-    <ClCompile Include="CSSPropertyNames.cpp" />
-    <ClCompile Include="FontFamilyNames.cpp" />
     <ClCompile Include="platform\graphics\Path.cpp" />
     <ClCompile Include="wtf\FastMalloc.cpp" />
     <ClCompile Include="wtf\text\WTFString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="blink\config.h" />
+    <ClInclude Include="blink\CSSPropertyNames.h" />
+    <ClInclude Include="blink\CSSValueKeywords.h" />
+    <ClInclude Include="blink\EventInterfaces.h" />
+    <ClInclude Include="blink\EventNames.h" />
+    <ClInclude Include="blink\EventTargetInterfaces.h" />
+    <ClInclude Include="blink\EventTargetNames.h" />
+    <ClInclude Include="blink\EventTypeNames.h" />
+    <ClInclude Include="blink\FontFamilyNames.h" />
+    <ClInclude Include="blink\HTMLElementTypeHelpers.h" />
+    <ClInclude Include="blink\HTMLNames.h" />
+    <ClInclude Include="blink\MediaFeatureNames.h" />
+    <ClInclude Include="blink\RuntimeEnabledFeatures.h" />
     <ClInclude Include="canvas\CanvasPathMethods.h" />
+    <ClInclude Include="canvas\CanvasRenderingContext2D.h" />
     <ClInclude Include="canvas\CanvasStyle.h" />
-    <ClInclude Include="config.h" />
-    <ClInclude Include="CSSPropertyNames.h" />
-    <ClInclude Include="FontFamilyNames.h" />
     <ClInclude Include="platform\graphics\Path.h" />
     <ClInclude Include="wtf\text\WTFString.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="canvas\CanvasRenderingContext2D.idl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1E319386-4E4F-7BF0-A26E-00FE401F6002}</ProjectGuid>
@@ -65,7 +87,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;../v8/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;blink;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;../v8/include;../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP /we4189 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>
