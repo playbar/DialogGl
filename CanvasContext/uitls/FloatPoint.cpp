@@ -1,6 +1,7 @@
 
 #include "FloatPoint.h"
 #include "SkPoint.h"
+#include "Vector.h"
 #include <limits>
 #include <math.h>
 
