@@ -52,9 +52,6 @@
     <ClInclude Include="platform\graphics\Path.h" />
     <ClInclude Include="wtf\text\WTFString.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Midl Include="canvas\CanvasRenderingContext2D.idl" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1E319386-4E4F-7BF0-A26E-00FE401F6002}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -87,7 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./;blink;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;../v8/include;../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;blink;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/gpu;../skia/include/utils;../v8/include;../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP /we4189 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>

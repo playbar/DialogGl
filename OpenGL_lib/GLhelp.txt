@@ -1,0 +1,10 @@
+1.将VC include目录下创建GL文件夹，然后放入GLAux.h,glut.h文件
+2.将OpenGL需要的.lib文件加入到VC lib目录下
+3.将OpenGL需要的.dll文件加入到system32目录下
+4.vs2008/vs2010添加.lib文件：project->property->linker->input->additional dependencies 
+5.加入链接文件opengl32.lib glu32.lib glut32.lib
+vs2010需要改为(opengl32.lib;glu32.lib;glut32.lib;) 
+6.无法定位程序输入点glPopAttrib于动态连接库OPENGL.DLL上--链接库的问题，是不是用的glut的库，链接glut32.lib，不要连接glut.lib
+7.vs2005类似问题——error LNK2019: unresolved external symbol __imp____glutInitWithExit@12 referenced in function _glutInit_ATEXIT_HACK@8
+解决方法：（Try define the following line right before including the header, glut.h.）
+#define GLUT_DISABLE_ATEXIT_HACK
