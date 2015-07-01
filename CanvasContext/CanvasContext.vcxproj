@@ -15,32 +15,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="uitls\CString.cpp" />
-    <ClCompile Include="uitls\FastMalloc.cpp" />
-    <ClCompile Include="uitls\FloatPoint.cpp" />
-    <ClCompile Include="uitls\FloatSize.cpp" />
-    <ClCompile Include="uitls\WTFString.cpp" />
+    <ClCompile Include="canvas\CanvasPathMethods.cpp" />
+    <ClCompile Include="FontFamilyNames.cpp" />
+    <ClCompile Include="platform\graphics\Path.cpp" />
+    <ClCompile Include="wtf\FastMalloc.cpp" />
+    <ClCompile Include="wtf\text\WTFString.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="uitls\Alignment.h" />
-    <ClInclude Include="uitls\CString.h" />
-    <ClInclude Include="uitls\FastMalloc.h" />
-    <ClInclude Include="uitls\FloatPoint.h" />
-    <ClInclude Include="uitls\FloatSize.h" />
-    <ClInclude Include="uitls\Globaldef.h" />
-    <ClInclude Include="uitls\IntPoint.h" />
-    <ClInclude Include="uitls\IntSize.h" />
-    <ClInclude Include="uitls\MathExtras.h" />
-    <ClInclude Include="uitls\OwnPtr.h" />
-    <ClInclude Include="uitls\PassOwnPtr.h" />
-    <ClInclude Include="uitls\PassRefPtr.h" />
-    <ClInclude Include="uitls\RawPtr.h" />
-    <ClInclude Include="uitls\RefCounted.h" />
-    <ClInclude Include="uitls\RefPtr.h" />
-    <ClInclude Include="uitls\TypeTraits.h" />
-    <ClInclude Include="uitls\Vector.h" />
-    <ClInclude Include="uitls\VectorTraits.h" />
-    <ClInclude Include="uitls\WTFString.h" />
+    <ClInclude Include="canvas\CanvasPathMethods.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="FontFamilyNames.h" />
+    <ClInclude Include="platform\graphics\Path.h" />
+    <ClInclude Include="wtf\text\WTFString.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1E319386-4E4F-7BF0-A26E-00FE401F6002}</ProjectGuid>
@@ -66,15 +52,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <ExecutablePath>$(ExecutablePath);$(MSBuildProjectDirectory)</ExecutablePath>
-    <IntDir>$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <TargetName>canvas</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
     <TargetPath>$(OutDir)\$(ProjectName)\(TargetExt)</TargetPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./;utils;../skia/include/core;../skia/include/config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;utils;../skia/include/core;../skia/include/config;../skia/include/ports;../skia/include/utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP /we4189 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>

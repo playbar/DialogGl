@@ -46,6 +46,13 @@ public:
         }
     }
 
+	void deref() const {
+		if (sk_atomic_dec(&fRefCnt) == 1) {
+			sk_membar_acquire__after_atomic_dec();
+			internal_dispose();
+		}
+	}
+
 protected:
 
     void internal_dispose_restore_refcnt_to_1() const {

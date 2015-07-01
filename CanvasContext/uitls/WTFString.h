@@ -1,52 +1,51 @@
 #ifndef WTFString_h
 #define WTFString_h
 
-#include "wtf/HashTableDeletedValueType.h"
-#include "wtf/WTFExport.h"
-#include "wtf/text/ASCIIFastPath.h"
-#include "wtf/text/StringImpl.h"
-#include "wtf/text/StringView.h"
+//#include "wtf/HashTableDeletedValueType.h"
+//#include "wtf/WTFExport.h"
+//#include "wtf/text/ASCIIFastPath.h"
+//#include "wtf/text/StringImpl.h"
+//#include "wtf/text/StringView.h"
 
+#include "Globaldef.h"
 
-
-namespace WTF {
 
 class CString;
 struct StringHash;
 
 // Declarations of string operations
 
-WTF_EXPORT int charactersToIntStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT int charactersToIntStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT unsigned charactersToUIntStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT unsigned charactersToUIntStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT int64_t charactersToInt64Strict(const LChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT int64_t charactersToInt64Strict(const UChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT uint64_t charactersToUInt64Strict(const LChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT uint64_t charactersToUInt64Strict(const UChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT intptr_t charactersToIntPtrStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
-WTF_EXPORT intptr_t charactersToIntPtrStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
+int charactersToIntStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
+int charactersToIntStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
+unsigned charactersToUIntStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
+unsigned charactersToUIntStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
+int64_t charactersToInt64Strict(const LChar*, size_t, bool* ok = 0, int base = 10);
+int64_t charactersToInt64Strict(const UChar*, size_t, bool* ok = 0, int base = 10);
+uint64_t charactersToUInt64Strict(const LChar*, size_t, bool* ok = 0, int base = 10);
+uint64_t charactersToUInt64Strict(const UChar*, size_t, bool* ok = 0, int base = 10);
+intptr_t charactersToIntPtrStrict(const LChar*, size_t, bool* ok = 0, int base = 10);
+intptr_t charactersToIntPtrStrict(const UChar*, size_t, bool* ok = 0, int base = 10);
 
-WTF_EXPORT int charactersToInt(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT int charactersToInt(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT unsigned charactersToUInt(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT unsigned charactersToUInt(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT int64_t charactersToInt64(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT int64_t charactersToInt64(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT uint64_t charactersToUInt64(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT uint64_t charactersToUInt64(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT intptr_t charactersToIntPtr(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
-WTF_EXPORT intptr_t charactersToIntPtr(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
+int charactersToInt(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
+int charactersToInt(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
+unsigned charactersToUInt(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
+unsigned charactersToUInt(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
+int64_t charactersToInt64(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
+int64_t charactersToInt64(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
+uint64_t charactersToUInt64(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
+uint64_t charactersToUInt64(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
+intptr_t charactersToIntPtr(const LChar*, size_t, bool* ok = 0); // ignores trailing garbage
+intptr_t charactersToIntPtr(const UChar*, size_t, bool* ok = 0); // ignores trailing garbage
 
 // FIXME: Like the strict functions above, these give false for "ok" when there is trailing garbage.
 // Like the non-strict functions above, these return the value when there is trailing garbage.
 // It would be better if these were more consistent with the above functions instead.
-WTF_EXPORT double charactersToDouble(const LChar*, size_t, bool* ok = 0);
-WTF_EXPORT double charactersToDouble(const UChar*, size_t, bool* ok = 0);
-WTF_EXPORT float charactersToFloat(const LChar*, size_t, bool* ok = 0);
-WTF_EXPORT float charactersToFloat(const UChar*, size_t, bool* ok = 0);
-WTF_EXPORT float charactersToFloat(const LChar*, size_t, size_t& parsedLength);
-WTF_EXPORT float charactersToFloat(const UChar*, size_t, size_t& parsedLength);
+double charactersToDouble(const LChar*, size_t, bool* ok = 0);
+double charactersToDouble(const UChar*, size_t, bool* ok = 0);
+float charactersToFloat(const LChar*, size_t, bool* ok = 0);
+float charactersToFloat(const UChar*, size_t, bool* ok = 0);
+float charactersToFloat(const LChar*, size_t, size_t& parsedLength);
+float charactersToFloat(const UChar*, size_t, size_t& parsedLength);
 
 enum TrailingZerosTruncatingPolicy {
     KeepTrailingZeros,
@@ -62,9 +61,7 @@ enum UTF8ConversionMode {
 template<bool isSpecialCharacter(UChar), typename CharacterType>
 bool isAllSpecialCharacters(const CharacterType*, size_t);
 
-// You can find documentation about this class in this doc:
-// https://docs.google.com/document/d/1kOCUlJdh2WJMJGDf-WoEQhmnjKLaOYRbiHz5TiGJl14/edit?usp=sharing
-class WTF_EXPORT String {
+class String {
 public:
     // Construct a null string, distinguishable from an empty string.
     String() { }
@@ -78,7 +75,6 @@ public:
     // NOTE: This is different from String(vector.data(), vector.size())
     // which will sometimes return a null string when vector.data() is null
     // which can only occur for vectors without inline capacity.
-    // See: https://bugs.webkit.org/show_bug.cgi?id=109792
     template<size_t inlineCapacity>
     explicit String(const Vector<UChar, inlineCapacity>&);
 
@@ -520,7 +516,7 @@ inline bool String::containsOnlyASCII() const
     return charactersAreAllASCII(characters16(), m_impl->length());
 }
 
-WTF_EXPORT int codePointCompare(const String&, const String&);
+int codePointCompare(const String&, const String&);
 
 inline bool codePointCompareLessThan(const String& a, const String& b)
 {
@@ -643,7 +639,7 @@ template <> struct VectorTraits<String> : SimpleClassVectorTraits<String> {
 };
 
 // Shared global empty string.
-WTF_EXPORT const String& emptyString();
+const String& emptyString();
 
 }
 

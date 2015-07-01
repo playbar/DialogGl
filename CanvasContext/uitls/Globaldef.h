@@ -44,5 +44,17 @@ public: \
 private: \
 typedef int __thisIsHereToForceASemicolonAfterThisMacro
 
+typedef unsigned char LChar;
+typedef wchar_t UChar;
+
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef short int16_t;  // NOLINT
+typedef unsigned short uint16_t;  // NOLINT
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+
 #endif
 
