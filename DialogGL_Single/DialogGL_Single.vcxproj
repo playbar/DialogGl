@@ -107,7 +107,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\gles\gles;..\gles\gles/kazmath;..\gles\gles/raster;..\gles\gles/shader;..\gles\gles/support;..\gles\glew;..\gles\glu;..\gles;.\libpng;.\zlib;./vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\gles\gles;..\gles\gles/kazmath;..\gles\gles/raster;..\gles\gles/shader;..\gles\gles/support;..\gles\glew;..\gles\glu;..\gles;.\libpng;.\zlib;./vld;../CanvasContext/canvas;../CanvasContext;../CanvasContext/blink;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -145,6 +145,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CanvasContextTest.cpp" />
     <ClCompile Include="OpenGLDialog.cpp" />
     <ClCompile Include="OpenGLDialogDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -153,6 +154,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CanvasContextTest.h" />
     <ClInclude Include="OpenGLDialog.h" />
     <ClInclude Include="OpenGLDialogDlg.h" />
     <ClInclude Include="Resource.h" />

@@ -120,7 +120,7 @@ template <typename Target, typename Source> struct BoundsChecker<Target, Source,
     {
         // Same signedness so implicit type conversion will always increase precision
         // to widest type
-        return value <= std::numeric_limits<Target>::max();
+        return value <= (std::numeric_limits<Target>::max)();
     }
 };
 
@@ -129,7 +129,7 @@ template <typename Target, typename Source> struct BoundsChecker<Target, Source,
     {
         // Same signedness so implicit type conversion will always increase precision
         // to widest type
-        return std::numeric_limits<Target>::min() <= value && value <= std::numeric_limits<Target>::max();
+        return (std::numeric_limits<Target>::min)() <= value && value <= (std::numeric_limits<Target>::max)();
     }
 };
 

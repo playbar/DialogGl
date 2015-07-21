@@ -218,7 +218,6 @@ WTF_EXPORT void WTFInstallReportBacktraceOnCrashHook();
    vulnerability. Classes of these vulnerabilities include bad casts, out of
    bounds accesses, use-after-frees, etc. Please be sure to file bugs for these
    failures using the security template:
-      http://code.google.com/p/chromium/issues/entry?template=Security%20Bug
 */
 #ifdef ADDRESS_SANITIZER
 
@@ -348,7 +347,6 @@ static inline void UNREACHABLE_FOR_PLATFORM()
    Use in places where failure of an assertion indicates a definite security
    vulnerability from which execution must not continue even in a release build.
    Please sure to file bugs for these failures using the security template:
-      http://code.google.com/p/chromium/issues/entry?template=Security%20Bug
 */
 
 #if ASSERT_DISABLED

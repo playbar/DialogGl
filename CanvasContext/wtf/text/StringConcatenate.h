@@ -183,9 +183,6 @@ public:
         size_t len = 0;
         while (m_buffer[len] != UChar(0))
             ++len;
-
-        RELEASE_ASSERT(len <= std::numeric_limits<unsigned>::max());
-
         m_length = len;
     }
 
