@@ -7,12 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DialogGL_Single", "DialogGL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gleslib", "gles\gles.vcxproj", "{98A51BA8-FC3A-415B-AC8F-8C7BD464E93E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "skia\out\gyp\core.vcxproj", "{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skgpu", "skia\out\gyp\skgpu.vcxproj", "{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CanvasContext", "CanvasContext\CanvasContext.vcxproj", "{1E319386-4E4F-7BF0-A26E-00FE401F6002}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,24 +27,6 @@ Global
 		{98A51BA8-FC3A-415B-AC8F-8C7BD464E93E}.Release|Win32.ActiveCfg = Release|Win32
 		{98A51BA8-FC3A-415B-AC8F-8C7BD464E93E}.Release|Win32.Build.0 = Release|Win32
 		{98A51BA8-FC3A-415B-AC8F-8C7BD464E93E}.Release|x64.ActiveCfg = Release|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Debug|Win32.Build.0 = Debug|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Debug|x64.ActiveCfg = Debug|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Release|Win32.ActiveCfg = Release|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Release|Win32.Build.0 = Release|Win32
-		{B7760B5E-BFA8-486B-ACFD-49E3A6DE8E76}.Release|x64.ActiveCfg = Release|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Debug|Win32.Build.0 = Debug|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Debug|x64.ActiveCfg = Debug|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Release|Win32.ActiveCfg = Release|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Release|Win32.Build.0 = Release|Win32
-		{C42338AF-78B5-1DF9-6047-9E1C1A5F187E}.Release|x64.ActiveCfg = Release|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Debug|Win32.Build.0 = Debug|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Debug|x64.ActiveCfg = Debug|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Release|Win32.ActiveCfg = Release|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Release|Win32.Build.0 = Release|Win32
-		{1E319386-4E4F-7BF0-A26E-00FE401F6002}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

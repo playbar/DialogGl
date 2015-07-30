@@ -1,6 +1,0 @@
-include_rules = [
-  "+base",
-  "+skia/ext",
-  "+third_party/angle",
-  "+third_party/skia",
-]

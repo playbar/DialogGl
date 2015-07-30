@@ -149,7 +149,7 @@ EGLView::EGLView()
 , m_wndproc(NULL)
 , m_fFrameZoomFactor(1.0f)
 {
-    strcpy(m_szViewName, "Cocos2dxWin32");
+    strcpy(m_szViewName, "Win32GLTest");
 	m_eProjection = kCCDirectorProjectionDefault;
 }
 
